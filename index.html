@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organograma — Simplifica Timbó</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1565a8;
+    --verde-claro: #1e7ecf;
+    --verde-neon: #5ab4f0;
+    --creme: #f0f5fb;
+    --creme-escuro: #dce8f5;
+    --cinza: #2d3a4a;
+    --cinza-claro: #7a8fa6;
+    --branco: #ffffff;
+    --sombra: 0 4px 24px rgba(21,101,168,0.10);
+    --sombra-hover: 0 8px 32px rgba(21,101,168,0.18);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--creme);
+    color: var(--cinza);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--verde);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+  .header-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--branco);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-logo span {
+    background: var(--verde-neon);
+    color: var(--verde);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .btn-filtro {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-filtro:hover, .btn-filtro.ativo {
+    background: var(--verde-neon);
+    color: var(--verde);
+    border-color: var(--verde-neon);
+    font-weight: 500;
+  }
+  .btn-admin {
+    background: var(--verde-neon);
+    color: var(--verde);
+    border: none;
+    padding: 7px 18px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-admin:hover { background: white; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--verde) 0%, #0f4a7a 100%);
+    padding: 48px 40px 40px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(90,180,240,0.1);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 20%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(90,180,240,0.07);
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    position: relative;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    position: relative;
+  }
+  .stat { text-align: left; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--verde-neon);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+  /* FILTROS TURNO */
+  .filtros-bar {
+    background: white;
+    border-bottom: 1px solid var(--creme-escuro);
+    padding: 14px 40px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .filtros-bar label {
+    font-size: 0.8rem;
+    color: var(--cinza-claro);
+    margin-right: 4px;
+    font-weight: 500;
+  }
+  .chip {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--creme-escuro);
+    background: white;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    color: var(--cinza);
+  }
+  .chip:hover { border-color: var(--verde-claro); color: var(--verde); }
+  .chip.ativo { background: var(--verde); color: white; border-color: var(--verde); font-weight: 500; }
+
+  /* GRID SETORES */
+  .main { padding: 36px 40px; }
+  .diretor-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+  .card-diretor {
+    background: var(--verde);
+    color: white;
+    border-radius: var(--radius);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--sombra-hover);
+    min-width: 260px;
+  }
+  .card-diretor img {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--verde-neon);
+  }
+  .card-diretor .nome {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+  .card-diretor .cargo {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--verde-neon);
+    margin-top: 2px;
+  }
+
+  .setores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .setor-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .setor-card:hover { box-shadow: var(--sombra-hover); transform: translateY(-2px); }
+
+  .setor-header {
+    background: linear-gradient(135deg, var(--verde) 0%, #1257a0 100%);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .setor-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+  }
+  .setor-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+  }
+  .setor-tag {
+    margin-left: auto;
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .setor-tag.parceiro { background: rgba(90,180,240,0.3); color: var(--verde-neon); }
+
+  .pessoas-lista { padding: 12px 16px; }
+
+  .pessoa-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    transition: background 0.15s;
+  }
+  .pessoa-item:hover { background: var(--creme); }
+  .pessoa-item + .pessoa-item { border-top: 1px solid var(--creme-escuro); }
+
+  .pessoa-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--creme-escuro);
+    flex-shrink: 0;
+    background: var(--creme-escuro);
+  }
+  .pessoa-info { flex: 1; min-width: 0; }
+  .pessoa-nome {
+    font-weight: 500;
+    font-size: 0.88rem;
+    color: var(--cinza);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pessoa-cargo {
+    font-size: 0.73rem;
+    color: var(--cinza-claro);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+  }
+  .turno-badge {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .turno-mat { background: #fff8e1; color: #b45309; }
+  .turno-ves { background: #ede9fe; color: #5b21b6; }
+
+  /* OCULTAR POR TURNO */
+  body.filtro-mat .turno-ves-item { display: none; }
+  body.filtro-ves .turno-mat-item { display: none; }
+
+  /* MODAL ADMIN */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.aberto { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 36px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--verde);
+    margin-bottom: 6px;
+  }
+  .modal p { font-size: 0.88rem; color: var(--cinza-claro); margin-bottom: 24px; }
+  .modal input, .modal select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--creme-escuro);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--cinza);
+    background: var(--creme);
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .modal input:focus, .modal select:focus {
+    outline: none;
+    border-color: var(--verde-claro);
+    background: white;
+  }
+  .modal-btns { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-primary {
+    flex: 1;
+    background: var(--verde);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--verde-claro); }
+  .btn-secondary {
+    background: var(--creme);
+    color: var(--cinza);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background: var(--creme-escuro); }
+  .erro-msg { color: #dc2626; font-size: 0.82rem; margin-top: -4px; margin-bottom: 8px; display: none; }
+
+  /* PAINEL ADMIN */
+  .painel {
+    display: none;
+    position: fixed; inset: 0;
+    background: var(--creme);
+    z-index: 200;
+    overflow-y: auto;
+  }
+  .painel.aberto { display: block; }
+  .painel-header {
+    background: var(--verde);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .painel-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: white;
+    font-size: 1.2rem;
+  }
+  .btn-fechar {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+  }
+  .btn-fechar:hover { background: rgba(255,255,255,0.3); }
+  .painel-body { padding: 32px 40px; }
+  .painel-body h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--verde);
+    margin-bottom: 16px;
+    margin-top: 32px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--creme-escuro);
+  }
+  .painel-body h3:first-child { margin-top: 0; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .form-grid input, .form-grid select,
+  .painel-body input, .painel-body select {
+    padding: 10px 14px;
+    border: 1.5px solid var(--creme-escuro);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    background: white;
+    color: var(--cinza);
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .form-grid input:focus, .form-grid select:focus,
+  .painel-body input:focus, .painel-body select:focus {
+    outline: none; border-color: var(--verde-claro);
+  }
+  .form-full { grid-column: 1 / -1; }
+  .btn-add {
+    background: var(--verde);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-add:hover { background: var(--verde-claro); }
+
+  .lista-admin { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .item-admin {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .item-admin-info { font-size: 0.88rem; color: var(--cinza); }
+  .item-admin-info strong { font-weight: 600; }
+  .item-admin-info span { color: var(--cinza-claro); font-size: 0.78rem; margin-left: 6px; }
+  .btn-del {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 7px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-del:hover { background: #fecaca; }
+  .btn-salvar-tudo {
+    background: var(--verde-neon);
+    color: var(--verde);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 32px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-salvar-tudo:hover { background: white; box-shadow: var(--sombra-hover); }
+  .btn-salvar-tudo:disabled { opacity: 0.6; cursor: not-allowed; }
+  .aviso-salvar {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-top: 16px;
+    display: none;
+  }
+  .aviso-salvar.sucesso { background: #dce8f5; color: #1565a8; }
+  .aviso-salvar.erro { background: #fee2e2; color: #dc2626; }
+
+  /* LOADING */
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(240,245,251,0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+  .loading-overlay.ativo { display: flex; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid var(--creme-escuro);
+    border-top-color: var(--verde);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--verde);
+    font-size: 0.9rem;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--verde);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+    margin-top: 48px;
+  }
+  footer strong { color: white; }
+
+  @media (max-width: 600px) {
+    header { padding: 0 20px; }
+    .hero { padding: 32px 20px 28px; }
+    .hero h1 { font-size: 1.6rem; }
+    .hero-stats { gap: 20px; }
+    .filtros-bar { padding: 12px 20px; flex-wrap: wrap; }
+    .main { padding: 24px 16px; }
+    .setores-grid { grid-template-columns: 1fr; }
+    .painel-body { padding: 24px 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loadingTxt">Carregando organograma...</div>
+</div>
+
+<header>
+  <div class="header-logo">
+    Simplifica Timbó <span>Organograma</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-filtro" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn-admin" onclick="abrirLogin()">⚙️ Admin</button>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Equipe Simplifica Timbó</h1>
+  <p>Organograma completo por setor e turno</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" id="totalPessoas">—</div>
+      <div class="stat-label">Colaboradores</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="totalSetores">—</div>
+      <div class="stat-label">Setores</div>
+    </div>
+  </div>
+</div>
+
+<div class="filtros-bar">
+  <label>Filtrar por turno:</label>
+  <button class="chip ativo" onclick="filtrar('todos', this)">Todos</button>
+  <button class="chip" onclick="filtrar('mat', this)">☀️ Matutino</button>
+  <button class="chip" onclick="filtrar('ves', this)">🌇 Vespertino</button>
+</div>
+
+<div class="main">
+  <div class="diretor-wrap">
+    <div class="card-diretor">
+      <img src="https://tisimplifica2.github.io/imagens/murilo.jpg" alt="Murilo" onerror="this.src='https://ui-avatars.com/api/?name=Murilo&background=1565a8&color=fff&size=64'">
+      <div>
+        <div class="nome">Murilo</div>
+        <div class="cargo">Diretor</div>
+      </div>
+    </div>
+  </div>
+  <div class="setores-grid" id="setoresGrid"></div>
+</div>
+
+<footer>
+  <strong>Simplifica Timbó</strong> — Rua Japão, 408 - Bairro das Nações · (47) 3380-7900
+</footer>
+
+<!-- MODAL LOGIN -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <h2>🔐 Área Administrativa</h2>
+    <p>Digite a senha para acessar o painel de edição do organograma.</p>
+    <input type="password" id="senhaInput" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha()">
+    <div class="erro-msg" id="erroSenha">Senha incorreta. Tente novamente.</div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="verificarSenha()">Entrar</button>
+      <button class="btn-secondary" onclick="fecharLogin()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div class="painel" id="painelAdmin">
+  <div class="painel-header">
+    <h2>⚙️ Painel Administrativo</h2>
+    <button class="btn-fechar" onclick="fecharPainel()">✕ Fechar</button>
+  </div>
+  <div class="painel-body">
+
+    <h3>➕ Adicionar Setor</h3>
+    <div class="form-grid">
+      <input type="text" id="novoSetorNome" placeholder="Nome do setor (ex: Triagem)">
+      <input type="text" id="novoSetorIcone" placeholder="Ícone emoji (ex: 📋)">
+      <select id="novoSetorParceiro">
+        <option value="">Setor próprio</option>
+        <option value="parceiro">Parceiro</option>
+      </select>
+      <button class="btn-add" onclick="adicionarSetor()">+ Adicionar Setor</button>
+    </div>
+
+    <h3>➕ Adicionar Pessoa</h3>
+    <div class="form-grid">
+      <input type="text" id="novaNome" placeholder="Nome da pessoa">
+      <input type="text" id="novaCargo" placeholder="Cargo (ex: ESTAGIÁRIA)">
+      <select id="novoSetor">
+        <option value="">Selecione o setor</option>
+      </select>
+      <select id="novoTurno">
+        <option value="">Sem turno fixo</option>
+        <option value="mat">Matutino</option>
+        <option value="ves">Vespertino</option>
+      </select>
+      <input type="text" class="form-full" id="novaFoto" placeholder="URL da foto (opcional — deixe em branco para usar iniciais)">
+      <button class="btn-add form-full" onclick="adicionarPessoa()">+ Adicionar Pessoa</button>
+    </div>
+
+    <h3>👥 Pessoas cadastradas</h3>
+    <div style="margin-bottom:10px">
+      <select id="filtroSetorAdmin" onchange="renderListaAdmin()" style="max-width:300px">
+        <option value="">Todos os setores</option>
+      </select>
+    </div>
+    <div class="lista-admin" id="listaAdmin"></div>
+
+    <h3>🏢 Setores cadastrados</h3>
+    <div class="lista-admin" id="listaSetoresAdmin"></div>
+
+    <button class="btn-salvar-tudo" onclick="salvarTudo()" id="btnSalvar">💾 Salvar Alterações no Firebase</button>
+    <div class="aviso-salvar" id="avisoSalvar"></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ============================================================
+  // CONFIGURAÇÃO FIREBASE — substitua pelos seus dados
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
+    authDomain: "simplifica-timbo.firebaseapp.com",
+    projectId: "simplifica-timbo",
+    storageBucket: "simplifica-timbo.firebasestorage.app",
+    messagingSenderId: "651621474575",
+    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ============================================================
+  // DADOS PADRÃO (usados apenas na primeira vez)
+  // ============================================================
+  const SENHA_ADMIN = "simplifica2024";
+  const BASE = "https://tisimplifica2.github.io/imagens/";
+
+  const SETORES_PADRAO = [
+    { id: "gestao", nome: "Gestão", icone: "⚙️", parceiro: false },
+    { id: "triagem", nome: "Triagem", icone: "📋", parceiro: false },
+    { id: "tecnologia", nome: "Tecnologia", icone: "💻", parceiro: false },
+    { id: "callcenter", nome: "Call Center", icone: "📞", parceiro: false },
+    { id: "tramite", nome: "Trâmite", icone: "📄", parceiro: false },
+    { id: "obras", nome: "Obras", icone: "🏗️", parceiro: false },
+    { id: "agricultura", nome: "Agricultura", icone: "🌾", parceiro: false },
+    { id: "tributos", nome: "Tributos & Planejamento", icone: "📊", parceiro: false },
+    { id: "conciliacao", nome: "Unidade de Conciliação", icone: "🤝", parceiro: false },
+    { id: "limpeza", nome: "Aux. Serviços Gerais", icone: "🧹", parceiro: false },
+    { id: "demutran", nome: "Demutran", icone: "🚦", parceiro: false },
+    { id: "empreendedor", nome: "Sala do Empreendedor", icone: "💼", parceiro: false },
+    { id: "procon", nome: "Procon", icone: "⚖️", parceiro: false },
+    { id: "sine", nome: "Sine", icone: "👔", parceiro: true },
+    { id: "icasa", nome: "Icasa", icone: "🏠", parceiro: true },
+    { id: "epagri", nome: "Epagri", icone: "🌱", parceiro: true },
+    { id: "fotocnh", nome: "Foto CNH", icone: "📷", parceiro: true },
+    { id: "citran", nome: "Citran", icone: "🚗", parceiro: true },
+    { id: "samae", nome: "Samae", icone: "💧", parceiro: true },
+    { id: "receita", nome: "Receita Federal", icone: "🏛️", parceiro: true },
+    { id: "junta", nome: "Junta Militar", icone: "⭐", parceiro: true },
+    { id: "identidade", nome: "Identidade", icone: "🪪", parceiro: true },
+  ];
+
+  const PESSOAS_PADRAO = [
+    { nome: "Deisy", cargo: "SERVIDORA", setor: "gestao", turno: "", foto: BASE+"deisy.jpg" },
+    { nome: "Pamela", cargo: "SERVIDORA", setor: "gestao", turno: "", foto: BASE+"pamela longo.jpg" },
+    { nome: "Viviane", cargo: "SERVIDORA", setor: "gestao", turno: "", foto: BASE+"viviane.jpg" },
+    { nome: "Maria", cargo: "ESTAGIÁRIA", setor: "gestao", turno: "mat", foto: BASE+"maria odorizzi.jpg" },
+    { nome: "Rafaela", cargo: "ESTAGIÁRIA", setor: "gestao", turno: "ves", foto: BASE+"rafaela.jpg" },
+    { nome: "Kriscia", cargo: "ESTAGIÁRIA", setor: "triagem", turno: "ves", foto: BASE+"kriscia.jpg" },
+    { nome: "Maria Clara", cargo: "ESTAGIÁRIA", setor: "triagem", turno: "ves", foto: BASE+"maria clara.jpg" },
+    { nome: "Ana Laura", cargo: "ESTAGIÁRIA", setor: "triagem", turno: "ves", foto: BASE+"AnaLaura.jpeg" },
+    { nome: "Helen", cargo: "ESTAGIÁRIA", setor: "triagem", turno: "mat", foto: BASE+"helen.jpeg" },
+    { nome: "Maycon", cargo: "ESTAGIÁRIO", setor: "triagem", turno: "mat", foto: BASE+"maycon.jpg" },
+    { nome: "Fiorella", cargo: "ESTAGIÁRIA", setor: "triagem", turno: "mat", foto: BASE+"fiorella-augustina.jpeg" },
+    { nome: "Guilherme", cargo: "ESTAGIÁRIO", setor: "tecnologia", turno: "mat", foto: BASE+"guilherme.jpg" },
+    { nome: "Gabriela", cargo: "ESTAGIÁRIA", setor: "callcenter", turno: "ves", foto: BASE+"gabriela-pagno.jpeg" },
+    { nome: "Julia", cargo: "ESTAGIÁRIA", setor: "callcenter", turno: "ves", foto: BASE+"julia-hoeltgebaum.jpeg" },
+    { nome: "Neusa", cargo: "ESTAGIÁRIA", setor: "callcenter", turno: "mat", foto: BASE+"neusa.jpg" },
+    { nome: "Carlos", cargo: "ESTAGIÁRIO", setor: "callcenter", turno: "mat", foto: BASE+"carlos.jpeg" },
+    { nome: "Aline", cargo: "SERVIDORA", setor: "tramite", turno: "", foto: BASE+"aline.jpg" },
+    { nome: "Heloisa", cargo: "ESTAGIÁRIA", setor: "tramite", turno: "ves", foto: BASE+"heloisa grobe.jpg" },
+    { nome: "Maria Eduarda", cargo: "ESTAGIÁRIA", setor: "tramite", turno: "mat", foto: BASE+"maria-eduarda.jpeg" },
+    { nome: "Klaudinei", cargo: "SERVIDOR", setor: "obras", turno: "", foto: BASE+"klaudinei.jpg" },
+    { nome: "Gabriel", cargo: "ESTAGIÁRIO", setor: "obras", turno: "ves", foto: BASE+"gabriel klitzke.jpg" },
+    { nome: "Robson", cargo: "ESTAGIÁRIO", setor: "obras", turno: "mat", foto: BASE+"robson.jpeg" },
+    { nome: "Daniel", cargo: "ESTAGIÁRIO", setor: "obras", turno: "mat", foto: BASE+"Daniel_foto.jpg" },
+    { nome: "Odair", cargo: "SERVIDOR", setor: "agricultura", turno: "", foto: BASE+"odair.jpg" },
+    { nome: "Wander", cargo: "SERVIDOR", setor: "agricultura", turno: "", foto: BASE+"wander.jpg" },
+    { nome: "Aline", cargo: "SERVIDORA", setor: "tributos", turno: "", foto: BASE+"aline.jpg" },
+    { nome: "Emilly", cargo: "ESTAGIÁRIA", setor: "tributos", turno: "ves", foto: BASE+"emilly.jpg" },
+    { nome: "Gabriel C.", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "ves", foto: BASE+"gabriel christoff.jpg" },
+    { nome: "Gabriel K.", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "ves", foto: BASE+"gabriel klitzke.jpg" },
+    { nome: "Eduarda", cargo: "ESTAGIÁRIA", setor: "tributos", turno: "ves", foto: BASE+"eduarda vaz.jpg" },
+    { nome: "Vinicius", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "mat", foto: BASE+"vinicius.jpg" },
+    { nome: "Daniel", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "mat", foto: BASE+"Daniel_foto.jpg" },
+    { nome: "Robson", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "mat", foto: BASE+"robson.jpeg" },
+    { nome: "Ricardo", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "mat", foto: BASE+"ricardo.jpg" },
+    { nome: "Tiago", cargo: "ESTAGIÁRIO", setor: "tributos", turno: "mat", foto: BASE+"tiago.jpeg" },
+    { nome: "Pamela", cargo: "SERVIDORA", setor: "conciliacao", turno: "", foto: BASE+"pamela longo.jpg" },
+    { nome: "Simone", cargo: "SERVIDORA", setor: "conciliacao", turno: "", foto: BASE+"Simone.jpeg" },
+    { nome: "Kelly", cargo: "SERVIDORA", setor: "conciliacao", turno: "", foto: BASE+"kelly.jpg" },
+    { nome: "Karina", cargo: "SERVIDORA", setor: "conciliacao", turno: "", foto: BASE+"karina.jpeg" },
+    { nome: "Bruna", cargo: "ESTAGIÁRIA", setor: "conciliacao", turno: "mat", foto: BASE+"bruna-aleiara.jpeg" },
+    { nome: "Regiane", cargo: "ESTAGIÁRIA", setor: "conciliacao", turno: "mat", foto: BASE+"regiane-brassiani.jpeg" },
+    { nome: "Isabela", cargo: "ESTAGIÁRIA", setor: "conciliacao", turno: "ves", foto: BASE+"isabela vaz.jpg" },
+    { nome: "Sofya", cargo: "ESTAGIÁRIA", setor: "conciliacao", turno: "ves", foto: BASE+"sofya.jpg" },
+    { nome: "Elsa", cargo: "SERVIDORA", setor: "limpeza", turno: "", foto: BASE+"elsa.jpg" },
+    { nome: "Keli", cargo: "SERVIDORA", setor: "limpeza", turno: "", foto: "" },
+    { nome: "Rafael", cargo: "SERVIDOR", setor: "demutran", turno: "", foto: BASE+"rafael-severino.jpeg" },
+    { nome: "Francisca", cargo: "SERVIDORA", setor: "demutran", turno: "", foto: BASE+"francisca.jpg" },
+    { nome: "Dylan", cargo: "ESTAGIÁRIO", setor: "demutran", turno: "", foto: BASE+"leonardo bertolo.jpg" },
+    { nome: "Enzo", cargo: "ESTAGIÁRIO", setor: "demutran", turno: "", foto: BASE+"enzo matheus.jpg" },
+    { nome: "Sidnei", cargo: "GUARDA DE TRÂNSITO", setor: "demutran", turno: "", foto: BASE+"sidnei.jpg" },
+    { nome: "Débora", cargo: "SERVIDORA", setor: "empreendedor", turno: "", foto: BASE+"débora.jpg" },
+    { nome: "Juliano Cesar", cargo: "SERVIDOR", setor: "empreendedor", turno: "", foto: BASE+"juliano.jpg" },
+    { nome: "Elias", cargo: "SERVIDOR", setor: "empreendedor", turno: "", foto: BASE+"elias.jpg" },
+    { nome: "Andersson", cargo: "SERVIDOR", setor: "empreendedor", turno: "", foto: BASE+"andersson.jpg" },
+    { nome: "Loriano", cargo: "ESTAGIÁRIO", setor: "empreendedor", turno: "mat", foto: BASE+"loriano.jpeg" },
+    { nome: "Beatriz", cargo: "ESTAGIÁRIA", setor: "empreendedor", turno: "mat", foto: BASE+"beatriz.jpg" },
+    { nome: "Arthur", cargo: "ESTAGIÁRIO", setor: "empreendedor", turno: "mat", foto: BASE+"arthur-henrique.jpeg" },
+    { nome: "Nathanael", cargo: "ESTAGIÁRIO", setor: "empreendedor", turno: "mat", foto: BASE+"nathanael.jpeg" },
+    { nome: "Andrei", cargo: "ESTAGIÁRIO", setor: "empreendedor", turno: "mat", foto: BASE+"andrei.jpeg" },
+    { nome: "Agatha", cargo: "ESTAGIÁRIA", setor: "empreendedor", turno: "ves", foto: BASE+"agatha.jpeg" },
+    { nome: "Vitoria", cargo: "ESTAGIÁRIA", setor: "empreendedor", turno: "ves", foto: BASE+"vitoria nogueira.jpg" },
+    { nome: "Debora", cargo: "ESTAGIÁRIA", setor: "empreendedor", turno: "ves", foto: BASE+"debora.jpg" },
+    { nome: "Julia", cargo: "ESTAGIÁRIA", setor: "empreendedor", turno: "ves", foto: BASE+"julia christine.jpg" },
+    { nome: "Vanessa", cargo: "COORDENADORA", setor: "procon", turno: "", foto: BASE+"vanessa.jpg" },
+    { nome: "Gabriel", cargo: "SERVIDOR", setor: "procon", turno: "", foto: BASE+"gabriel-fronza.jpeg" },
+    { nome: "Maria Clara", cargo: "AUX. ADM.", setor: "procon", turno: "", foto: BASE+"maria-silva.jpg" },
+    { nome: "Diogo", cargo: "FISCAL", setor: "procon", turno: "", foto: BASE+"diogo.jpg" },
+    { nome: "Julia", cargo: "ESTAGIÁRIA", setor: "procon", turno: "mat", foto: BASE+"julia-gabrielly.jpeg" },
+    { nome: "Carlos", cargo: "ESTAGIÁRIO", setor: "procon", turno: "mat", foto: BASE+"carlos-storari.jpeg" },
+    { nome: "Raquel", cargo: "ESTAGIÁRIA", setor: "procon", turno: "mat", foto: BASE+"raquel.jpg" },
+    { nome: "Amanda", cargo: "ESTAGIÁRIA", setor: "procon", turno: "ves", foto: BASE+"amanda.jpg" },
+    { nome: "Jéssica", cargo: "ESTAGIÁRIA", setor: "procon", turno: "ves", foto: BASE+"jessica-samara.jpg" },
+    { nome: "Alicia", cargo: "ESTAGIÁRIA", setor: "procon", turno: "ves", foto: BASE+"alicia.jpg" },
+    { nome: "Maysa", cargo: "SERVIDORA", setor: "sine", turno: "", foto: BASE+"maysa.jpg" },
+    { nome: "Eduarda", cargo: "ESTAGIÁRIA", setor: "sine", turno: "ves", foto: BASE+"eduarda kurth.jpg" },
+    { nome: "Geovana", cargo: "ESTAGIÁRIA", setor: "sine", turno: "mat", foto: BASE+"geovana-caravalho.jpeg" },
+    { nome: "Regiane", cargo: "SERVIDORA", setor: "icasa", turno: "", foto: BASE+"Regiane.jpg" },
+    { nome: "Katia", cargo: "SERVIDORA", setor: "epagri", turno: "", foto: BASE+"katia.jpg" },
+    { nome: "Adriano", cargo: "SERVIDOR", setor: "epagri", turno: "", foto: "" },
+    { nome: "Vanessa", cargo: "SERVIDORA", setor: "fotocnh", turno: "", foto: BASE+"vanessa orela.jpg" },
+    { nome: "Carlos", cargo: "SERVIDOR", setor: "citran", turno: "", foto: BASE+"carlos borchardt.jpg" },
+    { nome: "Nicolas", cargo: "ESTAGIÁRIO", setor: "citran", turno: "mat", foto: BASE+"nicolas.jpeg" },
+    { nome: "Bryan", cargo: "ESTAGIÁRIO", setor: "citran", turno: "ves", foto: BASE+"bryan.jpg" },
+    { nome: "Leticia", cargo: "SERVIDORA", setor: "samae", turno: "", foto: BASE+"leticia.jpg" },
+    { nome: "Ian", cargo: "ESTAGIÁRIO", setor: "samae", turno: "ves", foto: BASE+"ian-ramos.jpeg" },
+    { nome: "Bianca", cargo: "ESTAGIÁRIA", setor: "samae", turno: "mat", foto: BASE+"bianca.jpg" },
+    { nome: "João", cargo: "SERVIDOR", setor: "receita", turno: "", foto: BASE+"joão marcelo.jpg" },
+    { nome: "Dalia", cargo: "ESTAGIÁRIA", setor: "receita", turno: "mat", foto: BASE+"dalia.jpg" },
+    { nome: "Jhonatan", cargo: "ESTAGIÁRIO", setor: "receita", turno: "mat", foto: BASE+"jhonatan.jpg" },
+    { nome: "Leonardo", cargo: "ESTAGIÁRIO", setor: "receita", turno: "mat", foto: BASE+"leonardo.jpg" },
+    { nome: "Gabriela", cargo: "ESTAGIÁRIA", setor: "receita", turno: "ves", foto: BASE+"gabriela tamanini.jpg" },
+    { nome: "Pietra", cargo: "ESTAGIÁRIA", setor: "receita", turno: "ves", foto: BASE+"pietra.jpg" },
+    { nome: "Kaiki", cargo: "ESTAGIÁRIO", setor: "receita", turno: "ves", foto: BASE+"kaiki.jpg" },
+    { nome: "João", cargo: "SERVIDOR", setor: "junta", turno: "", foto: BASE+"joão marcelo.jpg" },
+    { nome: "Silvana", cargo: "SERVIDORA", setor: "identidade", turno: "", foto: BASE+"silvana.jpg" },
+    { nome: "Alexandra", cargo: "SERVIDORA", setor: "identidade", turno: "", foto: BASE+"alexandra.jpg" },
+    { nome: "Francine", cargo: "ESTAGIÁRIA", setor: "identidade", turno: "mat", foto: BASE+"francine.jpg" },
+    { nome: "Gustavo", cargo: "ESTAGIÁRIO", setor: "identidade", turno: "mat", foto: BASE+"gustavo-raddatz.jpeg" },
+    { nome: "Yasmin H.", cargo: "ESTAGIÁRIA", setor: "identidade", turno: "mat", foto: BASE+"yasmin-heloisa.jpeg" },
+    { nome: "José", cargo: "ESTAGIÁRIO", setor: "identidade", turno: "mat", foto: BASE+"jose-thiago.jpeg" },
+    { nome: "Kayane", cargo: "ESTAGIÁRIA", setor: "identidade", turno: "ves", foto: BASE+"kayane.jpeg" },
+    { nome: "Yasmin T.", cargo: "ESTAGIÁRIA", setor: "identidade", turno: "ves", foto: BASE+"yasmin tilch.jpg" },
+    { nome: "Rafael", cargo: "ESTAGIÁRIO", setor: "identidade", turno: "ves", foto: BASE+"Rafael.jpg" },
+    { nome: "Ian", cargo: "ESTAGIÁRIO", setor: "identidade", turno: "ves", foto: BASE+"ian vignola.jpg" },
+  ];
+
+  // ============================================================
+  // ESTADO
+  // ============================================================
+  let setores = [];
+  let pessoas = [];
+
+  function mostrarLoading(txt) {
+    document.getElementById('loadingTxt').textContent = txt || 'Carregando...';
+    document.getElementById('loadingOverlay').classList.add('ativo');
+  }
+  function esconderLoading() {
+    document.getElementById('loadingOverlay').classList.remove('ativo');
+  }
+
+  // ============================================================
+  // CARREGAR DADOS DO FIREBASE
+  // ============================================================
+  async function carregarDados() {
+    mostrarLoading('Carregando organograma...');
+    try {
+      const docRef = doc(db, "organograma", "dados");
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        setores = data.setores || SETORES_PADRAO;
+        pessoas = data.pessoas || PESSOAS_PADRAO;
+      } else {
+        // Primeira vez: usa dados padrão e já salva no Firebase
+        setores = SETORES_PADRAO;
+        pessoas = PESSOAS_PADRAO;
+        await setDoc(doc(db, "organograma", "dados"), { setores, pessoas });
+      }
+    } catch (e) {
+      console.error("Erro ao carregar dados:", e);
+      setores = SETORES_PADRAO;
+      pessoas = PESSOAS_PADRAO;
+    }
+    esconderLoading();
+    renderOrganograma();
+  }
+
+  // ============================================================
+  // RENDER
+  // ============================================================
+  function avatarUrl(nome, fotoUrl) {
+    if (fotoUrl) return fotoUrl;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=1565a8&color=fff&size=80&bold=true`;
+  }
+
+  function renderOrganograma() {
+    const grid = document.getElementById('setoresGrid');
+    grid.innerHTML = '';
+    document.getElementById('totalPessoas').textContent = pessoas.length;
+    document.getElementById('totalSetores').textContent = setores.length;
+
+    setores.forEach(s => {
+      const membros = pessoas.filter(p => p.setor === s.id);
+      if (membros.length === 0) return;
+
+      const card = document.createElement('div');
+      card.className = 'setor-card';
+
+      const tagHTML = s.parceiro
+        ? `<span class="setor-tag parceiro">Parceiro</span>`
+        : '';
+
+      let pessoasHTML = membros.map(p => {
+        const turnoClass = p.turno === 'mat' ? 'turno-mat-item' : p.turno === 'ves' ? 'turno-ves-item' : '';
+        const turnoLabel = p.turno === 'mat'
+          ? '<span class="turno-badge turno-mat">☀️ Mat.</span>'
+          : p.turno === 'ves'
+          ? '<span class="turno-badge turno-ves">🌇 Ves.</span>'
+          : '';
+        return `
+          <div class="pessoa-item ${turnoClass}">
+            <img class="pessoa-avatar" src="${avatarUrl(p.nome, p.foto)}" alt="${p.nome}"
+              onerror="this.src='${avatarUrl(p.nome, '')}'">
+            <div class="pessoa-info">
+              <div class="pessoa-nome">${p.nome}</div>
+              <div class="pessoa-cargo">${p.cargo}</div>
+            </div>
+            ${turnoLabel}
+          </div>`;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="setor-header">
+          <div class="setor-icon">${s.icone || '📁'}</div>
+          <div class="setor-titulo">${s.nome}</div>
+          ${tagHTML}
+        </div>
+        <div class="pessoas-lista">${pessoasHTML}</div>`;
+
+      grid.appendChild(card);
+    });
+  }
+
+  // ============================================================
+  // FILTRO TURNO
+  // ============================================================
+  window.filtrar = function(turno, btn) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    document.body.classList.remove('filtro-mat', 'filtro-ves');
+    if (turno === 'mat') document.body.classList.add('filtro-mat');
+    if (turno === 'ves') document.body.classList.add('filtro-ves');
+  };
+
+  // ============================================================
+  // LOGIN
+  // ============================================================
+  window.abrirLogin = function() {
+    document.getElementById('modalLogin').classList.add('aberto');
+    setTimeout(() => document.getElementById('senhaInput').focus(), 100);
+  };
+  window.fecharLogin = function() {
+    document.getElementById('modalLogin').classList.remove('aberto');
+    document.getElementById('senhaInput').value = '';
+    document.getElementById('erroSenha').style.display = 'none';
+  };
+  window.verificarSenha = function() {
+    const v = document.getElementById('senhaInput').value;
+    if (v === SENHA_ADMIN) {
+      fecharLogin();
+      abrirPainel();
+    } else {
+      document.getElementById('erroSenha').style.display = 'block';
+      document.getElementById('senhaInput').value = '';
+      document.getElementById('senhaInput').focus();
+    }
+  };
+
+  // ============================================================
+  // PAINEL
+  // ============================================================
+  window.abrirPainel = function() {
+    document.getElementById('painelAdmin').classList.add('aberto');
+    popularSelects();
+    renderListaAdmin();
+    renderListaSetoresAdmin();
+  };
+  window.fecharPainel = function() {
+    document.getElementById('painelAdmin').classList.remove('aberto');
+  };
+
+  function popularSelects() {
+    const opts = setores.map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
+    document.getElementById('novoSetor').innerHTML = '<option value="">Selecione o setor</option>' + opts;
+    document.getElementById('filtroSetorAdmin').innerHTML = '<option value="">Todos os setores</option>' + opts;
+  }
+
+  window.adicionarSetor = function() {
+    const nome = document.getElementById('novoSetorNome').value.trim();
+    const icone = document.getElementById('novoSetorIcone').value.trim() || '📁';
+    const parceiro = document.getElementById('novoSetorParceiro').value === 'parceiro';
+    if (!nome) return alert('Digite o nome do setor.');
+    const id = nome.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    setores.push({ id, nome, icone, parceiro });
+    document.getElementById('novoSetorNome').value = '';
+    document.getElementById('novoSetorIcone').value = '';
+    popularSelects();
+    renderListaSetoresAdmin();
+    renderOrganograma();
+  };
+
+  window.adicionarPessoa = function() {
+    const nome = document.getElementById('novaNome').value.trim();
+    const cargo = document.getElementById('novaCargo').value.trim();
+    const setor = document.getElementById('novoSetor').value;
+    const turno = document.getElementById('novoTurno').value;
+    const foto = document.getElementById('novaFoto').value.trim();
+    if (!nome || !cargo || !setor) return alert('Preencha nome, cargo e setor.');
+    pessoas.push({ nome, cargo, setor, turno, foto });
+    document.getElementById('novaNome').value = '';
+    document.getElementById('novaCargo').value = '';
+    document.getElementById('novaFoto').value = '';
+    renderListaAdmin();
+    renderOrganograma();
+  };
+
+  window.renderListaAdmin = function() {
+    const filtro = document.getElementById('filtroSetorAdmin').value;
+    const lista = document.getElementById('listaAdmin');
+    const filtrados = filtro ? pessoas.filter(p => p.setor === filtro) : pessoas;
+    lista.innerHTML = filtrados.map((p) => {
+      const idx = pessoas.indexOf(p);
+      const nomeSetor = setores.find(s => s.id === p.setor)?.nome || p.setor;
+      const turnoLabel = p.turno === 'mat' ? ' · ☀️ Mat' : p.turno === 'ves' ? ' · 🌇 Ves' : '';
+      return `<div class="item-admin">
+        <div class="item-admin-info">
+          <strong>${p.nome}</strong>
+          <span>${p.cargo} · ${nomeSetor}${turnoLabel}</span>
+        </div>
+        <button class="btn-del" onclick="removerPessoa(${idx})">Remover</button>
+      </div>`;
+    }).join('') || '<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhuma pessoa cadastrada.</div>';
+  };
+
+  function renderListaSetoresAdmin() {
+    const lista = document.getElementById('listaSetoresAdmin');
+    lista.innerHTML = setores.map((s, i) => `
+      <div class="item-admin">
+        <div class="item-admin-info">
+          <strong>${s.icone} ${s.nome}</strong>
+          <span>${s.parceiro ? 'Parceiro' : 'Próprio'}</span>
+        </div>
+        <button class="btn-del" onclick="removerSetor(${i})">Remover</button>
+      </div>`).join('');
+  }
+
+  window.removerPessoa = function(idx) {
+    if (!confirm(`Remover "${pessoas[idx].nome}"?`)) return;
+    pessoas.splice(idx, 1);
+    renderListaAdmin();
+    renderOrganograma();
+  };
+
+  window.removerSetor = function(idx) {
+    const s = setores[idx];
+    const qtd = pessoas.filter(p => p.setor === s.id).length;
+    if (qtd > 0 && !confirm(`O setor "${s.nome}" tem ${qtd} pessoa(s). Remover mesmo assim?`)) return;
+    setores.splice(idx, 1);
+    popularSelects();
+    renderListaSetoresAdmin();
+    renderOrganograma();
+  };
+
+  // ============================================================
+  // SALVAR NO FIREBASE
+  // ============================================================
+  window.salvarTudo = async function() {
+    const btn = document.getElementById('btnSalvar');
+    const aviso = document.getElementById('avisoSalvar');
+    btn.disabled = true;
+    btn.textContent = '⏳ Salvando...';
+    aviso.style.display = 'none';
+    try {
+      await setDoc(doc(db, "organograma", "dados"), { setores, pessoas });
+      aviso.textContent = '✅ Alterações salvas! Todos os visitantes já verão as mudanças.';
+      aviso.className = 'aviso-salvar sucesso';
+      aviso.style.display = 'block';
+    } catch (e) {
+      console.error("Erro ao salvar:", e);
+      aviso.textContent = '❌ Erro ao salvar. Verifique sua conexão e tente novamente.';
+      aviso.className = 'aviso-salvar erro';
+      aviso.style.display = 'block';
+    }
+    btn.disabled = false;
+    btn.textContent = '💾 Salvar Alterações no Firebase';
+    setTimeout(() => { aviso.style.display = 'none'; }, 5000);
+  };
+
+  // Inicializar
+  carregarDados();
+</script>
+</body>
+</html>
