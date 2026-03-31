@@ -609,6 +609,15 @@
   }
 
   function fmtData(d) { if (!d) return null; const [a,m,dia]=d.split('-'); return `${dia}/${m}/${a}`; }
+  function calcularIdade(d) {
+    if (!d) return null;
+    const hoje = new Date();
+    const nasc = new Date(d);
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+    return idade;
+  }
   function loading(show, txt) {
     document.getElementById('loadingTxt').textContent=txt||'Carregando...';
     document.getElementById('loadingOverlay').classList.toggle('ativo',show);
@@ -732,7 +741,7 @@
       {label:'Horário',valor:fmtHorario(mb)},
       {label:'Matrícula',valor:mb.matricula||null},
       {label:'Telefone',valor:mb.telefone||null},
-      {label:'Nascimento',valor:fmtData(mb.nascimento)},
+      {label:'Nascimento',valor:fmtData(mb.nascimento)?(fmtData(mb.nascimento)+' · '+calcularIdade(mb.nascimento)+' anos'):null},
       {label:'CPF',valor:mb.cpf||null},
       mb.obs?{label:'Observação',valor:mb.obs,full:true}:null,
     ].filter(Boolean);
