@@ -63,7 +63,8 @@
   .setor-card.sem-resultado { display: none; }
   .setor-header { background: linear-gradient(135deg, var(--azul) 0%, #1257a0 100%); padding: 16px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; transition: filter 0.2s; }
   .setor-header:hover { filter: brightness(1.1); }
-  .setor-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+  .setor-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; overflow: hidden; }
+  .setor-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
   .setor-titulo { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: white; line-height: 1.2; flex: 1; }
   .setor-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .setor-count { font-size: 0.75rem; background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
@@ -300,7 +301,7 @@
     <div class="card-diretor" onclick="abrirPerfilDiretor()">
       <img id="fotoDiretor" src="https://tisimplifica2.github.io/imagens/murilo.jpg" alt="Murilo"
         onerror="this.src='https://ui-avatars.com/api/?name=Murilo&background=1565a8&color=fff&size=80'">
-      <div><div class="nome">Murilo</div><div class="cargo">Diretor</div></div>
+      <div><div class="nome" id="diretorNomeCard">Murilo</div><div class="cargo" id="diretorCargoCard">Diretor</div></div>
     </div>
   </div>
   <div class="setores-grid" id="setoresGrid"></div>
@@ -349,11 +350,81 @@
   </div>
   <div class="painel-body">
 
+    <h3>👤 Editar Diretor</h3>
+    <div class="form-section">
+      <div class="field-label" style="margin-bottom:8px">Foto do Diretor</div>
+      <div class="foto-upload-area">
+        <input type="file" id="diretorFotoArquivo" accept="image/*" onchange="previewFotoDiretor(this)">
+        <img class="foto-preview" id="diretorFotoPreview" src="" alt="Preview">
+        <div class="foto-upload-txt" id="diretorFotoUploadTxt"><strong>Clique para escolher uma foto</strong><br>JPG, PNG ou WEBP</div>
+      </div>
+      <div style="margin-top:10px;margin-bottom:20px">
+        <div class="field-label">Ou cole a URL da foto</div>
+        <input type="text" id="diretorFotoUrl" placeholder="https://...">
+      </div>
+      <div class="form-grid">
+        <div><div class="field-label">Nome *</div><input type="text" id="diretorNome" placeholder="Nome do diretor"></div>
+        <div><div class="field-label">Cargo</div><input type="text" id="diretorCargo" placeholder="Ex: Diretor"></div>
+        <div>
+          <div class="field-label">Turno</div>
+          <select id="diretorTurno">
+            <option value="">Sem turno fixo</option>
+            <option value="mat">☀️ Matutino</option>
+            <option value="ves">🌇 Vespertino</option>
+            <option value="int">🕐 Integral</option>
+          </select>
+        </div>
+        <div><div class="field-label">Matrícula</div><input type="text" id="diretorMatricula" placeholder="Número de matrícula"></div>
+        <div><div class="field-label">Telefone</div><input type="text" id="diretorTelefone" placeholder="(47) 9 9999-9999"></div>
+        <div><div class="field-label">CPF</div><input type="text" id="diretorCpf" placeholder="000.000.000-00"></div>
+        <div><div class="field-label">Data de nascimento</div><input type="date" id="diretorNascimento"></div>
+        <div class="form-full">
+          <div class="field-label" style="margin-bottom:8px">Horário de trabalho</div>
+          <div class="horario-bloco">
+            <div class="horario-bloco-titulo">⏰ Período manhã</div>
+            <div class="horario-linha">
+              <input type="time" id="diretorHoraInicio">
+              <span class="horario-sep">até</span>
+              <input type="time" id="diretorHoraAlmocoInicio">
+            </div>
+            <div class="horario-bloco-titulo" style="margin-top:10px">🍽️ Retorno do almoço até saída</div>
+            <div class="horario-linha">
+              <input type="time" id="diretorHoraAlmocoFim">
+              <span class="horario-sep">até</span>
+              <input type="time" id="diretorHoraFim">
+            </div>
+          </div>
+        </div>
+        <div class="form-full">
+          <div class="field-label">Observação</div>
+          <textarea id="diretorObs" placeholder="Observações sobre o diretor..."></textarea>
+        </div>
+        <div class="form-full" style="margin-top:4px">
+          <button class="btn-add" onclick="salvarDiretor()" style="width:100%">💾 Salvar dados do Diretor</button>
+        </div>
+      </div>
+    </div>
+
     <h3>➕ Adicionar Setor</h3>
     <div class="form-section">
       <div class="form-grid">
         <div><div class="field-label">Nome do setor</div><input type="text" id="novoSetorNome" placeholder="Ex: Triagem"></div>
-        <div><div class="field-label">Ícone (emoji)</div><input type="text" id="novoSetorIcone" placeholder="Ex: 📋"></div>
+        <div>
+          <div class="field-label">Ícone (emoji) <span style="font-weight:400;text-transform:none">— ou use foto abaixo</span></div>
+          <input type="text" id="novoSetorIcone" placeholder="Ex: 📋">
+        </div>
+        <div class="form-full">
+          <div class="field-label" style="margin-bottom:6px">Foto do setor (substitui o emoji)</div>
+          <div class="foto-upload-area">
+            <input type="file" id="setorFotoArquivo" accept="image/*" onchange="previewFotoSetor(this)">
+            <img class="foto-preview" id="setorFotoPreview" src="" alt="Preview">
+            <div class="foto-upload-txt" id="setorFotoUploadTxt"><strong>Clique para escolher uma foto</strong><br>JPG, PNG ou WEBP</div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="field-label">Ou cole URL da imagem do setor</div>
+            <input type="text" id="novoSetorFotoUrl" placeholder="https://...">
+          </div>
+        </div>
         <div>
           <div class="field-label">Tipo</div>
           <select id="novoSetorParceiro">
@@ -592,7 +663,15 @@
     p("Ian","ESTAGIÁRIO","identidade","ves",BASE+"ian vignola.jpg","13:00","","","17:00"),
   ];
 
-  let setores=[], pessoas=[], fotoBase64='', pessoaAtualIdx=-1;
+  let setores=[], pessoas=[], fotoBase64='', fotoBase64Setor='', fotoBase64Diretor='', pessoaAtualIdx=-1;
+
+  const DIRETOR_PADRAO = {
+    nome: 'Murilo', cargo: 'Diretor',
+    foto: 'https://tisimplifica2.github.io/imagens/murilo.jpg',
+    turno:'int', horaInicio:'08:00', horaAlmocoInicio:'12:00', horaAlmocoFim:'13:00', horaFim:'17:00',
+    matricula:'', cpf:'', nascimento:'', telefone:'', obs:''
+  };
+  let diretor = {...DIRETOR_PADRAO};
 
   function avatarUrl(nome, foto) {
     if (foto) return foto;
@@ -609,15 +688,6 @@
   }
 
   function fmtData(d) { if (!d) return null; const [a,m,dia]=d.split('-'); return `${dia}/${m}/${a}`; }
-  function calcularIdade(d) {
-    if (!d) return null;
-    const hoje = new Date();
-    const nasc = new Date(d);
-    let idade = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
-    return idade;
-  }
   function loading(show, txt) {
     document.getElementById('loadingTxt').textContent=txt||'Carregando...';
     document.getElementById('loadingOverlay').classList.toggle('ativo',show);
@@ -627,8 +697,8 @@
     loading(true,'Carregando organograma...');
     try {
       const snap = await getDoc(doc(db,"organograma","dados"));
-      if (snap.exists()) { const d=snap.data(); setores=d.setores||SETORES_PADRAO; pessoas=d.pessoas||PESSOAS_PADRAO; }
-      else { setores=SETORES_PADRAO; pessoas=PESSOAS_PADRAO; await setDoc(doc(db,"organograma","dados"),{setores,pessoas}); }
+      if (snap.exists()) { const d=snap.data(); setores=d.setores||SETORES_PADRAO; pessoas=d.pessoas||PESSOAS_PADRAO; diretor=d.diretor||DIRETOR_PADRAO; }
+      else { setores=SETORES_PADRAO; pessoas=PESSOAS_PADRAO; diretor=DIRETOR_PADRAO; await setDoc(doc(db,"organograma","dados"),{setores,pessoas,diretor}); }
     } catch(e) { console.error(e); setores=SETORES_PADRAO; pessoas=PESSOAS_PADRAO; }
     loading(false); renderOrganograma();
   }
@@ -637,7 +707,7 @@
     const btn=document.getElementById('btnSalvar'), aviso=document.getElementById('avisoSalvar');
     btn.disabled=true; btn.textContent='⏳ Salvando...'; aviso.style.display='none';
     try {
-      await setDoc(doc(db,"organograma","dados"),{setores,pessoas});
+      await setDoc(doc(db,"organograma","dados"),{setores,pessoas,diretor});
       aviso.textContent='✅ Salvo! Todos os visitantes já verão as mudanças.';
       aviso.className='aviso-salvar sucesso'; aviso.style.display='block';
     } catch(e) {
@@ -654,6 +724,13 @@
     document.getElementById('totalPessoas').textContent=pessoas.length;
     document.getElementById('totalSetores').textContent=setores.length;
 
+    // Atualiza card do diretor
+    const fd = document.getElementById('fotoDiretor');
+    fd.src = diretor.foto || avatarUrl(diretor.nome,'');
+    fd.onerror = () => fd.src = avatarUrl(diretor.nome,'');
+    document.getElementById('diretorNomeCard').textContent = diretor.nome || 'Diretor';
+    document.getElementById('diretorCargoCard').textContent = diretor.cargo || 'Diretor';
+
     setores.forEach(s => {
       const membros=pessoas.filter(p=>p.setor===s.id);
       if (!membros.length) return;
@@ -661,6 +738,10 @@
       card.className='setor-card';
       card.dataset.setorId=s.id;
       const tagHTML=s.parceiro?`<span class="setor-tag">Parceiro</span>`:'';
+      // Ícone: foto ou emoji
+      const iconeHTML = s.foto
+        ? `<img src="${s.foto}" alt="${s.nome}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">${s.icone||'📁'}`
+        : (s.icone||'📁');
 
       const pessoasHTML=membros.map(mb=>{
         const turnoClass=mb.turno==='mat'?'turno-mat-item':mb.turno==='ves'?'turno-ves-item':mb.turno==='int'?'turno-int-item':'';
@@ -684,7 +765,7 @@
 
       card.innerHTML=`
         <div class="setor-header" onclick="toggleSetor(this)">
-          <div class="setor-icon">${s.icone||'📁'}</div>
+          <div class="setor-icon">${iconeHTML}</div>
           <div class="setor-titulo">${s.nome}</div>
           <div class="setor-meta">
             <span class="setor-count">${membros.length} pessoa${membros.length>1?'s':''}</span>
@@ -741,7 +822,7 @@
       {label:'Horário',valor:fmtHorario(mb)},
       {label:'Matrícula',valor:mb.matricula||null},
       {label:'Telefone',valor:mb.telefone||null},
-      {label:'Nascimento',valor:fmtData(mb.nascimento)?(fmtData(mb.nascimento)+' · '+calcularIdade(mb.nascimento)+' anos'):null},
+      {label:'Nascimento',valor:fmtData(mb.nascimento)},
       {label:'CPF',valor:mb.cpf||null},
       mb.obs?{label:'Observação',valor:mb.obs,full:true}:null,
     ].filter(Boolean);
@@ -756,11 +837,26 @@
   window.abrirPerfilDiretor = function() {
     pessoaAtualIdx=-1;
     const foto=document.getElementById('perfilFoto');
-    foto.src=document.getElementById('fotoDiretor').src;
-    document.getElementById('perfilNome').textContent='Murilo';
-    document.getElementById('perfilCargo').textContent='DIRETOR';
-    document.getElementById('perfilSetor').textContent='Simplifica Timbó';
-    document.getElementById('perfilGrid').innerHTML=`<div class="perfil-item full"><div class="perfil-label">Cargo</div><div class="perfil-valor">Diretor Geral</div></div>`;
+    foto.src = diretor.foto || avatarUrl(diretor.nome,'');
+    foto.onerror = () => foto.src = avatarUrl(diretor.nome,'');
+    document.getElementById('perfilNome').textContent = diretor.nome || 'Diretor';
+    document.getElementById('perfilCargo').textContent = (diretor.cargo||'DIRETOR').toUpperCase();
+    document.getElementById('perfilSetor').textContent = 'Simplifica Timbó';
+    const turnoLabel=diretor.turno==='mat'?'☀️ Matutino':diretor.turno==='ves'?'🌇 Vespertino':diretor.turno==='int'?'🕐 Integral':null;
+    const campos=[
+      {label:'Turno', valor:turnoLabel},
+      {label:'Horário', valor:fmtHorario(diretor)},
+      {label:'Matrícula', valor:diretor.matricula||null},
+      {label:'Telefone', valor:diretor.telefone||null},
+      {label:'Nascimento', valor:fmtData(diretor.nascimento)?(fmtData(diretor.nascimento)+' · '+calcularIdade(diretor.nascimento)+' anos'):null},
+      {label:'CPF', valor:diretor.cpf||null},
+      diretor.obs?{label:'Observação',valor:diretor.obs,full:true}:null,
+    ].filter(Boolean);
+    document.getElementById('perfilGrid').innerHTML=campos.map(c=>
+      `<div class="perfil-item${c.full?' full':''}">
+        <div class="perfil-label">${c.label}</div>
+        <div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div>
+      </div>`).join('');
     document.getElementById('modalPerfil').classList.add('aberto');
   };
   window.fecharPerfil=()=>document.getElementById('modalPerfil').classList.remove('aberto');
@@ -883,7 +979,7 @@
   window.verificarSenha=()=>{ if(document.getElementById('senhaInput').value===SENHA_ADMIN){fecharLogin();abrirPainel();}else{document.getElementById('erroSenha').style.display='block';document.getElementById('senhaInput').value='';document.getElementById('senhaInput').focus();} };
 
   // PAINEL
-  window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); };
+  window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); preencherFormDiretor(); };
   window.fecharPainel=()=>document.getElementById('painelAdmin').classList.remove('aberto');
 
   function popularSelects() {
@@ -899,14 +995,74 @@
     reader.readAsDataURL(file);
   };
 
+  window.previewFotoDiretor=function(input){
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{ fotoBase64Diretor=e.target.result; const prev=document.getElementById('diretorFotoPreview'); prev.src=fotoBase64Diretor; prev.classList.add('visivel'); document.getElementById('diretorFotoUploadTxt').style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+
+  window.previewFotoSetor=function(input){
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{ fotoBase64Setor=e.target.result; const prev=document.getElementById('setorFotoPreview'); prev.src=fotoBase64Setor; prev.classList.add('visivel'); document.getElementById('setorFotoUploadTxt').style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+
+  window.salvarDiretor=function(){
+    const nome=document.getElementById('diretorNome').value.trim();
+    if(!nome) return alert('Digite o nome do diretor.');
+    diretor = {
+      nome,
+      cargo: document.getElementById('diretorCargo').value.trim()||'Diretor',
+      foto: fotoBase64Diretor || document.getElementById('diretorFotoUrl').value.trim() || diretor.foto,
+      turno: document.getElementById('diretorTurno').value,
+      horaInicio: document.getElementById('diretorHoraInicio').value,
+      horaAlmocoInicio: document.getElementById('diretorHoraAlmocoInicio').value,
+      horaAlmocoFim: document.getElementById('diretorHoraAlmocoFim').value,
+      horaFim: document.getElementById('diretorHoraFim').value,
+      matricula: document.getElementById('diretorMatricula').value.trim(),
+      cpf: document.getElementById('diretorCpf').value.trim(),
+      nascimento: document.getElementById('diretorNascimento').value,
+      telefone: document.getElementById('diretorTelefone').value.trim(),
+      obs: document.getElementById('diretorObs').value.trim(),
+    };
+    fotoBase64Diretor='';
+    renderOrganograma();
+    alert('✅ Dados do diretor atualizados! Não esqueça de clicar em "Salvar no Firebase".');
+  };
+
+  // Preencher formulário do diretor ao abrir o painel
+  function preencherFormDiretor(){
+    document.getElementById('diretorNome').value = diretor.nome||'';
+    document.getElementById('diretorCargo').value = diretor.cargo||'';
+    document.getElementById('diretorFotoUrl').value = (diretor.foto&&!diretor.foto.startsWith('data:'))?diretor.foto:'';
+    document.getElementById('diretorTurno').value = diretor.turno||'';
+    document.getElementById('diretorHoraInicio').value = diretor.horaInicio||'';
+    document.getElementById('diretorHoraAlmocoInicio').value = diretor.horaAlmocoInicio||'';
+    document.getElementById('diretorHoraAlmocoFim').value = diretor.horaAlmocoFim||'';
+    document.getElementById('diretorHoraFim').value = diretor.horaFim||'';
+    document.getElementById('diretorMatricula').value = diretor.matricula||'';
+    document.getElementById('diretorCpf').value = diretor.cpf||'';
+    document.getElementById('diretorNascimento').value = diretor.nascimento||'';
+    document.getElementById('diretorTelefone').value = diretor.telefone||'';
+    document.getElementById('diretorObs').value = diretor.obs||'';
+    if(diretor.foto){ const prev=document.getElementById('diretorFotoPreview'); prev.src=diretor.foto; prev.classList.add('visivel'); document.getElementById('diretorFotoUploadTxt').style.display='none'; }
+  }
+
   window.adicionarSetor=function(){
     const nome=document.getElementById('novoSetorNome').value.trim();
     const icone=document.getElementById('novoSetorIcone').value.trim()||'📁';
+    const foto=fotoBase64Setor||document.getElementById('novoSetorFotoUrl').value.trim()||'';
     const parceiro=document.getElementById('novoSetorParceiro').value==='parceiro';
     if(!nome) return alert('Digite o nome do setor.');
     const id=nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
-    setores.push({id,nome,icone,parceiro});
+    setores.push({id,nome,icone,foto,parceiro});
     document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorIcone').value='';
+    document.getElementById('novoSetorFotoUrl').value=''; document.getElementById('setorFotoArquivo').value='';
+    document.getElementById('setorFotoPreview').classList.remove('visivel');
+    document.getElementById('setorFotoUploadTxt').style.display='';
+    fotoBase64Setor='';
     popularSelects(); renderListaSetoresAdmin(); renderOrganograma();
   };
 
