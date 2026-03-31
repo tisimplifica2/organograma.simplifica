@@ -771,57 +771,100 @@
           resolve(c.toDataURL('image/png'));
         } catch(e) { reject(e); }
       };
-      img.onerror = () => resolve(null); // fallback: mantém a URL original
+      img.onerror = () => resolve(null);
       img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    });
+  }
+
+  function waitImageReady(img) {
+    return new Promise(resolve => {
+      if (!img) return resolve();
+      if (img.complete && img.naturalWidth > 0) return resolve();
+      const done = () => resolve();
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
     });
   }
 
   window.downloadCracha = async function() {
     const btn=document.getElementById('btnDownloadCracha');
+    const html2canvasLib=window.html2canvas;
     btn.textContent='⏳ Gerando...'; btn.disabled=true;
-    let mb, nomeSetor, fotoSrc, nomeP, cargoP;
-    if(pessoaAtualIdx>=0){
-      mb=pessoas[pessoaAtualIdx];
-      nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor;
-      fotoSrc=avatarUrl(mb.nome,mb.foto); nomeP=mb.nome; cargoP=mb.cargo;
-    } else {
-      mb={turno:'int',horaInicio:'',horaFim:'',horaAlmocoInicio:'',horaAlmocoFim:'',matricula:'',obs:''};
-      nomeSetor='Simplifica Timbó';
-      fotoSrc=document.getElementById('fotoDiretor').src; nomeP='Murilo'; cargoP='DIRETOR';
+
+    if (typeof html2canvasLib !== 'function') {
+      alert('A biblioteca do crachá não carregou. Recarregue a página e tente novamente.');
+      btn.textContent='🪪 Baixar Crachá'; btn.disabled=false;
+      return;
     }
-    document.getElementById('cachaNome').textContent=nomeP;
-    document.getElementById('cachaCargo').textContent=cargoP;
-    document.getElementById('cachaSetor').textContent=nomeSetor;
-    const cf=document.getElementById('crachaFoto'); cf.src=fotoSrc; cf.crossOrigin='anonymous';
-
-    const turnoLabel=mb.turno==='mat'?'☀️ Matutino':mb.turno==='ves'?'🌇 Vespertino':mb.turno==='int'?'🕐 Integral':'—';
-    const hor=fmtHorario(mb)||'—';
-    const infos=[
-      {label:'Turno',valor:turnoLabel,full:false},
-      {label:'Horário',valor:hor,full:false},
-      mb.matricula?{label:'Matrícula',valor:mb.matricula,full:false}:null,
-      mb.obs?{label:'Observação',valor:mb.obs,full:true}:null,
-    ].filter(Boolean);
-    document.getElementById('cachaInfo').innerHTML=infos.map(i=>
-      `<div class="cracha-campo${i.full?' full':''}">
-        <div class="cracha-campo-label">${i.label}</div>
-        <div class="cracha-campo-valor">${i.valor}</div>
-      </div>`).join('');
-
-    // Converte a foto para base64 antes do html2canvas para evitar problema de CORS
-    try {
-      const imgB64 = await toBase64(cf.src);
-      if (imgB64) cf.src = imgB64;
-    } catch(e) { console.warn('Não foi possível converter foto para base64:', e); }
-
-    await new Promise(res => setTimeout(res, 300));
 
     try {
-      const canvas=await html2canvas(document.getElementById('crachaEl'),{scale:3,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
-      const link=document.createElement('a');
-      link.download=`cracha-${nomeP.toLowerCase().replace(/\s+/g,'-')}.png`;
-      link.href=canvas.toDataURL('image/png'); link.click();
-    } catch(e) { alert('Erro ao gerar crachá. Verifique se a imagem carregou.'); console.error(e); }
+      let mb, nomeSetor, fotoSrc, nomeP, cargoP;
+      if(pessoaAtualIdx>=0){
+        mb=pessoas[pessoaAtualIdx];
+        nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor;
+        fotoSrc=avatarUrl(mb.nome,mb.foto); nomeP=mb.nome; cargoP=mb.cargo;
+      } else {
+        mb={turno:'int',horaInicio:'',horaFim:'',horaAlmocoInicio:'',horaAlmocoFim:'',matricula:'',obs:''};
+        nomeSetor='Simplifica Timbó';
+        fotoSrc=document.getElementById('fotoDiretor').src; nomeP='Murilo'; cargoP='DIRETOR';
+      }
+
+      document.getElementById('cachaNome').textContent=nomeP;
+      document.getElementById('cachaCargo').textContent=cargoP;
+      document.getElementById('cachaSetor').textContent=nomeSetor;
+
+      const cf=document.getElementById('crachaFoto');
+      cf.src=fotoSrc;
+      await waitImageReady(cf);
+
+      const turnoLabel=mb.turno==='mat'?'☀️ Matutino':mb.turno==='ves'?'🌇 Vespertino':mb.turno==='int'?'🕐 Integral':'—';
+      const hor=fmtHorario(mb)||'—';
+      const infos=[
+        {label:'Turno',valor:turnoLabel,full:false},
+        {label:'Horário',valor:hor,full:false},
+        mb.matricula?{label:'Matrícula',valor:mb.matricula,full:false}:null,
+        mb.obs?{label:'Observação',valor:mb.obs,full:true}:null,
+      ].filter(Boolean);
+      document.getElementById('cachaInfo').innerHTML=infos.map(i=>
+        `<div class="cracha-campo${i.full?' full':''}">
+          <div class="cracha-campo-label">${i.label}</div>
+          <div class="cracha-campo-valor">${i.valor}</div>
+        </div>`).join('');
+
+      try {
+        const imgB64 = await toBase64(fotoSrc);
+        if (imgB64 && imgB64 !== cf.src) {
+          cf.src = imgB64;
+          await waitImageReady(cf);
+        }
+      } catch(e) {
+        console.warn('Não foi possível converter foto para base64:', e);
+      }
+
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      const canvas=await html2canvasLib(document.getElementById('crachaEl'),{scale:3,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
+      const fileName=`cracha-${nomeP.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-')}.png`;
+
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if (!blob) return reject(new Error('Falha ao gerar o PNG do crachá.'));
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = fileName;
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          resolve();
+        }, 'image/png');
+      });
+    } catch(e) {
+      alert('Erro ao gerar crachá. Verifique se a foto carregou corretamente.');
+      console.error(e);
+    }
+
     btn.textContent='🪪 Baixar Crachá'; btn.disabled=false;
   };
 
