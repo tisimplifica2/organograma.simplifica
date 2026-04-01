@@ -52,11 +52,18 @@
 
   .main { padding: 36px 40px; }
   .diretor-wrap { display: flex; justify-content: center; margin-bottom: 48px; }
-  .card-diretor { background: var(--azul); color: white; border-radius: var(--radius); padding: 24px 40px; display: flex; align-items: center; gap: 20px; box-shadow: var(--sombra-hover); min-width: 260px; cursor: pointer; transition: transform 0.2s; }
-  .card-diretor:hover { transform: translateY(-2px); }
-  .card-diretor img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid var(--azul-neon); }
-  .card-diretor .nome { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; }
-  .card-diretor .cargo { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--azul-neon); margin-top: 2px; }
+  /* CARD DIRETORIA EXPANSÍVEL */
+  .card-diretoria { background: white; border-radius: var(--radius); box-shadow: var(--sombra-hover); overflow: hidden; width: 100%; max-width: 420px; }
+  .card-diretoria-header { background: linear-gradient(135deg, #0d3d6e 0%, var(--azul) 100%); padding: 18px 24px; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; transition: filter 0.2s; }
+  .card-diretoria-header:hover { filter: brightness(1.1); }
+  .card-diretoria-titulo { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: white; flex: 1; }
+  .card-diretoria-sub { font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+  .card-diretoria-meta { display: flex; align-items: center; gap: 8px; }
+  .card-diretoria-badge { font-size: 0.72rem; background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 10px; }
+  .card-diretoria-toggle { color: rgba(255,255,255,0.8); font-size: 0.85rem; transition: transform 0.3s; }
+  .card-diretoria.aberto .card-diretoria-toggle { transform: rotate(180deg); }
+  .diretoria-lista { display: none; }
+  .card-diretoria.aberto .diretoria-lista { display: block; }
 
   .setores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; align-items: start; }
   .setor-card { background: white; border-radius: var(--radius); box-shadow: var(--sombra); overflow: hidden; }
@@ -302,10 +309,19 @@
 
 <div class="main">
   <div class="diretor-wrap">
-    <div class="card-diretor" onclick="abrirPerfilDiretor()">
-      <img id="fotoDiretor" src="https://tisimplifica2.github.io/imagens/murilo.jpg" alt="Murilo"
-        onerror="this.src='https://ui-avatars.com/api/?name=Murilo&background=1565a8&color=fff&size=80'">
-      <div><div class="nome" id="diretorNomeCard">Murilo</div><div class="cargo" id="diretorCargoCard">Diretor</div></div>
+    <div class="card-diretoria" id="cardDiretoria">
+      <div class="card-diretoria-header" onclick="toggleDiretoria()">
+        <div class="setor-icon" style="background:rgba(255,255,255,0.15);font-size:1.3rem">👔</div>
+        <div>
+          <div class="card-diretoria-titulo">Simplifica — Diretoria</div>
+          <div class="card-diretoria-sub">Clique para ver a equipe</div>
+        </div>
+        <div class="card-diretoria-meta">
+          <span class="card-diretoria-badge" id="diretoriaBadge">1 pessoa</span>
+          <span class="card-diretoria-toggle">▼</span>
+        </div>
+      </div>
+      <div class="diretoria-lista" id="diretoriaLista"></div>
     </div>
   </div>
   <div class="setores-grid" id="setoresGrid"></div>
@@ -803,9 +819,9 @@
       card.className='setor-card';
       card.dataset.setorId=s.id;
       const tagHTML=s.parceiro?`<span class="setor-tag">Parceiro</span>`:'';
-      // Ícone: foto ou emoji
+      // Ícone: foto ou emoji (apenas um dos dois)
       const iconeHTML = s.foto
-        ? `<img src="${s.foto}" alt="${s.nome}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">${s.icone||'📁'}`
+        ? `<img src="${s.foto}" alt="${s.nome}" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.outerHTML='${s.icone||'📁'}'">` 
         : (s.icone||'📁');
 
       const pessoasHTML=membros.map(mb=>{
@@ -899,14 +915,40 @@
     document.getElementById('modalPerfil').classList.add('aberto');
   };
 
+  // DIRETORIA EXPANSÍVEL
+  function renderDiretoria() {
+    const turnoClass=diretor.turno==='mat'?'turno-mat-item':diretor.turno==='ves'?'turno-ves-item':diretor.turno==='int'?'turno-int-item':'';
+    const turnoLabel=diretor.turno==='mat'?'<span class="turno-badge turno-mat">☀️ Mat.</span>'
+      :diretor.turno==='ves'?'<span class="turno-badge turno-ves">🌇 Ves.</span>'
+      :diretor.turno==='int'?'<span class="turno-badge turno-int">🕐 Int.</span>':'';
+    const hor=fmtHorario(diretor);
+    const horHTML=hor?`<div class="pessoa-horario">🕐 ${hor}</div>`:'';
+    document.getElementById('diretoriaLista').innerHTML=`
+      <div class="pessoa-item ${turnoClass}" onclick="abrirPerfilDiretor()">
+        <img class="pessoa-avatar" src="${avatarUrl(diretor.nome||'Murilo', diretor.foto||'https://tisimplifica2.github.io/imagens/murilo.jpg')}"
+          alt="${diretor.nome||'Murilo'}" onerror="this.src='${avatarUrl(diretor.nome||'Murilo','')}'" loading="lazy">
+        <div class="pessoa-info">
+          <div class="pessoa-nome">${diretor.nome||'Murilo'}</div>
+          <div class="pessoa-cargo">${diretor.cargo||'DIRETOR'}</div>
+          ${horHTML}
+        </div>
+        ${turnoLabel}
+      </div>`;
+    document.getElementById('diretoriaBadge').textContent='1 pessoa';
+  }
+
+  window.toggleDiretoria = function() {
+    document.getElementById('cardDiretoria').classList.toggle('aberto');
+  };
+
   window.abrirPerfilDiretor = function() {
     pessoaAtualIdx=-1;
     const foto=document.getElementById('perfilFoto');
-    foto.src = diretor.foto || avatarUrl(diretor.nome,'');
-    foto.onerror = () => foto.src = avatarUrl(diretor.nome,'');
-    document.getElementById('perfilNome').textContent = diretor.nome || 'Diretor';
+    foto.src = diretor.foto || avatarUrl(diretor.nome||'Murilo','');
+    foto.onerror = () => foto.src = avatarUrl(diretor.nome||'Murilo','');
+    document.getElementById('perfilNome').textContent = diretor.nome || 'Murilo';
     document.getElementById('perfilCargo').textContent = (diretor.cargo||'DIRETOR').toUpperCase();
-    document.getElementById('perfilSetor').textContent = 'Simplifica Timbó';
+    document.getElementById('perfilSetor').textContent = 'Simplifica Timbó — Diretoria';
     const turnoLabel=diretor.turno==='mat'?'☀️ Matutino':diretor.turno==='ves'?'🌇 Vespertino':diretor.turno==='int'?'🕐 Integral':null;
     const campos=[
       {label:'Turno', valor:turnoLabel},
