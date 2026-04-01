@@ -183,6 +183,9 @@
   .item-admin-info span { font-size: 0.75rem; color: var(--cinza-claro); }
   .btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
   .btn-del:hover { background: #fecaca; }
+  .btn-edit { background: #e0f0ff; color: var(--azul); border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; flex-shrink: 0; margin-right: 6px; }
+  .btn-edit:hover { background: #c7e2fa; }
+  .item-admin-acoes { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
 
   .filtro-admin-wrap select { padding: 8px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; background: white; color: var(--cinza); max-width: 300px; width: 100%; margin-bottom: 4px; }
   .btn-salvar-tudo { background: var(--azul-neon); color: var(--azul); border: none; padding: 14px 32px; border-radius: 12px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 32px; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
@@ -264,6 +267,7 @@
 <header>
   <div class="header-logo">Simplifica Timbó <span>Organograma</span></div>
   <div class="header-actions">
+    <button class="btn-header" onclick="window.open('ramais.html','_blank')">📞 Ramais</button>
     <button class="btn-header" onclick="window.print()">🖨️ Imprimir</button>
     <button class="btn-admin" onclick="abrirLogin()">⚙️ Admin</button>
   </div>
@@ -323,6 +327,67 @@
       <div class="perfil-grid" id="perfilGrid"></div>
       <div class="perfil-acoes">
         <button class="btn-cracha" id="btnDownloadCracha" onclick="downloadCracha()">🪪 Baixar Crachá</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR PESSOA -->
+<div class="modal-overlay" id="modalEditarPessoa">
+  <div class="modal-perfil" style="max-width:520px">
+    <div class="perfil-topo">
+      <button class="perfil-fechar" onclick="fecharEditarPessoa()">✕</button>
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-top:8px">✏️ Editar Pessoa</div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:4px" id="editarPessoaSubtitle"></div>
+    </div>
+    <div class="perfil-body">
+      <div class="field-label" style="margin-bottom:8px">Foto</div>
+      <div class="foto-upload-area" style="margin-bottom:12px">
+        <input type="file" id="editarFotoArquivo" accept="image/*" onchange="previewFotoEditar(this)">
+        <img class="foto-preview" id="editarFotoPreview" src="" alt="Preview">
+        <div class="foto-upload-txt" id="editarFotoUploadTxt"><strong>Clique para trocar a foto</strong><br>JPG, PNG ou WEBP</div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div class="field-label">Ou URL da foto</div>
+        <input type="text" id="editarFotoUrl" placeholder="https://..." style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+      </div>
+      <div class="perfil-grid" style="gap:12px">
+        <div><div class="field-label">Nome</div><input type="text" id="editarNome" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">Cargo</div><input type="text" id="editarCargo" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div>
+          <div class="field-label">Setor</div>
+          <select id="editarSetor" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"><option value="">Selecione</option></select>
+        </div>
+        <div>
+          <div class="field-label">Turno</div>
+          <select id="editarTurno" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+            <option value="">Sem turno fixo</option>
+            <option value="mat">☀️ Matutino</option>
+            <option value="ves">🌇 Vespertino</option>
+            <option value="int">🕐 Integral</option>
+          </select>
+        </div>
+        <div class="perfil-item full" style="grid-column:1/-1">
+          <div class="field-label" style="margin-bottom:8px">Horário</div>
+          <div class="horario-bloco">
+            <div class="horario-bloco-titulo">⏰ Manhã</div>
+            <div class="horario-linha"><input type="time" id="editarHoraInicio"><span class="horario-sep">até</span><input type="time" id="editarHoraAlmocoInicio"></div>
+            <div class="horario-bloco-titulo" style="margin-top:8px">🍽️ Tarde</div>
+            <div class="horario-linha"><input type="time" id="editarHoraAlmocoFim"><span class="horario-sep">até</span><input type="time" id="editarHoraFim"></div>
+          </div>
+        </div>
+        <div><div class="field-label">Matrícula</div><input type="text" id="editarMatricula" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">Telefone</div><input type="text" id="editarTelefone" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">CPF</div><input type="text" id="editarCpf" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">Nascimento</div><input type="date" id="editarNascimento" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div class="perfil-item full" style="grid-column:1/-1">
+          <div class="field-label">Observação</div>
+          <textarea id="editarObs" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza);resize:vertical;min-height:60px"></textarea>
+        </div>
+      </div>
+      <div class="perfil-acoes" style="margin-top:20px">
+        <button class="btn-cracha" onclick="salvarEdicaoPessoa()" style="background:var(--azul)">💾 Salvar Alterações</button>
+        <button class="btn-cracha" onclick="fecharEditarPessoa()" style="background:var(--cinza-claro);flex:0;padding:11px 20px">Cancelar</button>
       </div>
     </div>
   </div>
@@ -1106,7 +1171,10 @@
       return `<div class="item-admin">
         <img src="${avatarUrl(mb.nome,mb.foto)}" onerror="this.src='${avatarUrl(mb.nome,'')}'" alt="${mb.nome}">
         <div class="item-admin-info"><strong>${mb.nome}</strong><span>${mb.cargo} · ${nomeSetor}${tl}</span></div>
-        <button class="btn-del" onclick="removerPessoa(${idx})">Remover</button>
+        <div class="item-admin-acoes">
+          <button class="btn-edit" onclick="abrirEditarPessoa(${idx})">✏️ Editar</button>
+          <button class="btn-del" onclick="removerPessoa(${idx})">Remover</button>
+        </div>
       </div>`;
     }).join('')||'<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhuma pessoa cadastrada.</div>';
   };
@@ -1123,8 +1191,84 @@
   window.removerPessoa=function(idx){ if(!confirm(`Remover "${pessoas[idx].nome}"?`)) return; pessoas.splice(idx,1); renderListaAdmin(); renderOrganograma(); };
   window.removerSetor=function(idx){ const s=setores[idx],qtd=pessoas.filter(p=>p.setor===s.id).length; if(qtd>0&&!confirm(`O setor "${s.nome}" tem ${qtd} pessoa(s). Remover mesmo assim?`)) return; setores.splice(idx,1); popularSelects(); renderListaSetoresAdmin(); renderOrganograma(); };
 
-  ['modalPerfil','modalLogin'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else fecharLogin(); } });
+  // EDITAR PESSOA
+  let editandoIdx = -1;
+  let fotoBase64Editar = '';
+
+  window.abrirEditarPessoa = function(idx) {
+    editandoIdx = idx;
+    fotoBase64Editar = '';
+    const mb = pessoas[idx];
+    document.getElementById('editarPessoaSubtitle').textContent = mb.nome;
+    document.getElementById('editarNome').value = mb.nome||'';
+    document.getElementById('editarCargo').value = mb.cargo||'';
+    document.getElementById('editarTurno').value = mb.turno||'';
+    document.getElementById('editarHoraInicio').value = mb.horaInicio||'';
+    document.getElementById('editarHoraAlmocoInicio').value = mb.horaAlmocoInicio||'';
+    document.getElementById('editarHoraAlmocoFim').value = mb.horaAlmocoFim||'';
+    document.getElementById('editarHoraFim').value = mb.horaFim||'';
+    document.getElementById('editarMatricula').value = mb.matricula||'';
+    document.getElementById('editarTelefone').value = mb.telefone||'';
+    document.getElementById('editarCpf').value = mb.cpf||'';
+    document.getElementById('editarNascimento').value = mb.nascimento||'';
+    document.getElementById('editarObs').value = mb.obs||'';
+    document.getElementById('editarFotoUrl').value = (mb.foto&&!mb.foto.startsWith('data:'))?mb.foto:'';
+    // Foto preview
+    const prev = document.getElementById('editarFotoPreview');
+    if(mb.foto){ prev.src=mb.foto; prev.classList.add('visivel'); document.getElementById('editarFotoUploadTxt').style.display='none'; }
+    else { prev.classList.remove('visivel'); document.getElementById('editarFotoUploadTxt').style.display=''; }
+    // Setor select
+    const opts = setores.map(s=>`<option value="${s.id}"${s.id===mb.setor?' selected':''}>${s.nome}</option>`).join('');
+    document.getElementById('editarSetor').innerHTML = '<option value="">Selecione</option>'+opts;
+    document.getElementById('modalEditarPessoa').classList.add('aberto');
+  };
+
+  window.fecharEditarPessoa = function() {
+    document.getElementById('modalEditarPessoa').classList.remove('aberto');
+    document.getElementById('editarFotoArquivo').value='';
+    fotoBase64Editar='';
+  };
+
+  window.previewFotoEditar = function(input) {
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      fotoBase64Editar=e.target.result;
+      const prev=document.getElementById('editarFotoPreview');
+      prev.src=fotoBase64Editar; prev.classList.add('visivel');
+      document.getElementById('editarFotoUploadTxt').style.display='none';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.salvarEdicaoPessoa = function() {
+    if(editandoIdx<0) return;
+    const nome = document.getElementById('editarNome').value.trim();
+    const cargo = document.getElementById('editarCargo').value.trim();
+    const setor = document.getElementById('editarSetor').value;
+    if(!nome||!cargo||!setor) return alert('Preencha nome, cargo e setor.');
+    const fotoAtual = pessoas[editandoIdx].foto;
+    pessoas[editandoIdx] = {
+      nome, cargo, setor,
+      foto: fotoBase64Editar || document.getElementById('editarFotoUrl').value.trim() || fotoAtual,
+      turno: document.getElementById('editarTurno').value,
+      horaInicio: document.getElementById('editarHoraInicio').value,
+      horaAlmocoInicio: document.getElementById('editarHoraAlmocoInicio').value,
+      horaAlmocoFim: document.getElementById('editarHoraAlmocoFim').value,
+      horaFim: document.getElementById('editarHoraFim').value,
+      matricula: document.getElementById('editarMatricula').value.trim(),
+      telefone: document.getElementById('editarTelefone').value.trim(),
+      cpf: document.getElementById('editarCpf').value.trim(),
+      nascimento: document.getElementById('editarNascimento').value,
+      obs: document.getElementById('editarObs').value.trim(),
+    };
+    fecharEditarPessoa();
+    renderListaAdmin();
+    renderOrganograma();
+  };
+
+  ['modalPerfil','modalLogin','modalEditarPessoa'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditarPessoa') fecharEditarPessoa(); else fecharLogin(); } });
   });
 
   carregarDados();
