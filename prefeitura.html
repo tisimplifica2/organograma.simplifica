@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organograma da Prefeitura — Timbó</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #1565a8; --azul-claro: #1e7ecf; --azul-neon: #5ab4f0;
+    --azul-escuro: #0d3d6e;
+    --fundo: #f0f5fb; --fundo-escuro: #dce8f5;
+    --cinza: #2d3a4a; --cinza-claro: #7a8fa6; --branco: #ffffff;
+    --sombra: 0 4px 24px rgba(21,101,168,0.10);
+    --sombra-hover: 0 8px 32px rgba(21,101,168,0.18);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--cinza); min-height: 100vh; }
+
+  /* HEADER */
+  header { background: var(--azul); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 70px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.15); }
+  .header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--branco); letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+  .header-logo span { background: var(--azul-neon); color: var(--azul); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab { background: rgba(255,255,255,0.12); border: none; color: rgba(255,255,255,0.8); padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
+  .nav-tab:hover, .nav-tab.ativo { background: rgba(255,255,255,0.25); color: white; }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .btn-header { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-header:hover { background: rgba(255,255,255,0.25); }
+  .btn-admin { background: var(--azul-neon); color: var(--azul); border: none; padding: 7px 18px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-admin:hover { background: white; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, var(--azul) 0%, #0d3d6e 100%); padding: 48px 40px 40px; color: white; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; top:-40px; right:-40px; width:300px; height:300px; border-radius:50%; background:rgba(90,180,240,0.1); }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; position: relative; }
+  .hero p { color: rgba(255,255,255,0.7); font-size: 0.95rem; position: relative; }
+
+  /* ORGANOGRAMA */
+  .main { padding: 48px 40px; display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+  /* NÓS DO ORGANOGRAMA */
+  .org-row { display: flex; justify-content: center; gap: 24px; position: relative; }
+  .org-row + .org-row { margin-top: 0; }
+
+  .org-node-wrap { display: flex; flex-direction: column; align-items: center; }
+
+  /* LINHA VERTICAL de cima */
+  .linha-topo { width: 2px; height: 32px; background: var(--azul-claro); flex-shrink: 0; }
+  /* LINHA HORIZONTAL entre nós */
+  .linha-horiz { height: 2px; background: var(--azul-claro); flex: 1; align-self: flex-start; margin-top: 16px; }
+  .linha-horiz.dashed { border-top: 2px dashed var(--cinza-claro); background: none; }
+
+  .org-node {
+    background: white; border-radius: 14px; padding: 16px 28px;
+    text-align: center; box-shadow: var(--sombra);
+    cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;
+    min-width: 160px; position: relative;
+  }
+  .org-node:hover { box-shadow: var(--sombra-hover); transform: translateY(-2px); }
+  .org-node.nivel-1 { background: var(--azul-escuro); color: white; border-radius: 16px; padding: 20px 36px; min-width: 180px; }
+  .org-node.nivel-1 .node-titulo { font-size: 1.1rem; }
+  .org-node.nivel-1 .node-sub { color: rgba(255,255,255,0.65); }
+  .org-node.nivel-2 { background: var(--azul); color: white; border-radius: 14px; }
+  .org-node.nivel-2 .node-sub { color: rgba(255,255,255,0.65); }
+  .org-node.nivel-3 { background: white; border: 2px solid var(--fundo-escuro); }
+  .org-node.nivel-4 { background: var(--azul-neon); color: var(--azul); cursor: pointer; }
+  .org-node.nivel-4 .node-sub { color: rgba(21,101,168,0.7); }
+  .org-node.nivel-4 .node-link { font-size: 0.72rem; margin-top: 6px; font-weight: 600; }
+  .org-node.externo { background: var(--fundo); border: 2px dashed var(--cinza-claro); color: var(--cinza-claro); cursor: default; }
+  .org-node.externo .node-sub { color: var(--cinza-claro); }
+
+  .node-titulo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
+  .node-sub { font-size: 0.72rem; margin-top: 4px; }
+
+  /* ÁREA COM LINHA HORIZONTAL CONECTANDO FILHOS */
+  .org-children { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .org-children-row { display: flex; align-items: flex-start; justify-content: center; position: relative; }
+  .org-children-row::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 32px;
+    background: var(--azul-claro);
+  }
+
+  /* CONECTOR horizontal entre irmãos */
+  .org-siblings { display: flex; justify-content: center; gap: 0; align-items: flex-start; position: relative; margin-top: 32px; }
+  .org-siblings::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(50% - var(--half-width, 50%));
+    right: calc(50% - var(--half-width, 50%));
+    height: 2px;
+    background: var(--azul-claro);
+  }
+
+  /* Layout simples para múltiplos filhos */
+  .org-level { display: flex; flex-direction: column; align-items: center; }
+  .org-connector { width: 2px; height: 32px; background: var(--azul-claro); }
+  .org-connector.dashed { background: none; border-left: 2px dashed var(--cinza-claro); }
+  .org-h-row { display: flex; align-items: flex-start; gap: 0; position: relative; }
+  .org-h-row > .org-level { flex: 1; }
+  .org-h-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px; background: var(--azul-claro);
+    z-index: 0;
+  }
+  .org-h-line.dashed { background: none; border-top: 2px dashed var(--cinza-claro); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+  .modal-overlay.aberto { display: flex; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .modal-login { background: white; border-radius: 20px; padding: 36px; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: slideUp 0.25s ease; }
+  .modal-login h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--azul); margin-bottom: 6px; }
+  .modal-login p { font-size: 0.88rem; color: var(--cinza-claro); margin-bottom: 24px; }
+  .modal-login input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--cinza); background: var(--fundo); margin-bottom: 12px; }
+  .modal-login input:focus { outline: none; border-color: var(--azul-claro); background: white; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-primary { flex: 1; background: var(--azul); color: white; border: none; padding: 12px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .btn-primary:hover { background: var(--azul-claro); }
+  .btn-secondary { background: var(--fundo); color: var(--cinza); border: none; padding: 12px 20px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; }
+  .erro-msg { color: #dc2626; font-size: 0.82rem; margin-top: -4px; margin-bottom: 8px; display: none; }
+
+  /* PAINEL ADMIN */
+  .painel { display: none; position: fixed; inset: 0; background: var(--fundo); z-index: 200; overflow-y: auto; }
+  .painel.aberto { display: block; }
+  .painel-header { background: var(--azul); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .painel-header h2 { font-family: 'Syne', sans-serif; font-weight: 800; color: white; font-size: 1.2rem; }
+  .btn-fechar { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; }
+  .btn-fechar:hover { background: rgba(255,255,255,0.3); }
+  .painel-body { padding: 32px 40px; max-width: 860px; }
+  .painel-body h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--azul); margin-bottom: 16px; margin-top: 36px; padding-bottom: 8px; border-bottom: 2px solid var(--fundo-escuro); }
+  .painel-body h3:first-child { margin-top: 0; }
+  .form-section { background: white; border-radius: var(--radius); padding: 24px; box-shadow: var(--sombra); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-full { grid-column: 1 / -1; }
+  .field-label { font-size: 0.72rem; font-weight: 600; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .form-section input, .form-section select, .form-section textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; background: var(--fundo); color: var(--cinza); transition: border-color 0.2s; }
+  .form-section textarea { resize: vertical; min-height: 60px; }
+  .form-section input:focus, .form-section select:focus, .form-section textarea:focus { outline: none; border-color: var(--azul-claro); background: white; }
+  .foto-upload-area { border: 2px dashed var(--fundo-escuro); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--fundo); position: relative; overflow: hidden; margin-bottom: 10px; }
+  .foto-upload-area:hover { border-color: var(--azul-claro); background: #e8f2fb; }
+  .foto-upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .foto-preview { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto 6px; display: none; border: 3px solid var(--azul-neon); }
+  .foto-preview.visivel { display: block; }
+  .foto-upload-txt { font-size: 0.78rem; color: var(--cinza-claro); pointer-events: none; }
+  .foto-upload-txt strong { color: var(--azul); }
+  .btn-add { background: var(--azul); color: white; border: none; padding: 11px 24px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: background 0.2s; }
+  .btn-add:hover { background: var(--azul-claro); }
+  .lista-admin { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .item-admin { background: white; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .item-admin img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--fundo-escuro); flex-shrink: 0; }
+  .item-admin-info { flex: 1; min-width: 0; }
+  .item-admin-info strong { font-size: 0.88rem; font-weight: 600; color: var(--cinza); display: block; }
+  .item-admin-info span { font-size: 0.75rem; color: var(--cinza-claro); }
+  .item-admin-acoes { display: flex; gap: 6px; flex-shrink: 0; }
+  .btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-del:hover { background: #fecaca; }
+  .btn-edit { background: #e0f0ff; color: var(--azul); border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; margin-right: 4px; }
+  .btn-edit:hover { background: #c7e2fa; }
+  .btn-salvar-tudo { background: var(--azul-neon); color: var(--azul); border: none; padding: 14px 32px; border-radius: 12px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 32px; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .btn-salvar-tudo:hover { background: white; box-shadow: var(--sombra-hover); }
+  .btn-salvar-tudo:disabled { opacity: 0.6; cursor: not-allowed; }
+  .aviso-salvar { padding: 12px 16px; border-radius: 10px; font-size: 0.85rem; margin-top: 16px; display: none; }
+  .aviso-salvar.sucesso { background: var(--fundo-escuro); color: var(--azul); }
+  .aviso-salvar.erro { background: #fee2e2; color: #dc2626; }
+  .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(240,245,251,0.9); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+  .loading-overlay.ativo { display: flex; }
+  .spinner { width: 48px; height: 48px; border: 4px solid var(--fundo-escuro); border-top-color: var(--azul); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--azul); font-size: 0.9rem; }
+  footer { background: var(--azul); color: rgba(255,255,255,0.6); text-align: center; padding: 20px; font-size: 0.8rem; margin-top: 48px; }
+  footer strong { color: white; }
+
+  /* MODAL PERFIL */
+  .modal-perfil { background: white; border-radius: 24px; width: 90%; max-width: 440px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; overflow: hidden; max-height: 90vh; overflow-y: auto; }
+  .perfil-topo { background: linear-gradient(135deg, var(--azul) 0%, #0f4a7a 100%); padding: 32px 24px 24px; text-align: center; position: relative; }
+  .perfil-fechar { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+  .perfil-foto { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  .perfil-nome { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
+  .perfil-cargo { font-size: 0.8rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .perfil-setor { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .perfil-body { padding: 20px 24px 24px; }
+  .perfil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .perfil-item.full { grid-column: 1 / -1; }
+  .perfil-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--cinza-claro); margin-bottom: 3px; font-weight: 600; }
+  .perfil-valor { font-size: 0.88rem; color: var(--cinza); font-weight: 500; background: var(--fundo); padding: 8px 12px; border-radius: 8px; word-break: break-word; }
+  .perfil-valor.vazio { color: var(--cinza-claro); font-style: italic; font-weight: 400; }
+
+  @media (max-width: 640px) {
+    header { padding: 0 16px; }
+    .nav-tabs { display: none; }
+    .hero { padding: 28px 16px 24px; }
+    .hero h1 { font-size: 1.6rem; }
+    .main { padding: 24px 12px; }
+    .painel-body { padding: 20px 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-full { grid-column: 1; }
+    .perfil-grid { grid-template-columns: 1fr; }
+    .perfil-item.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loadingTxt">Carregando organograma...</div>
+</div>
+
+<header>
+  <div class="header-logo">Simplifica Timbó <span>Prefeitura</span></div>
+  <div class="header-actions">
+    <a class="btn-header" href="index.html">🏠 Organograma Simplifica</a>
+    <button class="btn-admin" onclick="abrirLogin()">⚙️ Admin</button>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Organograma da Prefeitura</h1>
+  <p>Estrutura hierárquica do governo municipal de Timbó</p>
+</div>
+
+<div class="main" id="orgMain"></div>
+
+<footer><strong>Simplifica Timbó</strong> — Rua Japão, 408 - Bairro das Nações · (47) 3380-7900</footer>
+
+<!-- MODAL PERFIL -->
+<div class="modal-overlay" id="modalPerfil">
+  <div class="modal-perfil">
+    <div class="perfil-topo">
+      <button class="perfil-fechar" onclick="fecharPerfil()">✕</button>
+      <img class="perfil-foto" id="perfilFoto" src="" alt="">
+      <div class="perfil-nome" id="perfilNome"></div>
+      <div class="perfil-cargo" id="perfilCargo"></div>
+      <div class="perfil-setor" id="perfilSetor"></div>
+    </div>
+    <div class="perfil-body">
+      <div class="perfil-grid" id="perfilGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGIN -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal-login">
+    <h2>🔐 Área Administrativa</h2>
+    <p>Digite a senha para acessar o painel da prefeitura.</p>
+    <input type="password" id="senhaInput" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha()">
+    <div class="erro-msg" id="erroSenha">Senha incorreta. Tente novamente.</div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="verificarSenha()">Entrar</button>
+      <button class="btn-secondary" onclick="fecharLogin()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR NÓ -->
+<div class="modal-overlay" id="modalEditar">
+  <div class="modal-perfil" style="max-width:520px">
+    <div class="perfil-topo">
+      <button class="perfil-fechar" onclick="fecharEditar()">✕</button>
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-top:8px">✏️ Editar Cargo</div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:4px" id="editarSubtitle"></div>
+    </div>
+    <div class="perfil-body" style="padding:20px 24px 24px">
+      <div style="margin-bottom:12px">
+        <div class="field-label" style="margin-bottom:8px">Foto</div>
+        <div class="foto-upload-area">
+          <input type="file" id="editarFotoArquivo" accept="image/*" onchange="previewFotoEditar(this)">
+          <img class="foto-preview" id="editarFotoPreview" src="" alt="">
+          <div class="foto-upload-txt" id="editarFotoTxt"><strong>Clique para escolher foto</strong><br>JPG, PNG ou WEBP</div>
+        </div>
+        <div class="field-label">Ou URL da foto</div>
+        <input type="text" id="editarFotoUrl" placeholder="https://..." style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza);margin-top:4px">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+        <div>
+          <div class="field-label">Nome *</div>
+          <input type="text" id="editarNome" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+        </div>
+        <div>
+          <div class="field-label">Cargo *</div>
+          <input type="text" id="editarCargo" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+        </div>
+        <div>
+          <div class="field-label">Matrícula</div>
+          <input type="text" id="editarMatricula" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+        </div>
+        <div>
+          <div class="field-label">Telefone</div>
+          <input type="text" id="editarTelefone" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+        </div>
+        <div>
+          <div class="field-label">CPF</div>
+          <input type="text" id="editarCpf" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+        </div>
+        <div>
+          <div class="field-label">Nascimento</div>
+          <input type="date" id="editarNascimento" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+        </div>
+        <div style="grid-column:1/-1">
+          <div class="field-label">Observação</div>
+          <textarea id="editarObs" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza);resize:vertical;min-height:60px"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button onclick="salvarEdicao()" style="flex:1;background:var(--azul);color:white;border:none;padding:12px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer">💾 Salvar</button>
+        <button onclick="fecharEditar()" style="background:var(--fundo);color:var(--cinza);border:none;padding:12px 20px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;cursor:pointer">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div class="painel" id="painelAdmin">
+  <div class="painel-header">
+    <h2>⚙️ Painel — Organograma da Prefeitura</h2>
+    <button class="btn-fechar" onclick="fecharPainel()">✕ Fechar</button>
+  </div>
+  <div class="painel-body">
+
+    <h3>ℹ️ Como funciona</h3>
+    <div class="form-section" style="color:var(--cinza);font-size:0.88rem;line-height:1.6">
+      O organograma tem uma estrutura fixa de cargos (Prefeito, Vice, Gabinete, etc.). Você pode editar os dados de cada cargo clicando em <strong>✏️ Editar</strong> na lista abaixo — nome, foto, matrícula, CPF, telefone e mais.
+    </div>
+
+    <h3>📋 Cargos cadastrados</h3>
+    <div class="lista-admin" id="listaAdmin"></div>
+
+    <button class="btn-salvar-tudo" onclick="salvarTudo()" id="btnSalvar">💾 Salvar no Firebase</button>
+    <div class="aviso-salvar" id="avisoSalvar"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
+    authDomain: "simplifica-timbo.firebaseapp.com",
+    projectId: "simplifica-timbo",
+    storageBucket: "simplifica-timbo.firebasestorage.app",
+    messagingSenderId: "651621474575",
+    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const SENHA_ADMIN = "simplifica2024";
+
+  // Estrutura fixa do organograma. "dados" são editáveis pelo admin.
+  // id: chave única, titulo: nome do cargo/setor, nivel: estilo visual
+  const ESTRUTURA = [
+    { id: "prefeito",    titulo: "Prefeito",      sub: "Prefeito Municipal",           nivel: 1 },
+    { id: "viceprefeito",titulo: "Vice-Prefeito", sub: "Vice-Prefeito Municipal",      nivel: 2, paisDash: false },
+    { id: "gabinete",   titulo: "Gabinete",       sub: "Gabinete do Prefeito",         nivel: 3 },
+    { id: "vereadores", titulo: "Vereadores",     sub: "Câmara de Vereadores",         nivel: 3, externo: true },
+    { id: "secretarias",titulo: "Secretárias",    sub: "Secretarias Municipais",       nivel: 3 },
+    { id: "simplifica", titulo: "Simplifica",     sub: "Simplifica Timbó",             nivel: 4, link: "index.html" },
+  ];
+
+  const DADOS_PADRAO = {};
+  ESTRUTURA.forEach(e => {
+    DADOS_PADRAO[e.id] = { nome: '', foto: '', matricula: '', cpf: '', nascimento: '', telefone: '', obs: '' };
+  });
+
+  let dados = {};
+  let fotoBase64Editar = '';
+  let editandoId = '';
+
+  function avatarUrl(nome, foto) {
+    if (foto) return foto;
+    if (!nome) return `https://ui-avatars.com/api/?name=?&background=1565a8&color=fff&size=80&bold=true`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=1565a8&color=fff&size=80&bold=true`;
+  }
+  function fmtData(d) { if(!d) return null; const [a,m,dia]=d.split('-'); return `${dia}/${m}/${a}`; }
+  function loading(show, txt) {
+    document.getElementById('loadingTxt').textContent = txt||'Carregando...';
+    document.getElementById('loadingOverlay').classList.toggle('ativo', show);
+  }
+
+  // FIREBASE
+  async function carregarDados() {
+    loading(true, 'Carregando organograma...');
+    try {
+      const snap = await getDoc(doc(db, "prefeitura", "dados"));
+      if (snap.exists()) { dados = snap.data(); }
+      else { dados = JSON.parse(JSON.stringify(DADOS_PADRAO)); await setDoc(doc(db,"prefeitura","dados"), dados); }
+    } catch(e) { console.error(e); dados = JSON.parse(JSON.stringify(DADOS_PADRAO)); }
+    loading(false);
+    renderOrganograma();
+  }
+
+  window.salvarTudo = async function() {
+    const btn=document.getElementById('btnSalvar'), aviso=document.getElementById('avisoSalvar');
+    btn.disabled=true; btn.textContent='⏳ Salvando...'; aviso.style.display='none';
+    try {
+      await setDoc(doc(db,"prefeitura","dados"), dados);
+      aviso.textContent='✅ Salvo!'; aviso.className='aviso-salvar sucesso'; aviso.style.display='block';
+    } catch(e) {
+      aviso.textContent='❌ Erro ao salvar.'; aviso.className='aviso-salvar erro'; aviso.style.display='block';
+    }
+    btn.disabled=false; btn.textContent='💾 Salvar no Firebase';
+    setTimeout(()=>aviso.style.display='none', 4000);
+  };
+
+  // RENDER ORGANOGRAMA
+  function nodeHTML(id) {
+    const e = ESTRUTURA.find(x=>x.id===id);
+    const d = dados[id]||{};
+    const nomeExtra = d.nome ? `<div style="font-size:0.7rem;margin-top:4px;opacity:0.7">${d.nome}</div>` : '';
+    const linkExtra = e.link ? `<div class="node-link">🔗 Clique para ver o organograma →</div>` : '';
+    const extranoClick = e.externo ? '' : `onclick="abrirPerfil('${id}')"`;
+    const cursor = e.externo ? 'cursor:default' : '';
+    return `<div class="org-node nivel-${e.nivel}${e.externo?' externo':''}" ${extranoClick} style="${cursor}">
+      <div class="node-titulo">${e.titulo}</div>
+      <div class="node-sub">${e.sub}</div>
+      ${nomeExtra}
+      ${linkExtra}
+    </div>`;
+  }
+
+  function connector(height=32, dashed=false) {
+    return `<div style="width:2px;height:${height}px;background:${dashed?'none':'var(--azul-claro)'};${dashed?'border-left:2px dashed var(--cinza-claro)':''};margin:0 auto"></div>`;
+  }
+
+  function hLine(dashed=false) {
+    return `<div style="position:absolute;top:0;left:0;right:0;height:2px;${dashed?'border-top:2px dashed var(--cinza-claro)':'background:var(--azul-claro)'}"></div>`;
+  }
+
+  function renderOrganograma() {
+    const main = document.getElementById('orgMain');
+    main.innerHTML = `
+      <!-- NÍVEL 1: Prefeito + Vice lado a lado -->
+      <div style="display:flex;justify-content:center;gap:60px;align-items:flex-start;width:100%;position:relative">
+        <!-- Prefeito -->
+        <div style="display:flex;flex-direction:column;align-items:center">
+          ${nodeHTML('prefeito')}
+          ${connector(32)}
+          <!-- Linha H conectando Gabinete e Vereadores -->
+          <div style="position:relative;display:flex;align-items:flex-start;gap:0">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              ${nodeHTML('gabinete')}
+              ${connector(32)}
+              ${nodeHTML('secretarias')}
+              ${connector(32)}
+              ${nodeHTML('simplifica')}
+            </div>
+            <!-- Linha horizontal dashed para vereadores -->
+            <div style="display:flex;align-items:flex-start;margin-top:24px">
+              <div style="width:48px;height:2px;background:none;border-top:2px dashed var(--cinza-claro);margin-top:24px"></div>
+              <div style="display:flex;flex-direction:column;align-items:center">
+                ${nodeHTML('vereadores')}
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Vice-Prefeito -->
+        <div style="display:flex;flex-direction:column;align-items:center;margin-top:0">
+          ${nodeHTML('viceprefeito')}
+        </div>
+      </div>
+    `;
+    // Clique no Simplifica abre o organograma
+    main.querySelector('.nivel-4')?.addEventListener('click', () => window.location.href='index.html');
+    renderListaAdmin();
+  }
+
+  // PERFIL
+  window.abrirPerfil = function(id) {
+    const e = ESTRUTURA.find(x=>x.id===id);
+    const d = dados[id]||{};
+    const foto = document.getElementById('perfilFoto');
+    foto.src = avatarUrl(d.nome||e.titulo, d.foto);
+    foto.onerror = () => foto.src = avatarUrl(d.nome||e.titulo,'');
+    document.getElementById('perfilNome').textContent = d.nome || e.titulo;
+    document.getElementById('perfilCargo').textContent = e.titulo.toUpperCase();
+    document.getElementById('perfilSetor').textContent = e.sub;
+    const campos = [
+      {label:'Matrícula', valor:d.matricula||null},
+      {label:'Telefone', valor:d.telefone||null},
+      {label:'Nascimento', valor:fmtData(d.nascimento)},
+      {label:'CPF', valor:d.cpf||null, full:true},
+      d.obs?{label:'Observação', valor:d.obs, full:true}:null,
+    ].filter(Boolean);
+    document.getElementById('perfilGrid').innerHTML = campos.map(c =>
+      `<div class="perfil-item${c.full?' full':''}">
+        <div class="perfil-label">${c.label}</div>
+        <div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div>
+      </div>`).join('');
+    document.getElementById('modalPerfil').classList.add('aberto');
+  };
+  window.fecharPerfil = () => document.getElementById('modalPerfil').classList.remove('aberto');
+
+  // LOGIN
+  window.abrirLogin = () => { document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
+  window.fecharLogin = () => { document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
+  window.verificarSenha = () => {
+    if(document.getElementById('senhaInput').value===SENHA_ADMIN){ fecharLogin(); abrirPainel(); }
+    else { document.getElementById('erroSenha').style.display='block'; document.getElementById('senhaInput').value=''; document.getElementById('senhaInput').focus(); }
+  };
+
+  // PAINEL
+  window.abrirPainel = () => { document.getElementById('painelAdmin').classList.add('aberto'); renderListaAdmin(); };
+  window.fecharPainel = () => document.getElementById('painelAdmin').classList.remove('aberto');
+
+  function renderListaAdmin() {
+    document.getElementById('listaAdmin').innerHTML = ESTRUTURA.map(e => {
+      const d = dados[e.id]||{};
+      return `<div class="item-admin">
+        <img src="${avatarUrl(d.nome||e.titulo, d.foto)}" onerror="this.src='${avatarUrl(e.titulo,'')}'" alt="${e.titulo}">
+        <div class="item-admin-info">
+          <strong>${e.titulo}${d.nome?' — '+d.nome:''}</strong>
+          <span>${e.sub}${d.matricula?' · Mat: '+d.matricula:''}</span>
+        </div>
+        <div class="item-admin-acoes">
+          <button class="btn-edit" onclick="abrirEditar('${e.id}')">✏️ Editar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // EDITAR
+  window.abrirEditar = function(id) {
+    editandoId = id; fotoBase64Editar = '';
+    const e = ESTRUTURA.find(x=>x.id===id);
+    const d = dados[id]||{};
+    document.getElementById('editarSubtitle').textContent = e.titulo + ' — ' + e.sub;
+    document.getElementById('editarNome').value = d.nome||'';
+    document.getElementById('editarCargo').value = e.titulo;
+    document.getElementById('editarMatricula').value = d.matricula||'';
+    document.getElementById('editarTelefone').value = d.telefone||'';
+    document.getElementById('editarCpf').value = d.cpf||'';
+    document.getElementById('editarNascimento').value = d.nascimento||'';
+    document.getElementById('editarObs').value = d.obs||'';
+    document.getElementById('editarFotoUrl').value = (d.foto&&!d.foto.startsWith('data:'))?d.foto:'';
+    const prev = document.getElementById('editarFotoPreview');
+    if(d.foto){ prev.src=d.foto; prev.classList.add('visivel'); document.getElementById('editarFotoTxt').style.display='none'; }
+    else { prev.classList.remove('visivel'); document.getElementById('editarFotoTxt').style.display=''; }
+    document.getElementById('modalEditar').classList.add('aberto');
+  };
+  window.fecharEditar = () => { document.getElementById('modalEditar').classList.remove('aberto'); document.getElementById('editarFotoArquivo').value=''; fotoBase64Editar=''; };
+  window.previewFotoEditar = function(input) {
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{ fotoBase64Editar=e.target.result; const prev=document.getElementById('editarFotoPreview'); prev.src=fotoBase64Editar; prev.classList.add('visivel'); document.getElementById('editarFotoTxt').style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+  window.salvarEdicao = function() {
+    if(!editandoId) return;
+    const nome = document.getElementById('editarNome').value.trim();
+    const fotoAtual = dados[editandoId]?.foto||'';
+    dados[editandoId] = {
+      nome,
+      foto: fotoBase64Editar || document.getElementById('editarFotoUrl').value.trim() || fotoAtual,
+      matricula: document.getElementById('editarMatricula').value.trim(),
+      telefone: document.getElementById('editarTelefone').value.trim(),
+      cpf: document.getElementById('editarCpf').value.trim(),
+      nascimento: document.getElementById('editarNascimento').value,
+      obs: document.getElementById('editarObs').value.trim(),
+    };
+    fecharEditar(); renderOrganograma();
+  };
+
+  ['modalPerfil','modalLogin','modalEditar'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditar') fecharEditar(); else fecharLogin(); } });
+  });
+
+  carregarDados();
+</script>
+</body>
+</html>
