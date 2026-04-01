@@ -205,6 +205,24 @@
   </div>
 </div>
 
+<!-- MODAL EDITAR SETOR -->
+<div class="modal-overlay" id="modalEditarSetor">
+  <div class="modal-editar">
+    <h2>✏️ Editar Setor</h2>
+    <input type="hidden" id="editarSetorEditIdx">
+    <div class="field-label">Nome do setor</div>
+    <input type="text" id="editarSetorNome" placeholder="Ex: Recursos Humanos">
+    <div class="field-label">Telefone geral</div>
+    <input type="text" id="editarSetorTelEdit" placeholder="Ex: 3380-7062">
+    <div class="field-label">WhatsApp do setor</div>
+    <input type="text" id="editarSetorWppEdit" placeholder="Ex: 47991798758 (só números)">
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="salvarEdicaoSetor()">💾 Salvar</button>
+      <button class="btn-secondary" onclick="fecharEditarSetor()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EDITAR RAMAL -->
 <div class="modal-overlay" id="modalEditar">
   <div class="modal-editar">
@@ -243,6 +261,9 @@
         </div>
       </div>
     </div>
+
+    <h3>🏢 Setores cadastrados</h3>
+    <div class="lista-admin" id="listaSetoresAdmin"></div>
 
     <h3>➕ Adicionar Ramal</h3>
     <div class="form-section">
@@ -404,7 +425,7 @@
   };
 
   // PAINEL
-  window.abrirPainel = () => { document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); };
+  window.abrirPainel = () => { document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); };
   window.fecharPainel = () => document.getElementById('painelAdmin').classList.remove('aberto');
 
   function popularSelects() {
@@ -432,6 +453,46 @@
     ramais[si].pessoas.push({nome, ramal, wpp});
     document.getElementById('novaNome').value=''; document.getElementById('novoRamal').value=''; document.getElementById('novoWpp').value='';
     renderListaAdmin(); renderTudo();
+  };
+
+  function renderListaSetoresAdmin() {
+    const lista = document.getElementById('listaSetoresAdmin');
+    if(!lista) return;
+    lista.innerHTML = ramais.map((s,si)=>`
+      <div class="item-admin">
+        <div class="item-admin-info">
+          <strong>${s.nome}</strong>
+          <span>${s.tel?'☎️ '+s.tel:'Sem telefone'}${s.wpp?' · 💬 '+s.wpp:''} · ${s.pessoas.length} ramal(is)</span>
+        </div>
+        <div class="item-admin-acoes">
+          <button class="btn-edit" onclick="abrirEditarSetor(${si})">✏️ Editar</button>
+          <button class="btn-del" onclick="removerSetor(${si})">✕ Remover</button>
+        </div>
+      </div>`).join('') || '<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhum setor.</div>';
+  }
+
+  window.abrirEditarSetor = function(si) {
+    document.getElementById('editarSetorEditIdx').value = si;
+    document.getElementById('editarSetorNome').value = ramais[si].nome||'';
+    document.getElementById('editarSetorTelEdit').value = ramais[si].tel||'';
+    document.getElementById('editarSetorWppEdit').value = ramais[si].wpp||'';
+    document.getElementById('modalEditarSetor').classList.add('aberto');
+  };
+  window.fecharEditarSetor = () => document.getElementById('modalEditarSetor').classList.remove('aberto');
+  window.salvarEdicaoSetor = function() {
+    const si = document.getElementById('editarSetorEditIdx').value;
+    const nome = document.getElementById('editarSetorNome').value.trim();
+    if(!nome) return alert('Digite o nome do setor.');
+    ramais[si].nome = nome;
+    ramais[si].tel = document.getElementById('editarSetorTelEdit').value.trim();
+    ramais[si].wpp = document.getElementById('editarSetorWppEdit').value.trim();
+    fecharEditarSetor(); popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); renderTudo();
+  };
+  window.removerSetor = function(si) {
+    const qtd = ramais[si].pessoas.length;
+    if(!confirm(`Remover setor "${ramais[si].nome}"${qtd>0?' e seus '+qtd+' ramal(is)':''}?`)) return;
+    ramais.splice(si,1);
+    popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); renderTudo();
   };
 
   window.renderListaAdmin = function() {
@@ -490,8 +551,8 @@
   };
 
   // Fechar ao clicar fora
-  ['modalLogin','modalEditar'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalLogin') fecharLogin(); else fecharEditar(); } });
+  ['modalLogin','modalEditar','modalEditarSetor'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalLogin') fecharLogin(); else if(id==='modalEditarSetor') fecharEditarSetor(); else fecharEditar(); } });
   });
 
   carregarDados();
