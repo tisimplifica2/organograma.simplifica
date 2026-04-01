@@ -67,6 +67,9 @@
   .ramal-nome { flex: 1; font-size: 0.88rem; font-weight: 500; color: var(--cinza); }
   .ramal-num { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--azul); background: var(--fundo-escuro); padding: 4px 12px; border-radius: 8px; white-space: nowrap; min-width: 60px; text-align: center; }
   .ramal-num.vazio { color: var(--cinza-claro); background: #f5f5f5; font-weight: 400; font-size: 0.78rem; }
+  .ramal-wpp { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: #dcfce7; border-radius: 8px; text-decoration: none; font-size: 1rem; flex-shrink: 0; transition: background 0.15s; }
+  .ramal-wpp:hover { background: #bbf7d0; }
+  .setor-wpp { font-size: 0.7rem; color: #16a34a; margin-top: 1px; }
 
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
@@ -212,6 +215,8 @@
     <input type="text" id="editarNome" placeholder="Nome da pessoa">
     <div class="field-label">Ramal</div>
     <input type="text" id="editarRamal" placeholder="Ex: 7041">
+    <div class="field-label">WhatsApp (opcional)</div>
+    <input type="text" id="editarWpp" placeholder="Ex: 47991798758 (só números)">
     <div class="modal-btns">
       <button class="btn-primary" onclick="salvarEdicao()">💾 Salvar</button>
       <button class="btn-secondary" onclick="fecharEditar()">Cancelar</button>
@@ -232,6 +237,7 @@
       <div class="form-grid">
         <div><div class="field-label">Nome do setor</div><input type="text" id="novoSetorNome" placeholder="Ex: Recursos Humanos"></div>
         <div><div class="field-label">Telefone geral (opcional)</div><input type="text" id="novoSetorTel" placeholder="Ex: 3380-7062"></div>
+        <div><div class="field-label">WhatsApp do setor (opcional)</div><input type="text" id="novoSetorWpp" placeholder="Ex: 47991798758 (só números)"></div>
         <div class="form-full" style="display:flex;justify-content:flex-end">
           <button class="btn-add" onclick="adicionarSetor()">+ Adicionar Setor</button>
         </div>
@@ -249,7 +255,10 @@
           <div class="field-label">Ramal</div>
           <input type="text" id="novoRamal" placeholder="Ex: 7041">
         </div>
-        <div></div>
+        <div>
+          <div class="field-label">WhatsApp (opcional)</div>
+          <input type="text" id="novoWpp" placeholder="Ex: 47991798758">
+        </div>
       </div>
       <div style="margin-top:12px">
         <div class="field-label">Setor</div>
@@ -339,16 +348,21 @@
       card.className = 'setor-card';
       card.dataset.si = si;
       const telHTML = s.tel ? `<div class="setor-tel">☎️ ${s.tel}</div>` : '';
-      const linhas = s.pessoas.map((p, pi) =>
-        `<div class="ramal-item" data-nome="${p.nome.toLowerCase()}" data-ramal="${p.ramal}">
+      const wppSetorHTML = s.wpp ? `<div class="setor-wpp">💬 WhatsApp: ${s.wpp}</div>` : '';
+      const linhas = s.pessoas.map((p, pi) => {
+        const wppBtn = p.wpp ? `<a class="ramal-wpp" href="https://wa.me/55${p.wpp.replace(/\D/g,'')}" target="_blank" title="WhatsApp">💬</a>` : '';
+        return `<div class="ramal-item" data-nome="${p.nome.toLowerCase()}" data-ramal="${p.ramal}">
           <span class="ramal-nome">${p.nome}</span>
+          ${wppBtn}
           <span class="ramal-num${!p.ramal?' vazio':''}">${p.ramal||'—'}</span>
-        </div>`).join('');
+        </div>`;
+      }).join('');
       card.innerHTML = `
         <div class="setor-header" onclick="toggleSetor(this)">
           <div style="flex:1">
             <div class="setor-titulo">${s.nome}</div>
             ${telHTML}
+            ${wppSetorHTML}
           </div>
           <span class="setor-count">${s.pessoas.length}</span>
           <span class="setor-toggle">▼</span>
@@ -403,18 +417,20 @@
     const nome = document.getElementById('novoSetorNome').value.trim();
     if(!nome) return alert('Digite o nome do setor.');
     const tel = document.getElementById('novoSetorTel').value.trim();
-    ramais.push({nome, tel, pessoas:[]});
-    document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorTel').value='';
+    const wpp = document.getElementById('novoSetorWpp').value.trim();
+    ramais.push({nome, tel, wpp, pessoas:[]});
+    document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorTel').value=''; document.getElementById('novoSetorWpp').value='';
     popularSelects(); renderListaAdmin(); renderTudo();
   };
 
   window.adicionarRamal = function() {
     const nome = document.getElementById('novaNome').value.trim();
     const ramal = document.getElementById('novoRamal').value.trim();
+    const wpp = document.getElementById('novoWpp').value.trim();
     const si = document.getElementById('novoSetorRamal').value;
     if(!nome||si==='') return alert('Preencha nome e setor.');
-    ramais[si].pessoas.push({nome, ramal});
-    document.getElementById('novaNome').value=''; document.getElementById('novoRamal').value='';
+    ramais[si].pessoas.push({nome, ramal, wpp});
+    document.getElementById('novaNome').value=''; document.getElementById('novoRamal').value=''; document.getElementById('novoWpp').value='';
     renderListaAdmin(); renderTudo();
   };
 
@@ -426,7 +442,7 @@
       lista.innerHTML = `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--azul);padding:8px 0 4px">${s.nome}</div>` +
         s.pessoas.map((p,pi)=>`
           <div class="item-admin">
-            <div class="item-admin-info"><strong>${p.nome}</strong><span>Ramal: ${p.ramal||'—'}</span></div>
+            <div class="item-admin-info"><strong>${p.nome}</strong><span>Ramal: ${p.ramal||'—'}${p.wpp?' · 💬 '+p.wpp:''}</span></div>
             <div class="item-admin-acoes">
               <button class="btn-edit" onclick="abrirEditar(${filtro},${pi})">✏️</button>
               <button class="btn-del" onclick="removerRamal(${filtro},${pi})">✕</button>
@@ -458,6 +474,7 @@
     document.getElementById('editarPessoaIdx').value = pi;
     document.getElementById('editarNome').value = ramais[si].pessoas[pi].nome;
     document.getElementById('editarRamal').value = ramais[si].pessoas[pi].ramal;
+    document.getElementById('editarWpp').value = ramais[si].pessoas[pi].wpp||'';
     document.getElementById('modalEditar').classList.add('aberto');
   };
   window.fecharEditar = () => document.getElementById('modalEditar').classList.remove('aberto');
@@ -467,7 +484,8 @@
     const nome = document.getElementById('editarNome').value.trim();
     const ramal = document.getElementById('editarRamal').value.trim();
     if(!nome) return alert('Digite o nome.');
-    ramais[si].pessoas[pi] = {nome, ramal};
+    const wpp = document.getElementById('editarWpp').value.trim();
+    ramais[si].pessoas[pi] = {nome, ramal, wpp};
     fecharEditar(); renderListaAdmin(); renderTudo();
   };
 
