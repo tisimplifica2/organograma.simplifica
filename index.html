@@ -51,12 +51,77 @@
   .busca-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; pointer-events: none; }
 
   .main { padding: 36px 40px; }
-  .diretor-wrap { display: flex; justify-content: center; margin-bottom: 48px; }
-  .card-diretor { background: var(--azul); color: white; border-radius: var(--radius); padding: 24px 40px; display: flex; align-items: center; gap: 20px; box-shadow: var(--sombra-hover); min-width: 260px; cursor: pointer; transition: transform 0.2s; }
-  .card-diretor:hover { transform: translateY(-2px); }
-  .card-diretor img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid var(--azul-neon); }
-  .card-diretor .nome { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; }
-  .card-diretor .cargo { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--azul-neon); margin-top: 2px; }
+
+  /* ── ALTERAÇÃO 1: .avatar-img ──────────────────────────────────
+     Classe utilitária para todos os avatares gerados dinamicamente.
+     Substitui emojis hardcoded; basta preencher o atributo src.
+  ──────────────────────────────────────────────────────────────── */
+  .avatar-img {
+    display: block;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: inherit;        /* herda o border-radius do container */
+  }
+
+  /* ── ALTERAÇÃO 2: Diretoria como accordion destacado ───────────
+     Remove o card fixo (.diretor-wrap/.card-diretor) e substitui
+     por um setor-card colapsável com identidade visual única:
+     gradiente mais escuro + borda dourada/neon de destaque.
+  ──────────────────────────────────────────────────────────────── */
+  .diretoria-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--sombra-hover);          /* sombra mais forte = hierarquia */
+    overflow: hidden;
+    margin-bottom: 20px;
+    /* Borda neon sutil sinalizando importância */
+    border: 2px solid var(--azul-neon);
+  }
+  .diretoria-header {
+    background: linear-gradient(135deg, #0d3561 0%, var(--azul) 100%); /* gradiente mais escuro */
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: filter 0.2s;
+  }
+  .diretoria-header:hover { filter: brightness(1.12); }
+  /* Ícone circular do diretor no header */
+  .diretoria-avatar-wrap {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2.5px solid var(--azul-neon);
+    flex-shrink: 0;
+    background: var(--fundo-escuro);
+  }
+  .diretoria-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.97rem;
+    font-weight: 800;
+    color: white;
+    flex: 1;
+    line-height: 1.2;
+  }
+  .diretoria-subtitulo {
+    font-size: 0.72rem;
+    color: var(--azul-neon);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 2px;
+  }
+  .diretoria-toggle {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+    transition: transform 0.3s;
+  }
+  .diretoria-card.aberto .diretoria-toggle { transform: rotate(180deg); }
+  /* Body colapsável — mesmo padrão do .pessoas-lista */
+  .diretoria-body { display: none; }
+  .diretoria-card.aberto .diretoria-body { display: block; }
 
   .setores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; align-items: start; }
   .setor-card { background: white; border-radius: var(--radius); box-shadow: var(--sombra); overflow: hidden; }
@@ -301,13 +366,82 @@
 </div>
 
 <div class="main">
-  <div class="diretor-wrap">
-    <div class="card-diretor" onclick="abrirPerfilDiretor()">
-      <img id="fotoDiretor" src="https://tisimplifica2.github.io/imagens/murilo.jpg" alt="Murilo"
-        onerror="this.src='https://ui-avatars.com/api/?name=Murilo&background=1565a8&color=fff&size=80'">
-      <div><div class="nome" id="diretorNomeCard">Murilo</div><div class="cargo" id="diretorCargoCard">Diretor</div></div>
+
+  <!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  ALTERAÇÃO 2 — Seção "Simplifica - Diretoria"               ║
+  ║  Removido: card fixo (.diretor-wrap/.card-diretor)          ║
+  ║  Substituído por: accordion colapsável (.diretoria-card)    ║
+  ║  com destaque visual (borda neon + gradiente escuro).       ║
+  ║                                                              ║
+  ║  ALTERAÇÃO 1 — Emojis → <img class="avatar-img">            ║
+  ║  A foto do diretor agora usa .avatar-img dentro de          ║
+  ║  .diretoria-avatar-wrap. O src é preenchido via JS          ║
+  ║  (id="fotoDiretor"), sem emoji hardcoded.                   ║
+  ╚══════════════════════════════════════════════════════════════╝
+  -->
+  <div class="diretoria-card" id="diretoriaCard">
+
+    <!-- HEADER — clicável para abrir/fechar -->
+    <div class="diretoria-header" onclick="toggleDiretoria()">
+
+      <!--
+        ALTERAÇÃO 1 — Avatar via <img class="avatar-img">
+        src vazio; preenchido dinamicamente por renderOrganograma().
+        Para trocar a foto, basta mudar o src no Admin ou no Firebase.
+      -->
+      <div class="diretoria-avatar-wrap">
+        <img
+          id="fotoDiretor"
+          class="avatar-img"
+          src=""
+          alt="Foto do Diretor"
+          onerror="this.src='https://ui-avatars.com/api/?name=Diretor&background=0d3561&color=fff&size=88&bold=true'"
+        >
+      </div>
+
+      <!-- Título e subtítulo da seção -->
+      <div style="flex:1;min-width:0">
+        <div class="diretoria-titulo">Simplifica — Diretoria</div>
+        <div class="diretoria-subtitulo" id="diretorCargoCard">Diretor</div>
+      </div>
+
+      <!-- Badge de contagem (fixo em "1 pessoa") -->
+      <span class="setor-count">1 pessoa</span>
+
+      <!-- Chevron animado -->
+      <span class="diretoria-toggle">▼</span>
     </div>
-  </div>
+
+    <!-- BODY colapsável — mesmo padrão do .pessoas-lista -->
+    <div class="diretoria-body">
+      <!--
+        Linha de pessoa com .pessoa-item — reutiliza os estilos
+        existentes sem nenhuma alteração de CSS adicional.
+      -->
+      <div class="pessoa-item" onclick="abrirPerfilDiretor()">
+        <!--
+          ALTERAÇÃO 1 — Avatar via <img class="pessoa-avatar avatar-img">
+          src preenchido via JS (id="fotoDiretorInner").
+        -->
+        <img
+          id="fotoDiretorInner"
+          class="pessoa-avatar avatar-img"
+          src=""
+          alt="Foto do Diretor"
+          onerror="this.src='https://ui-avatars.com/api/?name=Diretor&background=0d3561&color=fff&size=128&bold=true'"
+        >
+        <div class="pessoa-info">
+          <div class="pessoa-nome" id="diretorNomeCard">—</div>
+          <div class="pessoa-cargo" id="diretorCargoInner">Diretor</div>
+        </div>
+        <!-- Badge de turno (preenchido por JS) -->
+        <span class="turno-badge turno-int" id="diretorTurnoBadge">🕐 Int.</span>
+      </div>
+    </div>
+
+  </div><!-- /.diretoria-card -->
+
   <div class="setores-grid" id="setoresGrid"></div>
 </div>
 
@@ -753,6 +887,14 @@
   }
 
   function fmtData(d) { if (!d) return null; const [a,m,dia]=d.split('-'); return `${dia}/${m}/${a}`; }
+  function calcularIdade(d) {
+    if (!d) return null;
+    const hoje = new Date(), nasc = new Date(d);
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+    return idade;
+  }
   function loading(show, txt) {
     document.getElementById('loadingTxt').textContent=txt||'Carregando...';
     document.getElementById('loadingOverlay').classList.toggle('ativo',show);
@@ -789,12 +931,31 @@
     document.getElementById('totalPessoas').textContent=pessoas.length;
     document.getElementById('totalSetores').textContent=setores.length;
 
-    // Atualiza card do diretor
-    const fd = document.getElementById('fotoDiretor');
-    fd.src = diretor.foto || avatarUrl(diretor.nome,'');
-    fd.onerror = () => fd.src = avatarUrl(diretor.nome,'');
-    document.getElementById('diretorNomeCard').textContent = diretor.nome || 'Diretor';
+    // ── ALTERAÇÃO 2 + 1: preenche o accordion da Diretoria ─────
+    // Atualiza AMBAS as imagens: header (fotoDiretor) e body (fotoDiretorInner)
+    const fotoSrc = diretor.foto || avatarUrl(diretor.nome, '');
+    const fdHeader = document.getElementById('fotoDiretor');
+    const fdBody   = document.getElementById('fotoDiretorInner');
+    [fdHeader, fdBody].forEach(el => {
+      el.src = fotoSrc;
+      el.alt = diretor.nome || 'Diretor';
+      el.onerror = () => { el.src = avatarUrl(diretor.nome, ''); };
+    });
+    document.getElementById('diretorNomeCard').textContent  = diretor.nome  || 'Diretor';
     document.getElementById('diretorCargoCard').textContent = diretor.cargo || 'Diretor';
+    document.getElementById('diretorCargoInner').textContent= diretor.cargo || 'Diretor';
+    // Badge de turno
+    const tb = document.getElementById('diretorTurnoBadge');
+    if (diretor.turno === 'mat') {
+      tb.className = 'turno-badge turno-mat'; tb.textContent = '☀️ Mat.';
+    } else if (diretor.turno === 'ves') {
+      tb.className = 'turno-badge turno-ves'; tb.textContent = '🌇 Ves.';
+    } else if (diretor.turno === 'int') {
+      tb.className = 'turno-badge turno-int'; tb.textContent = '🕐 Int.';
+    } else {
+      tb.className = ''; tb.textContent = '';
+    }
+    // ──────────────────────────────────────────────────────────
 
     setores.forEach(s => {
       const membros=pessoas.filter(p=>p.setor===s.id);
@@ -803,10 +964,14 @@
       card.className='setor-card';
       card.dataset.setorId=s.id;
       const tagHTML=s.parceiro?`<span class="setor-tag">Parceiro</span>`:'';
-      // Ícone: foto ou emoji
+
+      // ── ALTERAÇÃO 1: ícone do setor via <img class="avatar-img"> ──
+      // Se o setor tiver foto, renderiza APENAS a <img> (sem emoji ao lado).
+      // Se não tiver, usa o emoji como texto — nunca os dois juntos.
       const iconeHTML = s.foto
-        ? `<img src="${s.foto}" alt="${s.nome}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">${s.icone||'📁'}`
-        : (s.icone||'📁');
+        ? `<img class="avatar-img" src="${s.foto}" alt="${s.nome}">`
+        : (s.icone || '📁');
+      // ────────────────────────────────────────────────────────────
 
       const pessoasHTML=membros.map(mb=>{
         const turnoClass=mb.turno==='mat'?'turno-mat-item':mb.turno==='ves'?'turno-ves-item':mb.turno==='int'?'turno-int-item':'';
@@ -818,7 +983,11 @@
         const obsHTML=mb.obs?`<div class="pessoa-obs">📌 ${mb.obs}</div>`:'';
         const idx=pessoas.indexOf(mb);
         return `<div class="pessoa-item ${turnoClass}" data-nome="${mb.nome.toLowerCase()}" onclick="abrirPerfil(${idx})">
-          <img class="pessoa-avatar" src="${avatarUrl(mb.nome,mb.foto)}" alt="${mb.nome}" onerror="this.src='${avatarUrl(mb.nome,'')}'" loading="lazy">
+          <!--
+            ALTERAÇÃO 1 — avatar via <img class="pessoa-avatar avatar-img">
+            src preenchido dinamicamente; src vazio = placeholder automático.
+          -->
+          <img class="pessoa-avatar avatar-img" src="${avatarUrl(mb.nome,mb.foto)}" alt="${mb.nome}" onerror="this.src='${avatarUrl(mb.nome,'')}'" loading="lazy">
           <div class="pessoa-info">
             <div class="pessoa-nome">${mb.nome}</div>
             <div class="pessoa-cargo">${mb.cargo}</div>
@@ -842,6 +1011,12 @@
     });
   }
 
+  // ── ALTERAÇÃO 2: toggle do accordion da Diretoria ────────────
+  window.toggleDiretoria = function() {
+    document.getElementById('diretoriaCard').classList.toggle('aberto');
+  };
+  // ─────────────────────────────────────────────────────────────
+
   // FIX EXPANDIR: apenas o card clicado
   window.toggleSetor = function(header) {
     header.closest('.setor-card').classList.toggle('aberto');
@@ -850,6 +1025,19 @@
   // BUSCA POR NOME
   window.buscarPessoa = function(termo) {
     const t=termo.toLowerCase().trim();
+
+    // ── ALTERAÇÃO 2: busca também na Diretoria ────────────────
+    const diretorCard = document.getElementById('diretoriaCard');
+    const diretorNome = (document.getElementById('diretorNomeCard').textContent||'').toLowerCase();
+    if (t) {
+      const bate = diretorNome.includes(t);
+      diretorCard.classList.toggle('aberto', bate);
+      diretorCard.style.display = bate ? '' : 'none';
+    } else {
+      diretorCard.style.display = '';
+    }
+    // ──────────────────────────────────────────────────────────
+
     document.querySelectorAll('.setor-card').forEach(card=>{
       let temVisivel=false;
       card.querySelectorAll('.pessoa-item').forEach(item=>{
