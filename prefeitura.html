@@ -3,519 +3,640 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Organograma da Prefeitura — Timbó</title>
+<title>Organograma — Prefeitura de Timbó</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --azul:#1565a8;--azul-claro:#1e7ecf;--azul-neon:#5ab4f0;--azul-esc:#0d3d6e;
-    --fundo:#f0f5fb;--fundo-escuro:#dce8f5;--cinza:#2d3a4a;--cinza-claro:#7a8fa6;
-    --branco:#ffffff;--sombra:0 4px 24px rgba(21,101,168,0.10);
-    --sombra-hover:0 8px 32px rgba(21,101,168,0.18);--radius:14px;--linha:#93c5e8;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--fundo);color:var(--cinza);min-height:100vh;}
-  header{background:var(--azul);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:70px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.15);}
-  .header-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:white;display:flex;align-items:center;gap:10px;}
-  .header-logo span{background:var(--azul-neon);color:var(--azul);padding:2px 8px;border-radius:6px;font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-  .header-actions{display:flex;gap:10px;align-items:center;}
-  .btn-header{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;padding:7px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all 0.2s;}
-  .btn-header:hover{background:rgba(255,255,255,0.28);}
-  .btn-admin{background:var(--azul-neon);color:var(--azul);border:none;padding:7px 16px;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
-  .btn-admin:hover{background:white;}
-  .tabs-bar{background:white;border-bottom:1px solid var(--fundo-escuro);padding:0 40px;display:flex;gap:4px;}
-  .tab-btn{padding:12px 18px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--cinza-claro);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all 0.2s;}
-  .tab-btn.ativo{color:var(--azul);border-bottom-color:var(--azul);font-weight:600;}
-  .tab-content{display:none;}.tab-content.ativo{display:block;}
-  .hero{background:linear-gradient(135deg,var(--azul) 0%,var(--azul-esc) 100%);padding:40px 40px 36px;color:white;position:relative;overflow:hidden;}
-  .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:280px;height:280px;border-radius:50%;background:rgba(90,180,240,0.08);}
-  .hero h1{font-family:'Syne',sans-serif;font-size:2.1rem;font-weight:800;line-height:1.1;margin-bottom:6px;position:relative;}
-  .hero p{color:rgba(255,255,255,0.65);font-size:0.9rem;position:relative;}
-  /* ORGANOGRAMA */
-  .org-wrap{padding:48px 32px 64px;overflow-x:auto;}
-  .org-tree{display:flex;flex-direction:column;align-items:center;gap:0;min-width:700px;}
-  .node{display:inline-flex;flex-direction:column;align-items:center;background:white;border-radius:var(--radius);padding:13px 22px;box-shadow:var(--sombra);text-align:center;cursor:pointer;transition:box-shadow 0.2s,transform 0.18s;min-width:140px;position:relative;}
-  .node:hover{box-shadow:var(--sombra-hover);transform:translateY(-2px);}
-  .node-titulo{font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;line-height:1.2;}
-  .node-sub{font-size:0.68rem;margin-top:3px;opacity:0.7;}
-  .node-pessoa{font-size:0.72rem;margin-top:4px;font-weight:500;}
-  .node-foto{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--fundo-escuro);margin-bottom:8px;}
-  .node.lv1{background:var(--azul-esc);color:white;padding:16px 32px;min-width:160px;}
-  .node.lv1 .node-sub{color:rgba(255,255,255,0.6);}
-  .node.lv2{background:var(--azul);color:white;}
-  .node.lv2 .node-sub{color:rgba(255,255,255,0.6);}
-  .node.lv3{background:white;border:2px solid var(--fundo-escuro);}
-  .node.redirect{background:var(--azul-neon);color:var(--azul);border:none;}
-  .node.redirect .node-sub{color:rgba(21,101,168,0.65);}
-  .node.no-click{cursor:default!important;}
-  .node.no-click:hover{transform:none;box-shadow:var(--sombra);}
-  .v-line{width:2px;height:32px;background:var(--linha);margin:0 auto;}
-  .v-line.short{height:18px;}
-  .setor-exp{background:white;border-radius:var(--radius);box-shadow:var(--sombra);overflow:hidden;min-width:150px;max-width:210px;}
-  .setor-exp-header{background:linear-gradient(135deg,var(--azul) 0%,#1257a0 100%);padding:11px 14px;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .setor-exp-header:hover{filter:brightness(1.1);}
-  .setor-exp-titulo{font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;color:white;flex:1;line-height:1.2;}
-  .setor-exp-count{font-size:0.65rem;background:rgba(255,255,255,0.2);color:white;padding:1px 6px;border-radius:8px;white-space:nowrap;}
-  .setor-exp-toggle{color:rgba(255,255,255,0.8);font-size:0.72rem;transition:transform 0.3s;flex-shrink:0;}
-  .setor-exp.aberto .setor-exp-toggle{transform:rotate(180deg);}
-  .setor-exp-body{display:none;}
-  .setor-exp.aberto .setor-exp-body{display:block;}
-  .setor-pessoa{display:flex;align-items:center;gap:10px;padding:10px 13px;cursor:pointer;transition:background 0.15s;}
-  .setor-pessoa:hover{background:var(--fundo);}
-  .setor-pessoa+.setor-pessoa{border-top:1px solid var(--fundo-escuro);}
-  .setor-pessoa-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--fundo-escuro);flex-shrink:0;background:var(--fundo-escuro);}
-  .setor-pessoa-nome{font-size:0.8rem;font-weight:500;color:var(--cinza);}
-  .setor-pessoa-cargo{font-size:0.65rem;color:var(--cinza-claro);text-transform:uppercase;letter-spacing:0.3px;}
-  /* MODAIS */
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
-  .modal-overlay.aberto{display:flex;}
-  @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-  .modal-perfil{background:white;border-radius:22px;width:90%;max-width:440px;box-shadow:0 24px 60px rgba(0,0,0,0.22);animation:slideUp 0.22s ease;overflow:hidden;max-height:90vh;overflow-y:auto;}
-  .perfil-topo{background:linear-gradient(135deg,var(--azul) 0%,var(--azul-esc) 100%);padding:28px 20px 20px;text-align:center;position:relative;}
-  .perfil-fechar{position:absolute;top:10px;right:12px;background:rgba(255,255,255,0.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;}
-  .perfil-foto{width:90px;height:90px;border-radius:50%;object-fit:cover;object-position:center top;border:3px solid white;margin:0 auto 10px;display:block;}
-  .perfil-nome{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:white;}
-  .perfil-cargo{font-size:0.75rem;color:var(--azul-neon);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
-  .perfil-setor{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:2px;}
-  .perfil-body{padding:18px 20px 22px;}
-  .perfil-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .perfil-item.full{grid-column:1/-1;}
-  .perfil-label{font-size:0.67rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--cinza-claro);margin-bottom:2px;font-weight:600;}
-  .perfil-valor{font-size:0.85rem;color:var(--cinza);font-weight:500;background:var(--fundo);padding:7px 11px;border-radius:7px;word-break:break-word;}
-  .perfil-valor.vazio{color:var(--cinza-claro);font-style:italic;font-weight:400;}
-  .modal-login{background:white;border-radius:18px;padding:32px;width:90%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:slideUp 0.22s ease;}
-  .modal-login h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--azul);margin-bottom:5px;}
-  .modal-login p{font-size:0.85rem;color:var(--cinza-claro);margin-bottom:20px;}
-  .modal-login input{width:100%;padding:11px 14px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--cinza);background:var(--fundo);margin-bottom:10px;}
-  .modal-login input:focus{outline:none;border-color:var(--azul-claro);background:white;}
-  .modal-btns{display:flex;gap:10px;margin-top:6px;}
-  .btn-primary{flex:1;background:var(--azul);color:white;border:none;padding:11px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;}
-  .btn-primary:hover{background:var(--azul-claro);}
-  .btn-secondary{background:var(--fundo);color:var(--cinza);border:none;padding:11px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;}
-  .erro-msg{color:#dc2626;font-size:0.8rem;margin-top:-4px;margin-bottom:8px;display:none;}
-  /* PAINEL */
-  .painel{display:none;position:fixed;inset:0;background:var(--fundo);z-index:200;overflow-y:auto;}
-  .painel.aberto{display:block;}
-  .painel-header{background:var(--azul);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-  .painel-header h2{font-family:'Syne',sans-serif;font-weight:800;color:white;font-size:1.1rem;}
-  .btn-fechar{background:rgba(255,255,255,0.2);border:none;color:white;padding:7px 14px;border-radius:7px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;}
-  .btn-fechar:hover{background:rgba(255,255,255,0.3);}
-  .painel-body{padding:28px 40px;max-width:900px;}
-  .painel-body h3{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--azul);margin-bottom:14px;margin-top:32px;padding-bottom:7px;border-bottom:2px solid var(--fundo-escuro);}
-  .painel-body h3:first-child{margin-top:0;}
-  .form-section{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--sombra);}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .form-full{grid-column:1/-1;}
-  .field-label{font-size:0.7rem;font-weight:600;color:var(--cinza-claro);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
-  .form-section input,.form-section select,.form-section textarea{width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza);transition:border-color 0.2s;}
-  .form-section textarea{resize:vertical;min-height:54px;}
-  .form-section input:focus,.form-section select:focus,.form-section textarea:focus{outline:none;border-color:var(--azul-claro);background:white;}
-  .foto-upload-area{border:2px dashed var(--fundo-escuro);border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:var(--fundo);position:relative;overflow:hidden;margin-bottom:8px;}
-  .foto-upload-area:hover{border-color:var(--azul-claro);background:#e8f2fb;}
-  .foto-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-  .foto-preview{width:56px;height:56px;border-radius:50%;object-fit:cover;margin:0 auto 6px;display:none;border:3px solid var(--azul-neon);}
-  .foto-preview.visivel{display:block;}
-  .foto-upload-txt{font-size:0.75rem;color:var(--cinza-claro);pointer-events:none;}
-  .foto-upload-txt strong{color:var(--azul);}
-  .btn-add{background:var(--azul);color:white;border:none;padding:10px 22px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:background 0.2s;}
-  .btn-add:hover{background:var(--azul-claro);}
-  .lista-admin{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
-  .item-admin{background:white;border-radius:9px;padding:11px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
-  .item-admin img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--fundo-escuro);flex-shrink:0;}
-  .item-admin .icon{width:40px;text-align:center;font-size:1.3rem;flex-shrink:0;}
-  .item-admin-info{flex:1;min-width:0;}
-  .item-admin-info strong{font-size:0.85rem;font-weight:600;color:var(--cinza);display:block;}
-  .item-admin-info span{font-size:0.72rem;color:var(--cinza-claro);}
-  .item-admin-acoes{display:flex;gap:5px;flex-shrink:0;}
-  .btn-del{background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:6px;font-size:0.78rem;cursor:pointer;}
-  .btn-del:hover{background:#fecaca;}
-  .btn-edit{background:#e0f0ff;color:var(--azul);border:none;padding:5px 10px;border-radius:6px;font-size:0.78rem;cursor:pointer;margin-right:3px;}
-  .btn-edit:hover{background:#c7e2fa;}
-  .btn-salvar-tudo{background:var(--azul-neon);color:var(--azul);border:none;padding:13px 28px;border-radius:11px;font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;cursor:pointer;margin-top:28px;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
-  .btn-salvar-tudo:hover{background:white;box-shadow:var(--sombra-hover);}
-  .btn-salvar-tudo:disabled{opacity:0.6;cursor:not-allowed;}
-  .aviso-salvar{padding:11px 14px;border-radius:9px;font-size:0.83rem;margin-top:14px;display:none;}
-  .aviso-salvar.sucesso{background:var(--fundo-escuro);color:var(--azul);}
-  .aviso-salvar.erro{background:#fee2e2;color:#dc2626;}
-  .loading-overlay{display:none;position:fixed;inset:0;background:rgba(240,245,251,0.9);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
-  .loading-overlay.ativo{display:flex;}
-  .spinner{width:44px;height:44px;border:4px solid var(--fundo-escuro);border-top-color:var(--azul);border-radius:50%;animation:spin 0.8s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .loading-txt{font-family:'Syne',sans-serif;font-weight:700;color:var(--azul);font-size:0.88rem;}
-  footer{background:var(--azul);color:rgba(255,255,255,0.6);text-align:center;padding:18px;font-size:0.78rem;margin-top:48px;}
-  footer strong{color:white;}
-  @media(max-width:640px){header{padding:0 16px;}.hero{padding:24px 16px 20px;}.hero h1{font-size:1.5rem;}.painel-body{padding:18px 14px;}.form-grid{grid-template-columns:1fr;}.form-full{grid-column:1;}.perfil-grid{grid-template-columns:1fr;}.perfil-item.full{grid-column:1;}}
+:root {
+  --azul: #1565a8; --azul-claro: #1e7ecf; --azul-neon: #5ab4f0; --azul-esc: #0d3d6e;
+  --fundo: #f0f5fb; --fundo-escuro: #dce8f5;
+  --cinza: #2d3a4a; --cinza-claro: #7a8fa6; --branco: #fff;
+  --sombra: 0 4px 24px rgba(21,101,168,0.10); --sombra-h: 0 8px 32px rgba(21,101,168,0.18);
+  --linha: #93c5e8; 
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--cinza); min-height: 100vh; overflow-y: scroll;}
+
+/* ── HEADER & TABS ── */
+header { background: var(--azul); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 70px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.15); }
+.header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: white; display: flex; align-items: center; gap: 10px; }
+.header-logo span { background: var(--azul-neon); color: var(--azul); padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.btn-header { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+.btn-header:hover { background: rgba(255,255,255,0.28); }
+.btn-admin { background: var(--azul-neon); color: var(--azul); border: none; padding: 7px 16px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.btn-admin:hover { background: white; }
+
+.tabs-bar { background: white; border-bottom: 1px solid var(--fundo-escuro); display: flex; justify-content: center; gap: 10px; padding-top: 10px; }
+.tab-btn { padding: 14px 28px; border: none; background: none; font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--cinza-claro); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-weight: 700; margin-bottom: -1px; }
+.tab-btn.ativo { color: var(--azul); border-bottom-color: var(--azul); }
+.tab-content { display: none; padding: 40px; overflow-x: auto; min-height: 70vh; }
+.tab-content.ativo { display: block; }
+
+/* ── MOTOR DA ÁRVORE (LINHAS DINÂMICAS) ── */
+.tree { display: min-content; margin: 0 auto; padding-bottom: 80px; }
+.tree ul { padding-top: 24px; position: relative; display: flex; justify-content: center; gap: 24px; }
+.tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 24px 8px 0 8px; transition: all 0.3s;}
+/* Linhas Horizontais */
+.tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2.5px solid var(--linha); width: 50%; height: 24px; }
+.tree li::after { right: auto; left: 50%; border-left: 2.5px solid var(--linha); }
+.tree li:only-child::after, .tree li:only-child::before { display: none; }
+.tree li:only-child { padding-top: 0; }
+.tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+.tree li:last-child::before { border-right: 2.5px solid var(--linha); border-radius: 0 8px 0 0; }
+.tree li:first-child::after { border-radius: 8px 0 0 0; }
+/* Linha Vertical para Filhos */
+.tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2.5px solid var(--linha); width: 0; height: 24px; transform: translateX(-50%); }
+
+.node-wrapper { display: inline-block; position: relative; z-index: 2; }
+
+/* Grupo Ponte (Pessoas que conectam Tópico A ao Tópico B) */
+.bridge-line { width: 2.5px; height: 24px; background: var(--linha); margin: 0 auto; }
+.bridge-group { display: flex; gap: 16px; justify-content: center; align-items: flex-start; flex-wrap: wrap; max-width: 900px; margin: 0 auto; }
+
+/* ── VISUAL DOS BLOCOS ── */
+/* 1. Topo (Prefeito & Vice) */
+.root-duplo { display: flex; gap: 40px; justify-content: center; position: relative; margin-bottom: 24px; }
+.root-duplo::after { content: ''; position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); width: calc(100% - 170px); border-bottom: 2.5px solid var(--linha); height: 24px; }
+.root-duplo-conector { position: absolute; bottom: -48px; left: 50%; transform: translateX(-50%); border-left: 2.5px solid var(--linha); height: 24px; }
+
+/* 2. Tópico (Pílula Azul Escura) */
+.node-topico { background: var(--azul-esc); color: white; padding: 12px 32px; border-radius: 30px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; display: inline-block; box-shadow: var(--sombra); border: 2px solid transparent; transition: all 0.2s;}
+.node-topico:hover { transform: translateY(-2px); box-shadow: var(--sombra-h); border-color: var(--azul-neon);}
+
+/* 3. Pessoa Ponte (NOVO LAYOUT DE ALTO CONTRASTE E DESTAQUE) */
+.card-pessoa { 
+  background: linear-gradient(145deg, #d4e8f9 0%, #b8d8f5 100%); 
+  border: 2px solid var(--azul-claro); 
+  border-radius: 14px; 
+  padding: 16px 20px; 
+  min-width: 170px; 
+  max-width: 220px; 
+  box-shadow: 0 4px 15px rgba(21, 101, 168, 0.15); 
+  cursor: pointer; 
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  text-align: center; 
+}
+.card-pessoa:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 8px 25px rgba(21, 101, 168, 0.25); 
+  border-color: var(--azul); 
+}
+.card-pessoa img { 
+  width: 86px; 
+  height: 86px; 
+  border-radius: 14px; 
+  object-fit: cover; 
+  border: 3px solid var(--azul-claro); 
+  margin-bottom: 12px; 
+  background: var(--fundo-escuro); 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+.card-pessoa .nome { 
+  font-family: 'Syne', sans-serif; 
+  font-weight: 800; 
+  font-size: 1.05rem; 
+  color: var(--azul-esc); 
+  line-height: 1.15; 
+  margin-bottom: 4px; 
+}
+.card-pessoa .titulo { 
+  font-size: 0.72rem; 
+  font-weight: 800; 
+  color: var(--azul); 
+  text-transform: uppercase; 
+  letter-spacing: 0.5px; 
+}
+
+/* 4. Setor (Caixa Branca com Pessoas) */
+.card-setor { background: white; border: 2px solid var(--azul); border-radius: 12px; min-width: 220px; box-shadow: var(--sombra); overflow: hidden; transition: box-shadow 0.2s; text-align: left; }
+.card-setor:hover { box-shadow: var(--sombra-h); }
+.setor-header { background: linear-gradient(135deg, var(--azul) 0%, #1257a0 100%); color: white; padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+.setor-header:hover { filter: brightness(1.1); }
+.setor-icone { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; overflow: hidden; }
+.setor-icone img { width: 100%; height: 100%; object-fit: cover; }
+.setor-titulo { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; flex: 1; line-height: 1.2; }
+.setor-toggle { font-size: 0.75rem; transition: transform 0.3s; }
+.card-setor.aberto .setor-toggle { transform: rotate(180deg); }
+.setor-body { display: none; background: white; max-height: 280px; overflow-y: auto; }
+.card-setor.aberto .setor-body { display: block; }
+.setor-pessoa { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; transition: background 0.15s; border-top: 1px solid var(--fundo-escuro); }
+.setor-pessoa:hover { background: var(--fundo); }
+.setor-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--fundo-escuro); flex-shrink: 0; background: var(--fundo); }
+.setor-pessoa-nome { font-size: 0.78rem; font-weight: 600; color: var(--cinza); line-height:1.1;}
+.setor-pessoa-cargo { font-size: 0.65rem; color: var(--cinza-claro); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;}
+
+/* 5. Link Node */
+.card-link { background: var(--azul-neon); border-radius: 12px; padding: 14px 24px; cursor: pointer; transition: transform 0.2s; box-shadow: var(--sombra); display: inline-block;}
+.card-link:hover { transform: translateY(-3px); box-shadow: var(--sombra-h); }
+.card-link .titulo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--azul-esc); }
+.card-link .sub { font-size: 0.72rem; font-weight: 700; color: white; background: var(--azul); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 8px; }
+
+/* ── PAINEL E MODAIS ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+.modal-overlay.aberto { display: flex; }
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.modal-box { background: white; border-radius: 24px; width: 90%; max-width: 460px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; overflow: hidden; max-height: 90vh; overflow-y: auto; }
+.modal-topo { background: linear-gradient(135deg, var(--azul) 0%, var(--azul-esc) 100%); padding: 32px 24px 24px; text-align: center; position: relative; }
+.modal-fechar { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+.modal-foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); background: white;}
+.modal-nome { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
+.modal-cargo { font-size: 0.8rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 700; }
+.modal-setor { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+.modal-body { padding: 24px; }
+
+.painel { display: none; position: fixed; inset: 0; background: var(--fundo); z-index: 200; overflow-y: auto; }
+.painel.aberto { display: block; }
+.painel-header { background: var(--azul); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+.painel-header h2 { font-family: 'Syne', sans-serif; font-weight: 800; color: white; font-size: 1.1rem; }
+.painel-tabs { display: flex; gap: 6px; margin-right: auto; margin-left: 30px; }
+.painel-tab { padding: 8px 16px; border: none; background: rgba(255,255,255,0.15); color: white; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+.painel-tab.ativo { background: var(--azul-neon); color: var(--azul); }
+.painel-body { padding: 32px 40px; max-width: 900px; margin: 0 auto; }
+.painel-section { display: none; }
+.painel-section.ativo { display: block; }
+.painel-body h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--azul); margin-bottom: 16px; margin-top: 36px; padding-bottom: 8px; border-bottom: 2px solid var(--fundo-escuro); }
+.painel-body h3:first-child { margin-top: 0; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: white; padding: 24px; border-radius: 16px; box-shadow: var(--sombra); margin-bottom: 16px;}
+.form-full { grid-column: 1 / -1; }
+.field-label { font-size: 0.72rem; font-weight: 600; color: var(--cinza-claro); text-transform: uppercase; margin-bottom: 6px; }
+input, select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: var(--fundo); color: var(--cinza); transition: 0.2s; }
+input:focus, select:focus { outline: none; border-color: var(--azul-claro); background: white; }
+.btn-add { background: var(--azul); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; width: 100%; }
+
+.item-admin { background: white; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 8px; }
+.item-admin-info { flex: 1; min-width: 0; }
+.item-admin-info strong { font-size: 0.9rem; font-weight: 600; color: var(--cinza); display: block; }
+.item-admin-info span { font-size: 0.75rem; color: var(--cinza-claro); }
+.btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 6px 12px; border-radius: 7px; font-weight: 600; cursor: pointer;}
+.btn-edit { background: #e0f0ff; color: var(--azul); border: none; padding: 6px 12px; border-radius: 7px; font-weight: 600; cursor: pointer;}
+
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(240,245,251,0.9); z-index: 9999; align-items: center; justify-content: center; }
+.loading-overlay.ativo { display: flex; }
+.spinner { width: 48px; height: 48px; border: 4px solid var(--fundo-escuro); border-top-color: var(--azul); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.modal-login { background: white; border-radius: 20px; padding: 36px; width: 90%; max-width: 400px; text-align: center; }
 </style>
 </head>
 <body>
-<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+
 <header>
-  <div class="header-logo">Simplifica Timbó <span>Prefeitura</span></div>
+  <div class="header-logo">Prefeitura de Timbó <span>Organograma Inteligente</span></div>
   <div class="header-actions">
-    <a class="btn-header" href="index.html">🏠 Organograma Simplifica</a>
-    <button class="btn-admin" onclick="abrirLogin()">⚙️ Admin</button>
+    <button class="btn-admin" onclick="abrirLogin()">⚙️ Admin (Montar Mapa)</button>
   </div>
 </header>
+
 <div class="tabs-bar">
-  <button class="tab-btn ativo" onclick="trocarTab('pref',this)">🏛️ Organograma da Prefeitura</button>
-  <button class="tab-btn" onclick="trocarTab('cam',this)">🏛️ Câmara de Vereadores</button>
+  <button class="tab-btn ativo" onclick="trocarTab('pref',this)">🏛️ Prefeitura</button>
+  <button class="tab-btn" onclick="trocarTab('cam',this)">🏛️ Câmara Municipal</button>
 </div>
+
 <div class="tab-content ativo" id="tab-pref">
-  <div class="hero"><h1>Organograma da Prefeitura</h1><p>Estrutura hierárquica do governo municipal de Timbó</p></div>
-  <div class="org-wrap"><div class="org-tree" id="orgPref"></div></div>
+  <div class="tree" id="tree-pref"></div>
 </div>
+
 <div class="tab-content" id="tab-cam">
-  <div class="hero"><h1>Câmara de Vereadores</h1><p>Estrutura da Câmara Municipal de Timbó</p></div>
-  <div class="org-wrap"><div class="org-tree" id="orgCam"></div></div>
+  <div class="tree" id="tree-cam"></div>
 </div>
-<footer><strong>Simplifica Timbó</strong> — Rua Japão, 408 - Bairro das Nações · (47) 3380-7900</footer>
-<!-- MODAL PERFIL -->
+
 <div class="modal-overlay" id="modalPerfil">
-  <div class="modal-perfil">
-    <div class="perfil-topo">
-      <button class="perfil-fechar" onclick="fecharPerfil()">✕</button>
-      <img class="perfil-foto" id="perfilFoto" src="" alt="">
-      <div class="perfil-nome" id="perfilNome"></div>
-      <div class="perfil-cargo" id="perfilCargo"></div>
-      <div class="perfil-setor" id="perfilSetor"></div>
+  <div class="modal-box">
+    <div class="modal-topo">
+      <button class="modal-fechar" onclick="fecharPerfil()">✕</button>
+      <img class="modal-foto" id="mFoto" src="" style="border-radius: 14px;">
+      <div class="modal-nome" id="mNome"></div>
+      <div class="modal-cargo" id="mCargo"></div>
+      <div class="modal-setor" id="mSetor"></div>
     </div>
-    <div class="perfil-body"><div class="perfil-grid" id="perfilGrid"></div></div>
+    <div class="modal-body">
+      <div style="font-size:0.85rem; color:var(--cinza); text-align:center" id="mObs">Sem observações adicionais.</div>
+    </div>
   </div>
 </div>
-<!-- MODAL LOGIN -->
+
 <div class="modal-overlay" id="modalLogin">
   <div class="modal-login">
-    <h2>🔐 Área Administrativa</h2><p>Digite a senha para acessar o painel.</p>
-    <input type="password" id="senhaInput" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha()">
-    <div class="erro-msg" id="erroSenha">Senha incorreta.</div>
-    <div class="modal-btns">
-      <button class="btn-primary" onclick="verificarSenha()">Entrar</button>
-      <button class="btn-secondary" onclick="fecharLogin()">Cancelar</button>
+    <h2 style="font-family:'Syne'; color:var(--azul); margin-bottom:16px">🔐 Acesso Restrito</h2>
+    <input type="password" id="senhaInput" placeholder="Senha" style="margin-bottom:16px" onkeydown="if(event.key==='Enter')verificarSenha()">
+    <div id="erroSenha" style="color:red; display:none; font-size:0.8rem; margin-bottom:10px">Senha incorreta</div>
+    <button class="btn-add" onclick="verificarSenha()">Entrar</button>
+    <button onclick="fecharLogin()" style="background:none; border:none; margin-top:12px; cursor:pointer; color:#7a8fa6">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalNode">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-topo" style="padding: 24px">
+      <button class="modal-fechar" onclick="document.getElementById('modalNode').classList.remove('aberto')">✕</button>
+      <div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:white" id="mNodeTitulo">Editar Bloco</div>
+    </div>
+    <div class="modal-body form-grid">
+      
+      <div class="form-full">
+        <div class="field-label">Tipo do Bloco visual</div>
+        <select id="nNodeTipo" onchange="adaptarForm()">
+          <option value="topico">🔵 Tópico (Pílula Azul Escura)</option>
+          <option value="pessoa">🟦 Pessoa / Vereador (Cartão Azul Destaque)</option>
+          <option value="setor">⬜ Setor (Caixa Branca com Pessoas)</option>
+          <option value="link">🔗 Link Externo (Botão Neon)</option>
+        </select>
+      </div>
+
+      <div class="form-full"><div class="field-label">Nome / Título</div><input type="text" id="nNodeNome"></div>
+      
+      <div class="form-full" id="boxNodeCargo"><div class="field-label">Cargo (Para Pessoas) ou URL (Para Links)</div><input type="text" id="nNodeCargo"></div>
+      <div class="form-full" id="boxNodeIcone"><div class="field-label">Ícone (Emoji) ou URL da Foto</div><input type="text" id="nNodeIcone"></div>
+      
+      <div class="form-full" id="boxNodeLink" style="display:none">
+        <div class="field-label" style="color:#059669; font-weight:700">🌐 Link do Perfil na Câmara/Prefeitura</div>
+        <input type="text" id="nNodeLink" placeholder="https://camaratimbo.sc.gov.br/vereador/...">
+      </div>
+
+      <div class="form-full" id="boxNodePai" style="margin-top:8px; border-top: 1px solid var(--fundo-escuro); padding-top: 16px;">
+        <div class="field-label" style="color:var(--azul); font-weight:800">🔗 Ligar abaixo de qual elemento?</div>
+        <select id="nNodePai"></select>
+        <div style="font-size:0.7rem; color:var(--cinza-claro); margin-top:4px">O sistema desenhará a linha conectando este bloco ao bloco "pai" automaticamente.</div>
+      </div>
+
+      <div class="form-full" style="margin-top:12px"><button class="btn-add" onclick="salvarNode()">💾 Salvar Bloco no Mapa</button></div>
     </div>
   </div>
 </div>
-<!-- MODAL EDITAR -->
-<div class="modal-overlay" id="modalEditar">
-  <div class="modal-perfil" style="max-width:500px">
-    <div class="perfil-topo">
-      <button class="perfil-fechar" onclick="fecharEditar()">✕</button>
-      <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:white;margin-top:6px">✏️ Editar</div>
-      <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:3px" id="editarSubtitle"></div>
-    </div>
-    <div class="perfil-body">
-      <div class="field-label" style="margin-bottom:6px">Foto</div>
-      <div class="foto-upload-area"><input type="file" id="edFotoArq" accept="image/*" onchange="prevFotoEd(this)"><img class="foto-preview" id="edFotoPrev" src="" alt=""><div class="foto-upload-txt" id="edFotoTxt"><strong>Clique para trocar foto</strong><br>JPG, PNG ou WEBP</div></div>
-      <div style="margin-bottom:14px"><div class="field-label">Ou URL da foto</div><input type="text" id="edFotoUrl" placeholder="https://..." style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza);margin-top:3px"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><div class="field-label">Nome *</div><input type="text" id="edNome" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza)"></div>
-        <div><div class="field-label">Cargo</div><input type="text" id="edCargo" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza)"></div>
-        <div><div class="field-label">Matrícula</div><input type="text" id="edMatricula" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza)"></div>
-        <div><div class="field-label">Telefone</div><input type="text" id="edTelefone" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza)"></div>
-        <div><div class="field-label">CPF</div><input type="text" id="edCpf" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza)"></div>
-        <div><div class="field-label">Nascimento</div><input type="date" id="edNasc" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza)"></div>
-        <div style="grid-column:1/-1"><div class="field-label">Observação</div><textarea id="edObs" style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza);resize:vertical;min-height:54px"></textarea></div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button onclick="salvarEdicao()" style="flex:1;background:var(--azul);color:white;border:none;padding:11px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer">💾 Salvar</button>
-        <button onclick="fecharEditar()" style="background:var(--fundo);color:var(--cinza);border:none;padding:11px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer">Cancelar</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- PAINEL ADMIN -->
+
 <div class="painel" id="painelAdmin">
-  <div class="painel-header"><h2>⚙️ Painel — Prefeitura & Câmara</h2><button class="btn-fechar" onclick="fecharPainel()">✕ Fechar</button></div>
+  <div class="painel-header">
+    <h2>⚙️ Construtor do Organograma</h2>
+    <div class="painel-tabs">
+      <button class="painel-tab ativo" onclick="trocarPainelTab('pPref',this)">Prefeitura</button>
+      <button class="painel-tab" onclick="trocarPainelTab('pCam',this)">Câmara</button>
+    </div>
+    <button class="btn-header" style="background:var(--azul-neon);color:var(--azul);border:none;font-weight:700" onclick="fecharPainel()">✕ Fechar Painel</button>
+  </div>
+  
   <div class="painel-body">
-    <h3>🏛️ Cargos fixos — Prefeitura</h3>
-    <p style="font-size:0.82rem;color:var(--cinza-claro);margin-bottom:12px">Edite nome, foto e dados de cada cargo.</p>
-    <div class="lista-admin" id="listaCargosPref"></div>
-    <h3>🏢 Secretarias</h3>
-    <div class="form-section" style="margin-bottom:12px">
+    <div class="painel-section ativo" id="pPref">
+      <h3>🏛️ Topo Fixo (Prefeito & Vice)</h3>
+      <div class="lista-admin" id="listaTopoPref"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:36px; border-bottom: 2px solid var(--fundo-escuro); padding-bottom:8px; margin-bottom:16px">
+        <h3 style="margin:0; border:none; padding:0">📦 Estrutura do Mapa (Blocos Livres)</h3>
+        <button class="btn-add" style="width:auto; padding:6px 14px" onclick="abrirNovoNode('pref')">+ Criar Novo Bloco</button>
+      </div>
+      <p style="font-size:0.8rem; color:var(--cinza-claro); margin-bottom:12px;">Crie Tópicos, Pessoas ou Setores e escolha sob qual linha eles devem aparecer.</p>
+      <div class="lista-admin" id="listaSetoresPref"></div>
+
+      <h3>👥 Inserir Pessoas nas Caixas Brancas</h3>
       <div class="form-grid">
-        <div><div class="field-label">Nome da secretaria *</div><input type="text" id="novaSecNome" placeholder="Ex: Secretaria de Saúde"></div>
-        <div style="display:flex;align-items:flex-end"><button class="btn-add" onclick="adicionarSec()" style="width:100%">+ Adicionar</button></div>
+        <div class="form-full"><div class="field-label">Escolha a Caixa (Setor)</div><select id="addPessoaSetorPref"></select></div>
+        <div><div class="field-label">Nome Completo</div><input type="text" id="addPessoaNomePref"></div>
+        <div><div class="field-label">Cargo</div><input type="text" id="addPessoaCargoPref"></div>
+        <div class="form-full"><button class="btn-add" onclick="addPessoa('pref')">+ Inserir Pessoa na Caixa</button></div>
       </div>
     </div>
-    <div class="lista-admin" id="listaSecretarias"></div>
-    <h3>🏗️ Fundações</h3>
-    <div class="form-section" style="margin-bottom:12px">
+
+    <div class="painel-section" id="pCam">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:36px; border-bottom: 2px solid var(--fundo-escuro); padding-bottom:8px; margin-bottom:16px">
+        <h3 style="margin:0; border:none; padding:0">📦 Estrutura do Mapa da Câmara</h3>
+        <button class="btn-add" style="width:auto; padding:6px 14px" onclick="abrirNovoNode('cam')">+ Criar Novo Bloco</button>
+      </div>
+      <div class="lista-admin" id="listaSetoresCam"></div>
+
+      <h3>👥 Inserir Pessoas nas Caixas Brancas</h3>
       <div class="form-grid">
-        <div><div class="field-label">Nome da fundação *</div><input type="text" id="novaFundNome" placeholder="Ex: Fundação de Cultura"></div>
-        <div style="display:flex;align-items:flex-end"><button class="btn-add" onclick="adicionarFund()" style="width:100%">+ Adicionar</button></div>
+        <div class="form-full"><div class="field-label">Escolha a Caixa (Setor)</div><select id="addPessoaSetorCam"></select></div>
+        <div><div class="field-label">Nome Completo</div><input type="text" id="addPessoaNomeCam"></div>
+        <div><div class="field-label">Partido / Cargo</div><input type="text" id="addPessoaCargoCam"></div>
+        <div class="form-full"><button class="btn-add" onclick="addPessoa('cam')">+ Inserir Pessoa na Caixa</button></div>
       </div>
     </div>
-    <div class="lista-admin" id="listaFundacoes"></div>
-    <h3>👤 Adicionar pessoa a secretaria ou fundação</h3>
-    <div class="form-section">
-      <div class="field-label" style="margin-bottom:6px">Foto</div>
-      <div class="foto-upload-area"><input type="file" id="npFotoArq" accept="image/*" onchange="prevFotoNp(this)"><img class="foto-preview" id="npFotoPrev" src="" alt=""><div class="foto-upload-txt" id="npFotoTxt"><strong>Clique para escolher foto</strong><br>JPG, PNG ou WEBP</div></div>
-      <div style="margin-bottom:12px"><div class="field-label">Ou URL da foto</div><input type="text" id="npFotoUrl" placeholder="https://..." style="width:100%;padding:9px 12px;border:1.5px solid var(--fundo-escuro);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--fundo);color:var(--cinza);margin-top:3px"></div>
-      <div class="form-grid">
-        <div><div class="field-label">Nome *</div><input type="text" id="npNome" placeholder="Nome completo"></div>
-        <div><div class="field-label">Cargo *</div><input type="text" id="npCargo" placeholder="Ex: Secretário"></div>
-        <div><div class="field-label">Setor *</div><select id="npSetor"><option value="">Selecione o setor</option></select></div>
-        <div><div class="field-label">Matrícula</div><input type="text" id="npMatricula" placeholder="Matrícula"></div>
-        <div><div class="field-label">Telefone</div><input type="text" id="npTelefone" placeholder="(47)..."></div>
-        <div><div class="field-label">CPF</div><input type="text" id="npCpf" placeholder="000.000.000-00"></div>
-        <div><div class="field-label">Nascimento</div><input type="date" id="npNasc"></div>
-        <div class="form-full"><div class="field-label">Observação</div><textarea id="npObs" placeholder="Obs..."></textarea></div>
-        <div class="form-full" style="margin-top:4px"><button class="btn-add" onclick="adicionarPessoa()" style="width:100%">+ Adicionar Pessoa</button></div>
-      </div>
+
+    <div style="text-align:center; margin-top:40px; margin-bottom: 40px;">
+      <button class="btn-add" style="background:var(--azul-neon); color:var(--azul); font-size:1.1rem; padding:16px" onclick="salvarNoFirebase()">💾 Publicar Layout no Ar</button>
+      <div id="avisoSalvar" style="margin-top:12px; font-weight:600; display:none"></div>
     </div>
-    <h3>🏛️ Cargos fixos — Câmara</h3>
-    <div class="lista-admin" id="listaCargosCam"></div>
-    <h3>👥 Membros da Mesa Diretora</h3>
-    <div class="form-section" style="margin-bottom:12px">
-      <div class="form-grid">
-        <div><div class="field-label">Nome *</div><input type="text" id="novoMembroNome" placeholder="Nome completo"></div>
-        <div><div class="field-label">Cargo na Mesa</div><input type="text" id="novoMembroCargo" placeholder="Ex: 1º Secretário"></div>
-        <div style="grid-column:1/-1;display:flex;justify-content:flex-end"><button class="btn-add" onclick="adicionarMembro()">+ Adicionar</button></div>
-      </div>
-    </div>
-    <div class="lista-admin" id="listaMembros"></div>
-    <h3>👥 Vereadores</h3>
-    <div class="form-section" style="margin-bottom:12px">
-      <div class="form-grid">
-        <div><div class="field-label">Nome *</div><input type="text" id="novoVereNome" placeholder="Nome completo"></div>
-        <div><div class="field-label">Partido</div><input type="text" id="novoVerePartido" placeholder="Ex: PSD"></div>
-        <div style="grid-column:1/-1;display:flex;justify-content:flex-end"><button class="btn-add" onclick="adicionarVereador()">+ Adicionar</button></div>
-      </div>
-    </div>
-    <div class="lista-admin" id="listaVereadores"></div>
-    <button class="btn-salvar-tudo" onclick="salvarTudo()" id="btnSalvar">💾 Salvar no Firebase</button>
-    <div class="aviso-salvar" id="avisoSalvar"></div>
   </div>
 </div>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  const firebaseConfig={apiKey:"AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",authDomain:"simplifica-timbo.firebaseapp.com",projectId:"simplifica-timbo",storageBucket:"simplifica-timbo.firebasestorage.app",messagingSenderId:"651621474575",appId:"1:651621474575:web:f9d75bcb41069038971e7a"};
-  const app=initializeApp(firebaseConfig),db=getFirestore(app),SENHA="simplifica2024";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const CARGOS_PREF=[{id:'prefeito',titulo:'Prefeito',nivel:'lv1'},{id:'vice',titulo:'Vice-Prefeito',nivel:'lv2'},{id:'gab_chefe',titulo:'Gabinete',nivel:'lv3'},{id:'controle',titulo:'Controle Interno',nivel:'lv3'},{id:'sefaz',titulo:'SEFAZ',nivel:'lv3'}];
-  const CARGOS_CAM=[{id:'cam_pres',titulo:'Presidente da Câmara',nivel:'lv1'},{id:'mesa_dir',titulo:'Mesa Diretora',nivel:'lv2'}];
-  function vazio(){return{nome:'',foto:'',matricula:'',cpf:'',nascimento:'',telefone:'',obs:''};}
-  const PADRAO={prefeito:vazio(),vice:vazio(),gab_chefe:vazio(),controle:vazio(),sefaz:vazio(),cam_pres:vazio(),mesa_dir:vazio(),secretarias:[{id:'sec_adm',nome:'Administração',pessoas:[]},{id:'sec_saude',nome:'Saúde',pessoas:[]},{id:'sec_edu',nome:'Educação',pessoas:[]},{id:'sec_obras',nome:'Obras',pessoas:[]}],fundacoes:[{id:'fund_cult',nome:'Fundação de Cultura',pessoas:[]},{id:'fund_esp',nome:'Fundação de Esportes',pessoas:[]}],membros_mesa:[],vereadores:[]};
+const firebaseConfig = { apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk", authDomain: "simplifica-timbo.firebaseapp.com", projectId: "simplifica-timbo" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  let D=JSON.parse(JSON.stringify(PADRAO)),edCtx=null,fotoEd='',fotoNp='';
+// ==========================================
+// ESTRUTURA DE DADOS V7 (Com Links de Redirecionamento)
+// ==========================================
+const DB_DEFAULT = {
+  pref_topo: { esq: {nome:'Jorge', cargo:'Prefeito', link:''}, dir: {nome:'Mário', cargo:'Vice-Prefeito', link:''} },
+  nodes_pref: [
+    { id: 't_gab', tipo: 'topico', nome: 'Gabinete', parentId: 'root' },
+    { id: 'p_cg', tipo: 'pessoa', nome: 'A Definir', cargo: 'Chefe de Gabinete', icone: '', link: '', parentId: 't_gab' },
+    { id: 't_sec', tipo: 'topico', nome: 'Secretarias', parentId: 't_gab' },
+    
+    { id: 't_ci', tipo: 'topico', nome: 'Controle Interno', parentId: 'root' },
+    { id: 'p_rc', tipo: 'pessoa', nome: 'A Definir', cargo: 'Responsável Controle', icone: '', link: '', parentId: 't_ci' },
+    { id: 't_fund', tipo: 'topico', nome: 'Fundações & Autarquias', parentId: 't_ci' },
+    
+    { id: 's_saude', tipo: 'setor', nome: 'Sec. de Saúde', icone: '🏥', parentId: 't_sec', pessoas: [] },
+    { id: 's_edu', tipo: 'setor', nome: 'Sec. de Educação', icone: '📚', parentId: 't_sec', pessoas: [] },
+    { id: 'l_simp', tipo: 'link', nome: 'Simplifica / SEFAZ', cargo: 'index.html', parentId: 't_sec' },
+    { id: 's_cult', tipo: 'setor', nome: 'Fundação de Cultura', icone: '🎭', parentId: 't_fund', pessoas: [] }
+  ],
+  nodes_cam: [
+    { id: 'c_mesa', tipo: 'topico', nome: 'Mesa Diretora', parentId: 'root' },
+    { id: 'p_pres', tipo: 'pessoa', nome: 'Presidente', cargo: 'Mesa', icone: '', link: 'https://camaratimbo.sc.gov.br', parentId: 'c_mesa' },
+    { id: 'c_vere', tipo: 'topico', nome: 'Vereadores', parentId: 'c_mesa' },
+    { id: 'p_v1', tipo: 'pessoa', nome: 'Vereador 1', cargo: 'PSD', icone: '', link: 'https://camaratimbo.sc.gov.br', parentId: 'c_vere' },
+    { id: 'p_v2', tipo: 'pessoa', nome: 'Vereador 2', cargo: 'PL', icone: '', link: 'https://camaratimbo.sc.gov.br', parentId: 'c_vere' }
+  ]
+};
 
-  function av(nome,foto){if(foto)return foto;return 'https://ui-avatars.com/api/?name='+encodeURIComponent(nome||'?')+'&background=1565a8&color=fff&size=80&bold=true';}
-  function fmtD(d){if(!d)return null;const[a,m,dia]=d.split('-');return dia+'/'+m+'/'+a;}
-  function uid(){return Math.random().toString(36).substr(2,8);}
-  function loading(s,t){document.getElementById('loadingTxt').textContent=t||'Carregando...';document.getElementById('loadingOverlay').classList.toggle('ativo',s);}
+let DB = JSON.parse(JSON.stringify(DB_DEFAULT));
 
-  async function carregarDados(){
-    loading(true,'Carregando...');
-    try{
-      const sn=await getDoc(doc(db,'prefeitura2','dados'));
-      if(sn.exists()){const d=sn.data();D={...JSON.parse(JSON.stringify(PADRAO)),...d};if(!Array.isArray(D.secretarias))D.secretarias=PADRAO.secretarias;if(!Array.isArray(D.fundacoes))D.fundacoes=PADRAO.fundacoes;if(!Array.isArray(D.vereadores))D.vereadores=[];if(!Array.isArray(D.membros_mesa))D.membros_mesa=[];}
-      else{D=JSON.parse(JSON.stringify(PADRAO));await setDoc(doc(db,'prefeitura2','dados'),D);}
-    }catch(e){console.error(e);D=JSON.parse(JSON.stringify(PADRAO));}
-    loading(false);renderPref();renderCam();
+function getAvatar(n, pic) { if(pic && pic.startsWith('http')) return pic; return `https://ui-avatars.com/api/?name=${encodeURIComponent(n||'?')}&background=1565a8&color=fff&size=128&bold=true`; }
+function uid() { return Math.random().toString(36).substr(2, 6); }
+window.toggleSetor = function(el, ev) { el.closest('.card-setor').classList.toggle('aberto'); };
+
+// ==========================================
+// RENDERIZADOR DA ÁRVORE (AGORA COM LINKS E NOVO DESIGN)
+// ==========================================
+function buildTree(nodes, parentId) {
+  return nodes.filter(n => n.parentId === parentId).map(n => ({ ...n, filhos: buildTree(nodes, n.id) }));
+}
+
+function renderNodeHTML(node) {
+  let html = `<li><div class="node-wrapper">`;
+  
+  // 1. Tópicos e Caixas Expansíveis
+  if (node.tipo === 'topico') {
+    html += `<div class="node-topico">${node.nome}</div>`;
   }
-
-  window.salvarTudo=async function(){
-    const btn=document.getElementById('btnSalvar'),av2=document.getElementById('avisoSalvar');
-    btn.disabled=true;btn.textContent='⏳ Salvando...';av2.style.display='none';
-    try{await setDoc(doc(db,'prefeitura2','dados'),D);av2.textContent='✅ Salvo!';av2.className='aviso-salvar sucesso';av2.style.display='block';}
-    catch(e){av2.textContent='❌ Erro.';av2.className='aviso-salvar erro';av2.style.display='block';}
-    btn.disabled=false;btn.textContent='💾 Salvar no Firebase';setTimeout(()=>av2.style.display='none',4000);
-  };
-
-  // ---- RENDER PREFEITURA ----
-  function nodeEl(id,titulo,nivel){
-    const d=D[id]||{};
-    const foto=d.foto?`<img class="node-foto" src="${d.foto}" alt="${d.nome}" onerror="this.style.display='none'">`:'';
-    const nome=d.nome?`<div class="node-pessoa">${d.nome}</div>`:'';
-    const clickable=(nivel!='no-click');
-    return `<div class="node ${nivel}${!clickable?' no-click':''}" ${clickable?'onclick="abrirPerfil(\''+id+'\')"':''}>${foto}<div class="node-titulo">${titulo}</div>${nome}</div>`;
-  }
-
-  function setorHTML(lista,tipo){
-    return lista.map(s=>{
-      const eid='exp_'+tipo+'_'+s.id;
-      const isSefaz=tipo==='sec'&&(s.nome.toLowerCase().includes('fazenda')||s.nome.toLowerCase().includes('sefaz'));
-      const idx=tipo==='sec'?D.secretarias.findIndex(x=>x.id===s.id):D.fundacoes.findIndex(x=>x.id===s.id);
-      const pp=(s.pessoas||[]).map((p,pi)=>`<div class="setor-pessoa" onclick="abrirPessoaPerfil('${tipo}',${idx},${pi})">
-        <img class="setor-pessoa-avatar" src="${av(p.nome,p.foto)}" onerror="this.src='${av(p.nome,'')}'" loading="lazy">
+  else if (node.tipo === 'setor') {
+    const pHTML = (node.pessoas || []).map((p, i) => `
+      <div class="setor-pessoa" onclick="abrirPerfil('${p.nome}', '${p.cargo}', '${node.nome}', event)">
+        <img class="setor-avatar" src="${getAvatar(p.nome)}">
         <div><div class="setor-pessoa-nome">${p.nome}</div><div class="setor-pessoa-cargo">${p.cargo||''}</div></div>
       </div>`).join('');
-      const simplLink=isSefaz?`<div style="padding:8px 12px;border-top:1px solid var(--fundo-escuro);display:flex;flex-direction:column;align-items:center"><div style="width:2px;height:14px;background:var(--linha);margin:0 auto 6px"></div><div class="node redirect" onclick="window.location.href='index.html'" style="padding:7px 12px;min-width:0;width:100%;text-align:center"><div class="node-titulo" style="font-size:0.76rem">Simplifica</div><div class="node-sub" style="font-size:0.63rem">🔗 Ver organograma</div></div></div>`:'';
-      return `<div style="display:flex;flex-direction:column;align-items:center"><div style="width:2px;height:20px;background:var(--linha);margin:0 auto"></div><div class="setor-exp" id="${eid}"><div class="setor-exp-header" onclick="toggleExp('${eid}')"><div class="setor-exp-titulo">${s.nome}</div><span class="setor-exp-count">${(s.pessoas||[]).length}</span><span class="setor-exp-toggle">▼</span></div><div class="setor-exp-body">${pp||'<div style="padding:9px 12px;font-size:0.76rem;color:var(--cinza-claro)">Sem pessoas</div>'}${simplLink}</div></div></div>`;
+      
+    html += `
+      <div class="card-setor">
+        <div class="setor-header" onclick="toggleSetor(this, event)">
+          <div class="setor-icone">${(node.icone||'').startsWith('http') ? `<img src="${node.icone}">` : (node.icone||'📁')}</div>
+          <div class="setor-titulo">${node.nome}</div>
+          <div class="setor-toggle">▼</div>
+        </div>
+        <div class="setor-body" onclick="event.stopPropagation()">${pHTML || '<div style="padding:12px;text-align:center;font-size:0.8rem;color:#aaa">Vazio</div>'}</div>
+      </div>`;
+  } 
+  else if (node.tipo === 'link') {
+    html += `<div class="card-link" onclick="window.location.href='${node.cargo}'"><div class="titulo">${node.nome}</div><div class="sub">Acessar Site</div></div>`;
+  }
+
+  // 2. Extrai Pessoas e as coloca na Ponte Central com Redirecionamento!
+  const pessoasPonte = node.filhos.filter(n => n.tipo === 'pessoa');
+  const outrosFilhos = node.filhos.filter(n => n.tipo !== 'pessoa');
+
+  if (pessoasPonte.length > 0) {
+     html += `<div class="bridge-line"></div>`;
+     html += `<div class="bridge-group">`;
+     pessoasPonte.forEach(p => {
+        const action = p.link ? `window.open('${p.link}', '_blank')` : `alert('Aviso: O link de redirecionamento deste perfil ainda não foi configurado no painel Admin.')`;
+        html += `
+          <div class="card-pessoa" onclick="${action}">
+            <img src="${getAvatar(p.nome, p.icone)}">
+            <div class="nome">${p.nome}</div>
+            <div class="titulo">${p.cargo || 'Cargo'}</div>
+          </div>`;
+     });
+     html += `</div>`;
+  }
+
+  html += `</div>`;
+
+  // 3. Restante das ramificações
+  if (outrosFilhos.length > 0) {
+    html += `<ul>` + outrosFilhos.map(renderNodeHTML).join('') + `</ul>`;
+  }
+  html += `</li>`;
+  return html;
+}
+
+window.drawOrganograma = function() {
+  const actionEsq = DB.pref_topo.esq.link ? `window.open('${DB.pref_topo.esq.link}', '_blank')` : `alert('Link não configurado no Admin.')`;
+  const actionDir = DB.pref_topo.dir.link ? `window.open('${DB.pref_topo.dir.link}', '_blank')` : `alert('Link não configurado no Admin.')`;
+
+  // Prefeitura
+  const tPref = buildTree(DB.nodes_pref, 'root');
+  let htmlPref = `
+    <li>
+      <div class="root-duplo">
+        <div class="card-pessoa" onclick="${actionEsq}">
+          <img src="${getAvatar(DB.pref_topo.esq.nome)}">
+          <div class="nome">${DB.pref_topo.esq.nome}</div>
+          <div class="titulo">${DB.pref_topo.esq.cargo}</div>
+        </div>
+        <div class="card-pessoa" onclick="${actionDir}">
+          <img src="${getAvatar(DB.pref_topo.dir.nome)}">
+          <div class="nome">${DB.pref_topo.dir.nome}</div>
+          <div class="titulo">${DB.pref_topo.dir.cargo}</div>
+        </div>
+        <div class="root-duplo-conector"></div>
+      </div>
+      <ul>${tPref.map(renderNodeHTML).join('')}</ul>
+    </li>`;
+  document.getElementById('tree-pref').innerHTML = `<ul>${htmlPref}</ul>`;
+
+  // Câmara
+  const tCam = buildTree(DB.nodes_cam, 'root');
+  document.getElementById('tree-cam').innerHTML = `<ul>${tCam.map(renderNodeHTML).join('').replace(/<li>/, '<li style="padding-top:0">')}</ul>`;
+}
+
+// ==========================================
+// UI BÁSICA E MODAL
+// ==========================================
+window.trocarTab = (t, b) => { document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('ativo')); document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('ativo')); b.classList.add('ativo'); document.getElementById('tab-'+t).classList.add('ativo'); };
+window.trocarPainelTab = (t, b) => { document.querySelectorAll('.painel-tab').forEach(x=>x.classList.remove('ativo')); document.querySelectorAll('.painel-section').forEach(x=>x.classList.remove('ativo')); b.classList.add('ativo'); document.getElementById(t).classList.add('ativo'); };
+
+window.abrirPerfil = (nome, cargo, setor, ev) => { 
+  if(ev) ev.stopPropagation();
+  document.getElementById('mFoto').src = getAvatar(nome);
+  document.getElementById('mNome').textContent = nome || '—';
+  document.getElementById('mCargo').textContent = cargo || '';
+  document.getElementById('mSetor').textContent = setor;
+  document.getElementById('modalPerfil').classList.add('aberto'); 
+};
+window.fecharPerfil = () => document.getElementById('modalPerfil').classList.remove('aberto');
+
+// ==========================================
+// FIREBASE & ADMIN
+// ==========================================
+async function loadDB() {
+  document.getElementById('loadingOverlay').classList.add('ativo');
+  try {
+    // Nova coleção V7 (Design do Link)
+    const snap = await getDoc(doc(db, "prefeitura_v7", "dados")); 
+    if (snap.exists()) DB = snap.data();
+  } catch(e) {}
+  document.getElementById('loadingOverlay').classList.remove('ativo');
+  drawOrganograma();
+}
+
+window.salvarNoFirebase = async function() {
+  const av = document.getElementById('avisoSalvar');
+  av.style.display = 'block'; av.textContent = '⏳ Salvando layout no servidor...'; av.style.color = 'var(--azul)';
+  try {
+    await setDoc(doc(db, "prefeitura_v7", "dados"), DB);
+    av.textContent = '✅ Sucesso! O Mapa visual foi atualizado para todos.'; av.style.color = 'green';
+  } catch(e) { av.textContent = '❌ Erro de conexão.'; av.style.color = 'red'; }
+  setTimeout(()=> av.style.display='none', 4000);
+}
+
+window.abrirLogin = () => document.getElementById('modalLogin').classList.add('aberto');
+window.fecharLogin = () => document.getElementById('modalLogin').classList.remove('aberto');
+window.verificarSenha = () => { if(document.getElementById('senhaInput').value === 'simplifica2024') { fecharLogin(); abrirPainel(); } else { document.getElementById('erroSenha').style.display='block'; } };
+
+window.abrirPainel = () => { document.getElementById('painelAdmin').classList.add('aberto'); renderAdmin(); };
+window.fecharPainel = () => { document.getElementById('painelAdmin').classList.remove('aberto'); drawOrganograma(); };
+
+// ==========================================
+// LÓGICA DO CONSTRUTOR NO ADMIN
+// ==========================================
+function renderAdmin() {
+  document.getElementById('listaTopoPref').innerHTML = `
+    <div class="item-admin"><div class="item-admin-info"><strong>Prefeito</strong><span>${DB.pref_topo.esq.nome}</span></div><button class="btn-edit" onclick="editTopo('esq')">⚙️ Configurar</button></div>
+    <div class="item-admin"><div class="item-admin-info"><strong>Vice-Prefeito</strong><span>${DB.pref_topo.dir.nome}</span></div><button class="btn-edit" onclick="editTopo('dir')">⚙️ Configurar</button></div>`;
+
+  const renderNodes = (nodes, targetId, aba) => {
+    document.getElementById(targetId).innerHTML = nodes.map(n => {
+      const parentName = n.parentId === 'root' ? 'Topo Master' : (nodes.find(x => x.id === n.parentId)?.nome || 'Desconectado');
+      const infoT = n.tipo === 'topico' ? '🔵 Tópico' : n.tipo === 'pessoa' ? '🟦 Pessoa / Vereador' : n.tipo === 'setor' ? '⬜ Setor Expansível' : '🔗 Link';
+      return `<div class="item-admin">
+        <div class="item-admin-info"><strong>${n.nome}</strong><span>${infoT} · ↳ Ligado debaixo de: <b>${parentName}</b></span></div>
+        <button class="btn-edit" onclick="abrirEdicaoNode('${aba}', '${n.id}')">⚙️ Configurar</button>
+        <button class="btn-del" onclick="delNode('${aba}', '${n.id}')">✕</button>
+      </div>`;
     }).join('');
-  }
-
-  function renderPref(){
-    const el=document.getElementById('orgPref');
-    const secsH=setorHTML(D.secretarias,'sec');
-    const fundsH=setorHTML(D.fundacoes,'fund');
-    el.innerHTML=`
-    <div style="display:flex;justify-content:center;gap:56px;align-items:flex-start">
-      <div style="display:flex;flex-direction:column;align-items:center">${nodeEl('prefeito','Prefeito','lv1')}</div>
-      <div style="display:flex;flex-direction:column;align-items:center;padding-top:0">${nodeEl('vice','Vice-Prefeito','lv2')}</div>
-    </div>
-    <div style="width:2px;height:32px;background:var(--linha);margin:0 auto;margin-left:calc(50% - 112px)"></div>
-    <div style="display:flex;align-items:flex-start;justify-content:center;gap:0">
-      <div style="display:flex;flex-direction:column;align-items:center">${nodeEl('gab_chefe','Gabinete','lv3')}</div>
-      <div style="width:60px;height:2px;background:var(--linha);margin-top:23px"></div>
-      <div style="display:flex;flex-direction:column;align-items:center">${nodeEl('controle','Controle Interno','lv3')}</div>
-    </div>
-    <div style="width:2px;height:32px;background:var(--linha);margin:0 auto;margin-left:calc(50% - 112px)"></div>
-    <div style="display:flex;gap:56px;justify-content:center;align-items:flex-start">
-      <div style="display:flex;flex-direction:column;align-items:center">
-        <div class="node lv3 no-click" style="min-width:160px"><div class="node-titulo">Secretarias</div></div>
-        <div style="width:2px;height:24px;background:var(--linha);margin:0 auto"></div>
-        <div style="position:relative;display:flex;gap:16px;align-items:flex-start">
-          <div style="position:absolute;top:0;left:72px;right:72px;height:2px;background:var(--linha)"></div>
-          ${secsH}
-        </div>
-        <div style="width:2px;height:24px;background:var(--linha);margin:0 auto;margin-top:20px"></div>
-        ${nodeEl('sefaz','SEFAZ','lv3')}
-        <div style="width:2px;height:20px;background:var(--linha);margin:0 auto"></div>
-        <div class="node redirect" onclick="window.location.href='index.html'" style="padding:10px 18px">
-          <div class="node-titulo" style="font-size:0.82rem">Simplifica</div>
-          <div class="node-sub" style="font-size:0.66rem">🔗 Ver organograma →</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center">
-        <div class="node lv3 no-click" style="min-width:150px"><div class="node-titulo">Fundações</div></div>
-        <div style="width:2px;height:24px;background:var(--linha);margin:0 auto"></div>
-        <div style="position:relative;display:flex;gap:16px;align-items:flex-start">
-          <div style="position:absolute;top:0;left:64px;right:64px;height:2px;background:var(--linha)"></div>
-          ${fundsH}
-        </div>
-      </div>
-    </div>`;
-  }
-
-  // ---- RENDER CÂMARA ----
-  function renderCam(){
-    const el=document.getElementById('orgCam');
-    const membH=(D.membros_mesa||[]).map((p,pi)=>`<div style="display:flex;flex-direction:column;align-items:center"><div style="width:2px;height:20px;background:var(--linha);margin:0 auto"></div><div class="setor-exp" id="mesa_m_${pi}" style="min-width:130px;max-width:170px"><div class="setor-exp-header" onclick="toggleExp('mesa_m_${pi}')"><div class="setor-exp-titulo">${p.cargo||p.nome}</div><span class="setor-exp-toggle">▼</span></div><div class="setor-exp-body"><div class="setor-pessoa" onclick="abrirPessoaPerfil('mesa',0,${pi})"><img class="setor-pessoa-avatar" src="${av(p.nome,p.foto)}" onerror="this.src='${av(p.nome,'')}'" loading="lazy"><div><div class="setor-pessoa-nome">${p.nome}</div><div class="setor-pessoa-cargo">${p.cargo||''}</div></div></div></div></div></div>`).join('');
-    const vereH=(D.vereadores||[]).map((v,vi)=>`<div style="display:flex;flex-direction:column;align-items:center"><div style="width:2px;height:20px;background:var(--linha);margin:0 auto"></div><div class="node lv3" onclick="abrirVereador(${vi})" style="min-width:110px;padding:9px 13px"><div class="node-titulo" style="font-size:0.8rem">${v.nome}</div>${v.partido?'<div class="node-sub">'+v.partido+'</div>':''}</div></div>`).join('');
-    el.innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center">${nodeEl('cam_pres','Câmara de Vereadores','lv1')}</div>
-    <div style="width:2px;height:28px;background:var(--linha);margin:0 auto"></div>
-    <div style="display:flex;flex-direction:column;align-items:center">${nodeEl('mesa_dir','Mesa Diretora','lv2')}</div>
-    ${membH?`<div style="position:relative;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;justify-content:center;max-width:800px"><div style="position:absolute;top:0;left:64px;right:64px;height:2px;background:var(--linha)"></div>${membH}</div>`:''}
-    <div style="width:2px;height:28px;background:var(--linha);margin:0 auto;margin-top:${membH?'20px':'0'}"></div>
-    <div class="node lv3 no-click" style="min-width:160px"><div class="node-titulo">Vereadores</div></div>
-    <div style="width:2px;height:24px;background:var(--linha);margin:0 auto"></div>
-    <div style="position:relative;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:900px">
-      <div style="position:absolute;top:0;left:60px;right:60px;height:2px;background:var(--linha)"></div>
-      ${vereH||'<div style="color:var(--cinza-claro);font-size:0.82rem;padding:16px">Nenhum vereador cadastrado</div>'}
-    </div>`;
-  }
-
-  window.toggleExp=id=>document.getElementById(id)?.classList.toggle('aberto');
-
-  // ---- PERFIS ----
-  function mostrarPerfil(nome,cargo,setor,foto,d){
-    const f=document.getElementById('perfilFoto');f.src=av(nome,foto);f.onerror=()=>f.src=av(nome,'');
-    document.getElementById('perfilNome').textContent=nome||'—';
-    document.getElementById('perfilCargo').textContent=(cargo||'').toUpperCase();
-    document.getElementById('perfilSetor').textContent=setor||'';
-    const cs=[{label:'Matrícula',valor:d?.matricula||null},{label:'Telefone',valor:d?.telefone||null},{label:'Nascimento',valor:fmtD(d?.nascimento)},{label:'CPF',valor:d?.cpf||null,full:true},d?.obs?{label:'Observação',valor:d.obs,full:true}:null].filter(Boolean);
-    document.getElementById('perfilGrid').innerHTML=cs.map(c=>`<div class="perfil-item${c.full?' full':''}"><div class="perfil-label">${c.label}</div><div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div></div>`).join('');
-    document.getElementById('modalPerfil').classList.add('aberto');
-  }
-  window.abrirPerfil=function(id){const cg=CARGOS_PREF.find(c=>c.id===id)||CARGOS_CAM.find(c=>c.id===id);const d=D[id]||{};mostrarPerfil(d.nome||cg?.titulo||'',cg?.titulo||'','Prefeitura de Timbó',d.foto,d);};
-  window.abrirPessoaPerfil=function(tipo,si,pi){let p,sn;if(tipo==='sec'){p=D.secretarias[si]?.pessoas[pi];sn=D.secretarias[si]?.nome;}else if(tipo==='fund'){p=D.fundacoes[si]?.pessoas[pi];sn=D.fundacoes[si]?.nome;}else if(tipo==='mesa'){p=D.membros_mesa[pi];sn='Mesa Diretora';}if(!p)return;mostrarPerfil(p.nome,p.cargo,sn,p.foto,p);};
-  window.abrirVereador=function(vi){const v=D.vereadores[vi];if(!v)return;mostrarPerfil(v.nome,'Vereador'+(v.partido?' — '+v.partido:''),'Câmara de Vereadores',v.foto,v);};
-  window.fecharPerfil=()=>document.getElementById('modalPerfil').classList.remove('aberto');
-
-  // ---- TABS ----
-  window.trocarTab=function(t,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ativo'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('ativo'));btn.classList.add('ativo');document.getElementById('tab-'+t).classList.add('ativo');};
-
-  // ---- LOGIN ----
-  window.abrirLogin=()=>{document.getElementById('modalLogin').classList.add('aberto');setTimeout(()=>document.getElementById('senhaInput').focus(),100);};
-  window.fecharLogin=()=>{document.getElementById('modalLogin').classList.remove('aberto');document.getElementById('senhaInput').value='';document.getElementById('erroSenha').style.display='none';};
-  window.verificarSenha=()=>{if(document.getElementById('senhaInput').value===SENHA){fecharLogin();abrirPainel();}else{document.getElementById('erroSenha').style.display='block';document.getElementById('senhaInput').value='';document.getElementById('senhaInput').focus();}};
-
-  // ---- PAINEL ----
-  window.abrirPainel=()=>{document.getElementById('painelAdmin').classList.add('aberto');renderAdmin();};
-  window.fecharPainel=()=>document.getElementById('painelAdmin').classList.remove('aberto');
-
-  function renderAdmin(){
-    document.getElementById('listaCargosPref').innerHTML=CARGOS_PREF.map(c=>{const d=D[c.id]||{};return`<div class="item-admin"><img src="${av(d.nome||c.titulo,d.foto)}" onerror="this.src='${av(c.titulo,'')}'" alt="${c.titulo}"><div class="item-admin-info"><strong>${c.titulo}${d.nome?' — '+d.nome:''}</strong><span>${d.telefone||'Sem telefone'}</span></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEd({tipo:'cargo',id:'${c.id}',titulo:'${c.titulo}'})">✏️ Editar</button></div></div>`;}).join('');
-    document.getElementById('listaSecretarias').innerHTML=D.secretarias.map((s,si)=>`<div class="item-admin"><div class="icon">🏢</div><div class="item-admin-info"><strong>${s.nome}</strong><span>${s.pessoas.length} pessoa(s)</span></div><div class="item-admin-acoes"><button class="btn-del" onclick="removerSec(${si})">✕</button></div></div>`).join('')||'<div style="color:#aaa;font-size:.82rem;padding:8px">Nenhuma secretaria.</div>';
-    document.getElementById('listaFundacoes').innerHTML=D.fundacoes.map((f,fi)=>`<div class="item-admin"><div class="icon">🏗️</div><div class="item-admin-info"><strong>${f.nome}</strong><span>${f.pessoas.length} pessoa(s)</span></div><div class="item-admin-acoes"><button class="btn-del" onclick="removerFund(${fi})">✕</button></div></div>`).join('')||'<div style="color:#aaa;font-size:.82rem;padding:8px">Nenhuma fundação.</div>';
-    document.getElementById('listaCargosCam').innerHTML=CARGOS_CAM.map(c=>{const d=D[c.id]||{};return`<div class="item-admin"><img src="${av(d.nome||c.titulo,d.foto)}" onerror="this.src='${av(c.titulo,'')}'" alt="${c.titulo}"><div class="item-admin-info"><strong>${c.titulo}${d.nome?' — '+d.nome:''}</strong><span>${d.telefone||'Sem telefone'}</span></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEd({tipo:'cargo',id:'${c.id}',titulo:'${c.titulo}'})">✏️ Editar</button></div></div>`;}).join('');
-    document.getElementById('listaMembros').innerHTML=(D.membros_mesa||[]).map((p,pi)=>`<div class="item-admin"><img src="${av(p.nome,p.foto)}" onerror="this.src='${av(p.nome,'')}'" alt="${p.nome}"><div class="item-admin-info"><strong>${p.nome}</strong><span>${p.cargo||'Mesa Diretora'}</span></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEd({tipo:'membro',idx:${pi}})">✏️</button><button class="btn-del" onclick="remMembro(${pi})">✕</button></div></div>`).join('')||'<div style="color:#aaa;font-size:.82rem;padding:8px">Nenhum membro.</div>';
-    document.getElementById('listaVereadores').innerHTML=(D.vereadores||[]).map((v,vi)=>`<div class="item-admin"><img src="${av(v.nome,v.foto)}" onerror="this.src='${av(v.nome,'')}'" alt="${v.nome}"><div class="item-admin-info"><strong>${v.nome}</strong><span>${v.partido||'Sem partido'}</span></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEd({tipo:'vereador',idx:${vi}})">✏️</button><button class="btn-del" onclick="remVere(${vi})">✕</button></div></div>`).join('')||'<div style="color:#aaa;font-size:.82rem;padding:8px">Nenhum vereador.</div>';
-    // select setores
-    const secOpts=D.secretarias.map((s,i)=>`<option value="sec:${i}">${s.nome}</option>`).join('');
-    const fundOpts=D.fundacoes.map((f,i)=>`<option value="fund:${i}">${f.nome}</option>`).join('');
-    const mesaOpt=`<option value="mesa:0">Mesa Diretora</option>`;
-    document.getElementById('npSetor').innerHTML=`<option value="">Selecione</option><optgroup label="Secretarias">${secOpts}</optgroup><optgroup label="Fundações">${fundOpts}</optgroup><optgroup label="Câmara">${mesaOpt}</optgroup>`;
-  }
-
-  // ---- ADICIONAR / REMOVER ----
-  window.adicionarSec=function(){const n=document.getElementById('novaSecNome').value.trim();if(!n)return alert('Digite o nome.');D.secretarias.push({id:'sec_'+uid(),nome:n,pessoas:[]});document.getElementById('novaSecNome').value='';renderAdmin();renderPref();};
-  window.removerSec=function(si){if(!confirm('Remover "'+D.secretarias[si].nome+'"?'))return;D.secretarias.splice(si,1);renderAdmin();renderPref();};
-  window.adicionarFund=function(){const n=document.getElementById('novaFundNome').value.trim();if(!n)return alert('Digite o nome.');D.fundacoes.push({id:'fund_'+uid(),nome:n,pessoas:[]});document.getElementById('novaFundNome').value='';renderAdmin();renderPref();};
-  window.removerFund=function(fi){if(!confirm('Remover "'+D.fundacoes[fi].nome+'"?'))return;D.fundacoes.splice(fi,1);renderAdmin();renderPref();};
-
-  window.adicionarPessoa=function(){
-    const nome=document.getElementById('npNome').value.trim(),cargo=document.getElementById('npCargo').value.trim(),setor=document.getElementById('npSetor').value;
-    if(!nome||!cargo||!setor)return alert('Preencha nome, cargo e setor.');
-    const foto=fotoNp||document.getElementById('npFotoUrl').value.trim()||'';
-    const p={nome,cargo,foto,matricula:document.getElementById('npMatricula').value.trim(),telefone:document.getElementById('npTelefone').value.trim(),cpf:document.getElementById('npCpf').value.trim(),nascimento:document.getElementById('npNasc').value,obs:document.getElementById('npObs').value.trim()};
-    const[tipo,idx]=setor.split(':');
-    if(tipo==='sec')D.secretarias[idx].pessoas.push(p);
-    else if(tipo==='fund')D.fundacoes[idx].pessoas.push(p);
-    else if(tipo==='mesa'){if(!D.membros_mesa)D.membros_mesa=[];D.membros_mesa.push(p);}
-    ['npNome','npCargo','npFotoUrl','npMatricula','npTelefone','npCpf','npObs'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('npNasc').value='';document.getElementById('npFotoArq').value='';document.getElementById('npFotoPrev').classList.remove('visivel');document.getElementById('npFotoTxt').style.display='';fotoNp='';
-    renderAdmin();renderPref();renderCam();
   };
+  renderNodes(DB.nodes_pref, 'listaSetoresPref', 'pref');
+  renderNodes(DB.nodes_cam, 'listaSetoresCam', 'cam');
 
-  window.adicionarMembro=function(){const n=document.getElementById('novoMembroNome').value.trim(),c=document.getElementById('novoMembroCargo').value.trim();if(!n)return alert('Digite o nome.');if(!D.membros_mesa)D.membros_mesa=[];D.membros_mesa.push({nome:n,cargo:c,foto:'',matricula:'',cpf:'',nascimento:'',telefone:'',obs:''});document.getElementById('novoMembroNome').value='';document.getElementById('novoMembroCargo').value='';renderAdmin();renderCam();};
-  window.remMembro=function(pi){if(!confirm('Remover?'))return;D.membros_mesa.splice(pi,1);renderAdmin();renderCam();};
-  window.adicionarVereador=function(){const n=document.getElementById('novoVereNome').value.trim();if(!n)return alert('Digite o nome.');const pt=document.getElementById('novoVerePartido').value.trim();if(!D.vereadores)D.vereadores=[];D.vereadores.push({nome:n,partido:pt,foto:'',matricula:'',cpf:'',nascimento:'',telefone:'',obs:''});document.getElementById('novoVereNome').value='';document.getElementById('novoVerePartido').value='';renderAdmin();renderCam();};
-  window.remVere=function(vi){if(!confirm('Remover "'+D.vereadores[vi].nome+'"?'))return;D.vereadores.splice(vi,1);renderAdmin();renderCam();};
-
-  // ---- EDITAR ----
-  window.abrirEd=function(ctx){
-    edCtx=ctx;fotoEd='';
-    let d={},titulo='';
-    if(ctx.tipo==='cargo'){d=D[ctx.id]||{};titulo=ctx.titulo;}
-    else if(ctx.tipo==='vereador'){d=D.vereadores[ctx.idx]||{};titulo='Vereador';}
-    else if(ctx.tipo==='membro'){d=D.membros_mesa[ctx.idx]||{};titulo='Membro da Mesa';}
-    document.getElementById('editarSubtitle').textContent=titulo;
-    document.getElementById('edNome').value=d.nome||'';
-    document.getElementById('edCargo').value=d.cargo||titulo;
-    document.getElementById('edMatricula').value=d.matricula||'';
-    document.getElementById('edTelefone').value=d.telefone||'';
-    document.getElementById('edCpf').value=d.cpf||'';
-    document.getElementById('edNasc').value=d.nascimento||'';
-    document.getElementById('edObs').value=d.obs||'';
-    document.getElementById('edFotoUrl').value=(d.foto&&!d.foto.startsWith('data:'))?d.foto:'';
-    const prev=document.getElementById('edFotoPrev');
-    if(d.foto){prev.src=d.foto;prev.classList.add('visivel');document.getElementById('edFotoTxt').style.display='none';}
-    else{prev.classList.remove('visivel');document.getElementById('edFotoTxt').style.display='';}
-    document.getElementById('modalEditar').classList.add('aberto');
+  const popSelect = (nodes, selId) => {
+    document.getElementById(selId).innerHTML = `<option value="">Escolha a Caixa Branca...</option>` + 
+      nodes.filter(n=>n.tipo==='setor').map(n => `<option value="${n.id}">${n.nome}</option>`).join('');
   };
-  window.fecharEditar=()=>{document.getElementById('modalEditar').classList.remove('aberto');document.getElementById('edFotoArq').value='';fotoEd='';};
-  window.salvarEdicao=function(){
-    if(!edCtx)return;
-    const nome=document.getElementById('edNome').value.trim();
-    let fotoAtual='';
-    if(edCtx.tipo==='cargo')fotoAtual=D[edCtx.id]?.foto||'';
-    else if(edCtx.tipo==='vereador')fotoAtual=D.vereadores[edCtx.idx]?.foto||'';
-    else if(edCtx.tipo==='membro')fotoAtual=D.membros_mesa[edCtx.idx]?.foto||'';
-    const novo={nome,cargo:document.getElementById('edCargo').value.trim(),foto:fotoEd||document.getElementById('edFotoUrl').value.trim()||fotoAtual,matricula:document.getElementById('edMatricula').value.trim(),telefone:document.getElementById('edTelefone').value.trim(),cpf:document.getElementById('edCpf').value.trim(),nascimento:document.getElementById('edNasc').value,obs:document.getElementById('edObs').value.trim()};
-    if(edCtx.tipo==='cargo')D[edCtx.id]=novo;
-    else if(edCtx.tipo==='vereador')D.vereadores[edCtx.idx]={...D.vereadores[edCtx.idx],...novo};
-    else if(edCtx.tipo==='membro')D.membros_mesa[edCtx.idx]={...D.membros_mesa[edCtx.idx],...novo};
-    fecharEditar();renderAdmin();renderPref();renderCam();
-  };
-  window.prevFotoEd=function(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{fotoEd=e.target.result;const p=document.getElementById('edFotoPrev');p.src=fotoEd;p.classList.add('visivel');document.getElementById('edFotoTxt').style.display='none';};r.readAsDataURL(f);};
-  window.prevFotoNp=function(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{fotoNp=e.target.result;const p=document.getElementById('npFotoPrev');p.src=fotoNp;p.classList.add('visivel');document.getElementById('npFotoTxt').style.display='none';};r.readAsDataURL(f);};
+  popSelect(DB.nodes_pref, 'addPessoaSetorPref');
+  popSelect(DB.nodes_cam, 'addPessoaSetorCam');
+}
 
-  ['modalPerfil','modalLogin','modalEditar'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id){if(id==='modalPerfil')fecharPerfil();else if(id==='modalEditar')fecharEditar();else fecharLogin();}});
+let nodeEmEdicao = null;
+
+window.adaptarForm = function() {
+  const t = document.getElementById('nNodeTipo').value;
+  document.getElementById('boxNodeCargo').style.display = (t==='pessoa'||t==='link') ? 'block' : 'none';
+  document.getElementById('boxNodeIcone').style.display = (t==='setor'||t==='pessoa') ? 'block' : 'none';
+  // Exibe o input do Link apenas para o tipo Pessoa
+  document.getElementById('boxNodeLink').style.display = (t==='pessoa') ? 'block' : 'none';
+};
+
+window.abrirNovoNode = function(aba) {
+  nodeEmEdicao = { isNew: true, aba, obj: { id: (aba==='pref'?'n_':'c_')+uid(), tipo: 'topico', nome: '', cargo: '', icone: '', link: '', parentId: 'root', pessoas: [] } };
+  prepararModalNode(aba);
+};
+
+window.abrirEdicaoNode = function(aba, id) {
+  const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
+  nodeEmEdicao = { isNew: false, aba, obj: lista.find(n => n.id === id) };
+  prepararModalNode(aba);
+};
+
+function prepararModalNode(aba) {
+  const n = nodeEmEdicao.obj;
+  document.getElementById('nNodeTipo').value = n.tipo;
+  document.getElementById('nNodeNome').value = n.nome;
+  document.getElementById('nNodeCargo').value = n.cargo || '';
+  document.getElementById('nNodeIcone').value = n.icone || '';
+  document.getElementById('nNodeLink').value = n.link || '';
+  
+  adaptarForm();
+  
+  const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
+  let opts = `<option value="root">Topo Master (Sairá direto da raiz)</option>`;
+  lista.forEach(x => {
+    if (x.id !== n.id) { 
+      opts += `<option value="${x.id}" ${x.id === n.parentId ? 'selected' : ''}>↳ Abaixo de: ${x.nome} (${x.tipo})</option>`;
+    }
   });
-  carregarDados();
+  document.getElementById('nNodePai').innerHTML = opts;
+  document.getElementById('modalNode').classList.add('aberto');
+}
+
+window.salvarNode = function() {
+  const n = nodeEmEdicao.obj;
+  n.tipo = document.getElementById('nNodeTipo').value;
+  n.nome = document.getElementById('nNodeNome').value.trim() || 'Bloco';
+  n.cargo = document.getElementById('nNodeCargo').value.trim();
+  n.icone = document.getElementById('nNodeIcone').value.trim();
+  n.link = document.getElementById('nNodeLink').value.trim();
+  n.parentId = document.getElementById('nNodePai').value;
+  
+  if (nodeEmEdicao.isNew) {
+    if(nodeEmEdicao.aba === 'pref') DB.nodes_pref.push(n); else DB.nodes_cam.push(n);
+  }
+  document.getElementById('modalNode').classList.remove('aberto');
+  renderAdmin();
+};
+
+window.delNode = function(aba, id) {
+  if(!confirm("Remover bloco? Se houver blocos ligados embaixo dele, eles também sumirão!")) return;
+  const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
+  
+  const idsToDel = new Set([id]);
+  let added = true;
+  while(added) {
+    added = false;
+    lista.forEach(n => { if (idsToDel.has(n.parentId) && !idsToDel.has(n.id)) { idsToDel.add(n.id); added = true; } });
+  }
+  
+  if (aba === 'pref') DB.nodes_pref = DB.nodes_pref.filter(n => !idsToDel.has(n.id));
+  else DB.nodes_cam = DB.nodes_cam.filter(n => !idsToDel.has(n.id));
+  renderAdmin();
+};
+
+window.addPessoa = function(aba) {
+  const idNode = document.getElementById(`addPessoaSetor${aba==='pref'?'Pref':'Cam'}`).value;
+  const nome = document.getElementById(`addPessoaNome${aba==='pref'?'Pref':'Cam'}`).value.trim();
+  const cargo = document.getElementById(`addPessoaCargo${aba==='pref'?'Pref':'Cam'}`).value.trim();
+  if(!idNode || !nome) return alert("Selecione a Caixa e digite o nome!");
+  
+  const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
+  const node = lista.find(n => n.id === idNode);
+  node.pessoas.push({ nome, cargo });
+  
+  document.getElementById(`addPessoaNome${aba==='pref'?'Pref':'Cam'}`).value = '';
+  document.getElementById(`addPessoaCargo${aba==='pref'?'Pref':'Cam'}`).value = '';
+  renderAdmin(); alert("Pessoa injetada na caixa!");
+};
+
+window.editTopo = function(lado) {
+  const n = prompt("Novo Nome da Liderança (Prefeito/Vice):", DB.pref_topo[lado].nome); if(!n) return;
+  const l = prompt("Link de Redirecionamento de Perfil (Opcional):", DB.pref_topo[lado].link || '');
+  DB.pref_topo[lado].nome = n; 
+  DB.pref_topo[lado].link = l;
+  renderAdmin();
+};
+
+window.addEventListener('click', e => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('aberto'); });
+
+loadDB();
 </script>
 </body>
 </html>
