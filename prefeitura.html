@@ -21,40 +21,111 @@ header { background: var(--azul); padding: 0 40px; display: flex; align-items: c
 .header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: white; display: flex; align-items: center; gap: 10px; }
 .header-logo span { background: var(--azul-neon); color: var(--azul); padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
 .header-actions { display: flex; gap: 10px; align-items: center; }
-.btn-header { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
-.btn-header:hover { background: rgba(255,255,255,0.28); }
 .btn-admin { background: var(--azul-neon); color: var(--azul); border: none; padding: 7px 16px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
 .btn-admin:hover { background: white; }
 
 .tabs-bar { background: white; border-bottom: 1px solid var(--fundo-escuro); display: flex; justify-content: center; gap: 10px; padding-top: 10px; }
 .tab-btn { padding: 14px 28px; border: none; background: none; font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--cinza-claro); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-weight: 700; margin-bottom: -1px; }
 .tab-btn.ativo { color: var(--azul); border-bottom-color: var(--azul); }
-.tab-content { display: none; padding: 40px; overflow-x: auto; min-height: 70vh; }
+.tab-content { display: none; padding: 40px; overflow-x: auto; min-height: 70vh; text-align: center; }
 .tab-content.ativo { display: block; }
 
-/* ── MOTOR DA ÁRVORE (LINHAS DINÂMICAS) ── */
-.tree { display: min-content; margin: 0 auto; padding-bottom: 80px; }
-.tree ul { padding-top: 24px; position: relative; display: flex; justify-content: center; gap: 24px; }
-.tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 24px 8px 0 8px; transition: all 0.3s;}
-/* Linhas Horizontais */
-.tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2.5px solid var(--linha); width: 50%; height: 24px; }
-.tree li::after { right: auto; left: 50%; border-left: 2.5px solid var(--linha); }
-.tree li:only-child::after, .tree li:only-child::before { display: none; }
+/* ── MOTOR DA ÁRVORE V3: REESCRITO DO ZERO ── */
+.tree { display: inline-block; margin: 0 auto; padding-bottom: 80px; }
+
+/* Grupo de filhos: flex horizontal centralizado */
+.tree ul {
+  padding-top: 24px; position: relative;
+  display: flex; justify-content: center;
+}
+
+/* Haste vertical que DESCE do pai até o topo do grupo de filhos */
+.tree ul ul::before {
+  content: ''; position: absolute; top: 0; left: 50%;
+  transform: translateX(-1.25px); /* metade da largura da borda */
+  border-left: 2.5px solid var(--linha);
+  height: 24px;
+}
+
+/* Cada item da árvore */
+.tree li {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; list-style: none;
+  position: relative; padding: 24px 16px 0;
+}
+
+/* --- Conectores horizontais + haste vertical no li --- */
+/* ::before = metade ESQUERDA da barra horizontal */
+.tree li::before {
+  content: ''; position: absolute; top: 0; right: 50%;
+  border-top: 2.5px solid var(--linha);
+  width: 50%; height: 24px;
+}
+/* ::after = metade DIREITA da barra horizontal + HASTE VERTICAL descendo ao nó */
+.tree li::after {
+  content: ''; position: absolute; top: 0; left: 50%;
+  border-top: 2.5px solid var(--linha);
+  border-left: 2.5px solid var(--linha);
+  width: 50%; height: 24px;
+}
+
+/* Filho único: SEM barra horizontal, SEM pseudo-elements (o ul::before já conecta) */
+.tree li:only-child::before,
+.tree li:only-child::after { display: none; }
 .tree li:only-child { padding-top: 0; }
-.tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+
+/* Primeiro filho: sem barra à esquerda */
+.tree li:first-child::before { border: 0 none; }
+.tree li:first-child::after  { border-radius: 8px 0 0 0; }
+
+/* Último filho: sem barra à direita, mas mantém haste vertical */
+.tree li:last-child::after  { border-top: 0 none; }
 .tree li:last-child::before { border-right: 2.5px solid var(--linha); border-radius: 0 8px 0 0; }
-.tree li:first-child::after { border-radius: 8px 0 0 0; }
-/* Linha Vertical para Filhos */
-.tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2.5px solid var(--linha); width: 0; height: 24px; transform: translateX(-50%); }
 
 .node-wrapper { display: inline-block; position: relative; z-index: 2; }
 
-/* Grupo Ponte (Pessoas que conectam Tópico A ao Tópico B) */
-.bridge-line { width: 2.5px; height: 24px; background: var(--linha); margin: 0 auto; }
-.bridge-group { display: flex; gap: 16px; justify-content: center; align-items: flex-start; flex-wrap: wrap; max-width: 900px; margin: 0 auto; }
+/* ── DUPLO-BOX: Linha horizontal interna entre dois blocos ── */
+/* A cruzeta funciona naturalmente: o ul::before desce do centro do li (= centro do duplo) */
+.duplo-box {
+  display: flex; gap: 300px; justify-content: center; align-items: flex-start;
+  position: relative;
+}
+.duplo-box > :not(.duplo-linha):not(.duplo-conector) {
+  width: 200px; text-align: center; flex-shrink: 0; position: relative; z-index: 2;
+}
+/* Linha horizontal interna entre os dois blocos */
+.duplo-linha {
+  position: absolute; top: 50%; left: 0; right: 0;
+  border-top: 2.5px solid var(--linha); z-index: 0;
+}
+/* Haste vertical que conecta de CIMA até a linha horizontal do duplo */
+.duplo-box::before {
+  content: ''; position: absolute; top: -24px; left: 50%;
+  transform: translateX(-1.25px);
+  border-left: 2.5px solid var(--linha);
+  height: calc(50% + 24px); z-index: 1;
+}
+/* Haste vertical que conecta da linha horizontal do duplo para BAIXO (até os filhos) */
+.duplo-box::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translateX(-1.25px);
+  border-left: 2.5px solid var(--linha);
+  height: calc(50% + 24px); z-index: 1;
+}
+/* Não duplicar conectores do li para duplo-box */
+.tree li:has(> .node-wrapper > .duplo-box)::after,
+.tree li:has(> .node-wrapper > .duplo-box)::before {
+  display: none;
+}
+.tree li:only-child:has(> .node-wrapper > .duplo-box) {
+  padding-top: 0;
+}
+.tree ul ul:has(> li > .node-wrapper > .duplo-box)::before {
+  display: none;
+}
 
 /* ── VISUAL DOS BLOCOS ── */
-/* 1. Topo (Prefeito & Vice) */
+/* 1. Topo Master (Prefeito & Vice) */
 .root-duplo { display: flex; gap: 40px; justify-content: center; position: relative; margin-bottom: 24px; }
 .root-duplo::after { content: ''; position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); width: calc(100% - 170px); border-bottom: 2.5px solid var(--linha); height: 24px; }
 .root-duplo-conector { position: absolute; bottom: -48px; left: 50%; transform: translateX(-50%); border-left: 2.5px solid var(--linha); height: 24px; }
@@ -63,7 +134,7 @@ header { background: var(--azul); padding: 0 40px; display: flex; align-items: c
 .node-topico { background: var(--azul-esc); color: white; padding: 12px 32px; border-radius: 30px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; display: inline-block; box-shadow: var(--sombra); border: 2px solid transparent; transition: all 0.2s;}
 .node-topico:hover { transform: translateY(-2px); box-shadow: var(--sombra-h); border-color: var(--azul-neon);}
 
-/* 3. Pessoa Ponte (NOVO LAYOUT DE ALTO CONTRASTE E DESTAQUE) */
+/* 3. Pessoa (Azul Alto Contraste) */
 .card-pessoa { 
   background: linear-gradient(145deg, #d4e8f9 0%, #b8d8f5 100%); 
   border: 2px solid var(--azul-claro); 
@@ -79,36 +150,10 @@ header { background: var(--azul); padding: 0 40px; display: flex; align-items: c
   align-items: center; 
   text-align: center; 
 }
-.card-pessoa:hover { 
-  transform: translateY(-4px); 
-  box-shadow: 0 8px 25px rgba(21, 101, 168, 0.25); 
-  border-color: var(--azul); 
-}
-.card-pessoa img { 
-  width: 86px; 
-  height: 86px; 
-  border-radius: 14px; 
-  object-fit: cover; 
-  border: 3px solid var(--azul-claro); 
-  margin-bottom: 12px; 
-  background: var(--fundo-escuro); 
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-}
-.card-pessoa .nome { 
-  font-family: 'Syne', sans-serif; 
-  font-weight: 800; 
-  font-size: 1.05rem; 
-  color: var(--azul-esc); 
-  line-height: 1.15; 
-  margin-bottom: 4px; 
-}
-.card-pessoa .titulo { 
-  font-size: 0.72rem; 
-  font-weight: 800; 
-  color: var(--azul); 
-  text-transform: uppercase; 
-  letter-spacing: 0.5px; 
-}
+.card-pessoa:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(21, 101, 168, 0.25); border-color: var(--azul); }
+.card-pessoa img { width: 86px; height: 86px; border-radius: 14px; object-fit: cover; border: 3px solid var(--azul-claro); margin-bottom: 12px; background: var(--fundo-escuro); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.card-pessoa .nome { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--azul-esc); line-height: 1.15; margin-bottom: 4px; }
+.card-pessoa .titulo { font-size: 0.72rem; font-weight: 800; color: var(--azul); text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* 4. Setor (Caixa Branca com Pessoas) */
 .card-setor { background: white; border: 2px solid var(--azul); border-radius: 12px; min-width: 220px; box-shadow: var(--sombra); overflow: hidden; transition: box-shadow 0.2s; text-align: left; }
@@ -134,14 +179,14 @@ header { background: var(--azul); padding: 0 40px; display: flex; align-items: c
 .card-link .titulo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--azul-esc); }
 .card-link .sub { font-size: 0.72rem; font-weight: 700; color: white; background: var(--azul); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 8px; }
 
-/* ── PAINEL E MODAIS ── */
+/* ── MODAIS E PAINEL ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
 .modal-overlay.aberto { display: flex; }
 @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 .modal-box { background: white; border-radius: 24px; width: 90%; max-width: 460px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; overflow: hidden; max-height: 90vh; overflow-y: auto; }
 .modal-topo { background: linear-gradient(135deg, var(--azul) 0%, var(--azul-esc) 100%); padding: 32px 24px 24px; text-align: center; position: relative; }
 .modal-fechar { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
-.modal-foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); background: white;}
+.modal-foto { width: 110px; height: 110px; border-radius: 14px; object-fit: cover; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); background: white;}
 .modal-nome { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
 .modal-cargo { font-size: 0.8rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 700; }
 .modal-setor { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
@@ -180,6 +225,9 @@ input:focus, select:focus { outline: none; border-color: var(--azul-claro); back
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .modal-login { background: white; border-radius: 20px; padding: 36px; width: 90%; max-width: 400px; text-align: center; }
+
+/* Destaque Formulario Admin */
+.box-bloco-2 { border-top: 1px dashed var(--fundo-escuro); margin-top: 8px; padding-top: 16px; }
 </style>
 </head>
 <body>
@@ -232,37 +280,44 @@ input:focus, select:focus { outline: none; border-color: var(--azul-claro); back
 </div>
 
 <div class="modal-overlay" id="modalNode">
-  <div class="modal-box" style="max-width:520px">
+  <div class="modal-box" style="max-width:560px">
     <div class="modal-topo" style="padding: 24px">
       <button class="modal-fechar" onclick="document.getElementById('modalNode').classList.remove('aberto')">✕</button>
       <div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:white" id="mNodeTitulo">Editar Bloco</div>
     </div>
-    <div class="modal-body form-grid">
+    <div class="modal-body form-grid" style="max-height:60vh; overflow-y:auto">
       
       <div class="form-full">
         <div class="field-label">Tipo do Bloco visual</div>
         <select id="nNodeTipo" onchange="adaptarForm()">
-          <option value="topico">🔵 Tópico (Pílula Azul Escura)</option>
+          <option value="topico">🔵 Tópico Simples (Pílula Azul)</option>
           <option value="pessoa">🟦 Pessoa / Vereador (Cartão Azul Destaque)</option>
+          <option value="duplo_topico">🔗 Dupla de Tópicos Lado a Lado</option>
+          <option value="duplo_pessoa">🔗 Dupla de Pessoas Lado a Lado</option>
           <option value="setor">⬜ Setor (Caixa Branca com Pessoas)</option>
-          <option value="link">🔗 Link Externo (Botão Neon)</option>
+          <option value="link">🌐 Link Externo (Botão Neon)</option>
         </select>
       </div>
 
+      <div class="form-full"><div class="field-label" style="color:var(--azul)" id="lblBloco1">Dados do Bloco</div></div>
       <div class="form-full"><div class="field-label">Nome / Título</div><input type="text" id="nNodeNome"></div>
       
-      <div class="form-full" id="boxNodeCargo"><div class="field-label">Cargo (Para Pessoas) ou URL (Para Links)</div><input type="text" id="nNodeCargo"></div>
+      <div class="form-full" id="boxNodeCargo"><div class="field-label">Cargo (Pessoas) ou URL (Links)</div><input type="text" id="nNodeCargo"></div>
       <div class="form-full" id="boxNodeIcone"><div class="field-label">Ícone (Emoji) ou URL da Foto</div><input type="text" id="nNodeIcone"></div>
-      
-      <div class="form-full" id="boxNodeLink" style="display:none">
-        <div class="field-label" style="color:#059669; font-weight:700">🌐 Link do Perfil na Câmara/Prefeitura</div>
-        <input type="text" id="nNodeLink" placeholder="https://camaratimbo.sc.gov.br/vereador/...">
+      <div class="form-full" id="boxNodeLink"><div class="field-label" style="color:#059669; font-weight:700">🌐 Link do Perfil (Redirecionamento)</div><input type="text" id="nNodeLink" placeholder="https://..."></div>
+
+      <div class="form-full box-bloco-2" id="boxBloco2">
+        <div class="field-label" style="color:var(--azul)">Configuração do Lado Direito (Bloco 2)</div>
+        <div style="margin-bottom:12px"><div class="field-label">Nome / Título 2</div><input type="text" id="nNodeNome2"></div>
+        <div id="boxNodeCargo2" style="margin-bottom:12px"><div class="field-label">Cargo 2</div><input type="text" id="nNodeCargo2"></div>
+        <div id="boxNodeIcone2" style="margin-bottom:12px"><div class="field-label">Ícone ou Foto 2</div><input type="text" id="nNodeIcone2"></div>
+        <div id="boxNodeLink2"><div class="field-label" style="color:#059669">🌐 Link do Perfil 2</div><input type="text" id="nNodeLink2"></div>
       </div>
 
-      <div class="form-full" id="boxNodePai" style="margin-top:8px; border-top: 1px solid var(--fundo-escuro); padding-top: 16px;">
+      <div class="form-full" id="boxNodePai" style="margin-top:16px; border-top: 1px solid var(--fundo-escuro); padding-top: 16px;">
         <div class="field-label" style="color:var(--azul); font-weight:800">🔗 Ligar abaixo de qual elemento?</div>
         <select id="nNodePai"></select>
-        <div style="font-size:0.7rem; color:var(--cinza-claro); margin-top:4px">O sistema desenhará a linha conectando este bloco ao bloco "pai" automaticamente.</div>
+        <div style="font-size:0.75rem; color:var(--cinza-claro); margin-top:4px">A linha será traçada saindo do elemento escolhido e conectando até este bloco.</div>
       </div>
 
       <div class="form-full" style="margin-top:12px"><button class="btn-add" onclick="salvarNode()">💾 Salvar Bloco no Mapa</button></div>
@@ -289,10 +344,10 @@ input:focus, select:focus { outline: none; border-color: var(--azul-claro); back
         <h3 style="margin:0; border:none; padding:0">📦 Estrutura do Mapa (Blocos Livres)</h3>
         <button class="btn-add" style="width:auto; padding:6px 14px" onclick="abrirNovoNode('pref')">+ Criar Novo Bloco</button>
       </div>
-      <p style="font-size:0.8rem; color:var(--cinza-claro); margin-bottom:12px;">Crie Tópicos, Pessoas ou Setores e escolha sob qual linha eles devem aparecer.</p>
+      <p style="font-size:0.85rem; color:var(--cinza-claro); margin-bottom:12px;">Crie Tópicos, Pessoas, Duplas ou Setores e escolha sob qual linha eles devem aparecer.</p>
       <div class="lista-admin" id="listaSetoresPref"></div>
 
-      <h3>👥 Inserir Pessoas nas Caixas Brancas</h3>
+      <h3 style="margin-top:36px">👥 Inserir Pessoas nas Caixas Brancas</h3>
       <div class="form-grid">
         <div class="form-full"><div class="field-label">Escolha a Caixa (Setor)</div><select id="addPessoaSetorPref"></select></div>
         <div><div class="field-label">Nome Completo</div><input type="text" id="addPessoaNomePref"></div>
@@ -308,7 +363,7 @@ input:focus, select:focus { outline: none; border-color: var(--azul-claro); back
       </div>
       <div class="lista-admin" id="listaSetoresCam"></div>
 
-      <h3>👥 Inserir Pessoas nas Caixas Brancas</h3>
+      <h3 style="margin-top:36px">👥 Inserir Pessoas nas Caixas Brancas</h3>
       <div class="form-grid">
         <div class="form-full"><div class="field-label">Escolha a Caixa (Setor)</div><select id="addPessoaSetorCam"></select></div>
         <div><div class="field-label">Nome Completo</div><input type="text" id="addPessoaNomeCam"></div>
@@ -333,19 +388,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================
-// ESTRUTURA DE DADOS V7 (Com Links de Redirecionamento)
+// ESTRUTURA DE DADOS V9 (Linhas Livres e Perfeitas)
 // ==========================================
 const DB_DEFAULT = {
   pref_topo: { esq: {nome:'Jorge', cargo:'Prefeito', link:''}, dir: {nome:'Mário', cargo:'Vice-Prefeito', link:''} },
   nodes_pref: [
-    { id: 't_gab', tipo: 'topico', nome: 'Gabinete', parentId: 'root' },
-    { id: 'p_cg', tipo: 'pessoa', nome: 'A Definir', cargo: 'Chefe de Gabinete', icone: '', link: '', parentId: 't_gab' },
-    { id: 't_sec', tipo: 'topico', nome: 'Secretarias', parentId: 't_gab' },
+    // Lado a Lado (Agrupador) conectando os dois tópicos!
+    { id: 'n_gab_ci', tipo: 'duplo_topico', nome: 'Gabinete', nome2: 'Controle Interno', parentId: 'root' },
     
-    { id: 't_ci', tipo: 'topico', nome: 'Controle Interno', parentId: 'root' },
-    { id: 'p_rc', tipo: 'pessoa', nome: 'A Definir', cargo: 'Responsável Controle', icone: '', link: '', parentId: 't_ci' },
-    { id: 't_fund', tipo: 'topico', nome: 'Fundações & Autarquias', parentId: 't_ci' },
+    // Nível 3: Descendo da Dupla
+    { id: 't_sec', tipo: 'topico', nome: 'Secretarias', parentId: 'n_gab_ci' },
+    { id: 't_fund', tipo: 'topico', nome: 'Fundações & Autarquias', parentId: 'n_gab_ci' },
     
+    // Nível 4: Caixas penduradas nos tópicos
     { id: 's_saude', tipo: 'setor', nome: 'Sec. de Saúde', icone: '🏥', parentId: 't_sec', pessoas: [] },
     { id: 's_edu', tipo: 'setor', nome: 'Sec. de Educação', icone: '📚', parentId: 't_sec', pessoas: [] },
     { id: 'l_simp', tipo: 'link', nome: 'Simplifica / SEFAZ', cargo: 'index.html', parentId: 't_sec' },
@@ -354,7 +409,8 @@ const DB_DEFAULT = {
   nodes_cam: [
     { id: 'c_mesa', tipo: 'topico', nome: 'Mesa Diretora', parentId: 'root' },
     { id: 'p_pres', tipo: 'pessoa', nome: 'Presidente', cargo: 'Mesa', icone: '', link: 'https://camaratimbo.sc.gov.br', parentId: 'c_mesa' },
-    { id: 'c_vere', tipo: 'topico', nome: 'Vereadores', parentId: 'c_mesa' },
+    // O Tópico Vereadores liga *debaixo* do Presidente. Tudo flui livremente!
+    { id: 'c_vere', tipo: 'topico', nome: 'Vereadores', parentId: 'p_pres' },
     { id: 'p_v1', tipo: 'pessoa', nome: 'Vereador 1', cargo: 'PSD', icone: '', link: 'https://camaratimbo.sc.gov.br', parentId: 'c_vere' },
     { id: 'p_v2', tipo: 'pessoa', nome: 'Vereador 2', cargo: 'PL', icone: '', link: 'https://camaratimbo.sc.gov.br', parentId: 'c_vere' }
   ]
@@ -367,18 +423,48 @@ function uid() { return Math.random().toString(36).substr(2, 6); }
 window.toggleSetor = function(el, ev) { el.closest('.card-setor').classList.toggle('aberto'); };
 
 // ==========================================
-// RENDERIZADOR DA ÁRVORE (AGORA COM LINKS E NOVO DESIGN)
+// RENDERIZADOR DA ÁRVORE 
 // ==========================================
 function buildTree(nodes, parentId) {
   return nodes.filter(n => n.parentId === parentId).map(n => ({ ...n, filhos: buildTree(nodes, n.id) }));
 }
 
 function renderNodeHTML(node) {
+  const isDuplo = node.tipo === 'duplo_topico' || node.tipo === 'duplo_pessoa';
+  const hasFilhos = node.filhos && node.filhos.length > 0;
+
   let html = `<li><div class="node-wrapper">`;
   
-  // 1. Tópicos e Caixas Expansíveis
   if (node.tipo === 'topico') {
     html += `<div class="node-topico">${node.nome}</div>`;
+  }
+  else if (node.tipo === 'duplo_topico') {
+    html += `<div class="duplo-box"><div class="duplo-linha"></div><div class="node-topico">${node.nome}</div><div class="node-topico">${node.nome2}</div></div>`;
+  }
+  else if (node.tipo === 'pessoa') {
+    const action = node.link ? `window.open('${node.link}', '_blank')` : `alert('Link não configurado no Admin.')`;
+    html += `
+      <div class="card-pessoa" onclick="${action}">
+        <img src="${getAvatar(node.nome, node.icone)}">
+        <div class="nome">${node.nome}</div>
+        <div class="titulo">${node.cargo || 'Cargo'}</div>
+      </div>`;
+  }
+  else if (node.tipo === 'duplo_pessoa') {
+    const act1 = node.link ? `window.open('${node.link}', '_blank')` : `alert('Link não configurado.')`;
+    const act2 = node.link2 ? `window.open('${node.link2}', '_blank')` : `alert('Link não configurado.')`;
+    html += `<div class="duplo-box"><div class="duplo-linha"></div>
+               <div class="card-pessoa" onclick="${act1}">
+                 <img src="${getAvatar(node.nome, node.icone)}">
+                 <div class="nome">${node.nome}</div>
+                 <div class="titulo">${node.cargo}</div>
+               </div>
+               <div class="card-pessoa" onclick="${act2}">
+                 <img src="${getAvatar(node.nome2, node.icone2)}">
+                 <div class="nome">${node.nome2}</div>
+                 <div class="titulo">${node.cargo2}</div>
+               </div>
+             </div>`;
   }
   else if (node.tipo === 'setor') {
     const pHTML = (node.pessoas || []).map((p, i) => `
@@ -401,30 +487,11 @@ function renderNodeHTML(node) {
     html += `<div class="card-link" onclick="window.location.href='${node.cargo}'"><div class="titulo">${node.nome}</div><div class="sub">Acessar Site</div></div>`;
   }
 
-  // 2. Extrai Pessoas e as coloca na Ponte Central com Redirecionamento!
-  const pessoasPonte = node.filhos.filter(n => n.tipo === 'pessoa');
-  const outrosFilhos = node.filhos.filter(n => n.tipo !== 'pessoa');
+  html += `</div>`; // fecha node-wrapper
 
-  if (pessoasPonte.length > 0) {
-     html += `<div class="bridge-line"></div>`;
-     html += `<div class="bridge-group">`;
-     pessoasPonte.forEach(p => {
-        const action = p.link ? `window.open('${p.link}', '_blank')` : `alert('Aviso: O link de redirecionamento deste perfil ainda não foi configurado no painel Admin.')`;
-        html += `
-          <div class="card-pessoa" onclick="${action}">
-            <img src="${getAvatar(p.nome, p.icone)}">
-            <div class="nome">${p.nome}</div>
-            <div class="titulo">${p.cargo || 'Cargo'}</div>
-          </div>`;
-     });
-     html += `</div>`;
-  }
-
-  html += `</div>`;
-
-  // 3. Restante das ramificações
-  if (outrosFilhos.length > 0) {
-    html += `<ul>` + outrosFilhos.map(renderNodeHTML).join('') + `</ul>`;
+  // Filhos: qualquer tipo de bloco (incluindo pessoa e duplo) pode ter filhos
+  if (hasFilhos) {
+    html += `<ul>` + node.filhos.map(renderNodeHTML).join('') + `</ul>`;
   }
   html += `</li>`;
   return html;
@@ -437,7 +504,7 @@ window.drawOrganograma = function() {
   // Prefeitura
   const tPref = buildTree(DB.nodes_pref, 'root');
   let htmlPref = `
-    <li>
+    <li style="padding-top:0">
       <div class="root-duplo">
         <div class="card-pessoa" onclick="${actionEsq}">
           <img src="${getAvatar(DB.pref_topo.esq.nome)}">
@@ -451,13 +518,13 @@ window.drawOrganograma = function() {
         </div>
         <div class="root-duplo-conector"></div>
       </div>
-      <ul>${tPref.map(renderNodeHTML).join('')}</ul>
+      ${tPref.length > 0 ? `<ul>${tPref.map(renderNodeHTML).join('')}</ul>` : ''}
     </li>`;
   document.getElementById('tree-pref').innerHTML = `<ul>${htmlPref}</ul>`;
 
   // Câmara
   const tCam = buildTree(DB.nodes_cam, 'root');
-  document.getElementById('tree-cam').innerHTML = `<ul>${tCam.map(renderNodeHTML).join('').replace(/<li>/, '<li style="padding-top:0">')}</ul>`;
+  document.getElementById('tree-cam').innerHTML = tCam.length > 0 ? `<ul>${tCam.map(renderNodeHTML).join('').replace(/<li>/, '<li style="padding-top:0">')}</ul>` : '';
 }
 
 // ==========================================
@@ -482,8 +549,7 @@ window.fecharPerfil = () => document.getElementById('modalPerfil').classList.rem
 async function loadDB() {
   document.getElementById('loadingOverlay').classList.add('ativo');
   try {
-    // Nova coleção V7 (Design do Link)
-    const snap = await getDoc(doc(db, "prefeitura_v7", "dados")); 
+    const snap = await getDoc(doc(db, "prefeitura_v9", "dados")); 
     if (snap.exists()) DB = snap.data();
   } catch(e) {}
   document.getElementById('loadingOverlay').classList.remove('ativo');
@@ -494,8 +560,8 @@ window.salvarNoFirebase = async function() {
   const av = document.getElementById('avisoSalvar');
   av.style.display = 'block'; av.textContent = '⏳ Salvando layout no servidor...'; av.style.color = 'var(--azul)';
   try {
-    await setDoc(doc(db, "prefeitura_v7", "dados"), DB);
-    av.textContent = '✅ Sucesso! O Mapa visual foi atualizado para todos.'; av.style.color = 'green';
+    await setDoc(doc(db, "prefeitura_v9", "dados"), DB);
+    av.textContent = '✅ Sucesso! A nova estrutura está no ar para todos.'; av.style.color = 'green';
   } catch(e) { av.textContent = '❌ Erro de conexão.'; av.style.color = 'red'; }
   setTimeout(()=> av.style.display='none', 4000);
 }
@@ -518,14 +584,18 @@ function renderAdmin() {
   const renderNodes = (nodes, targetId, aba) => {
     document.getElementById(targetId).innerHTML = nodes.map(n => {
       const parentName = n.parentId === 'root' ? 'Topo Master' : (nodes.find(x => x.id === n.parentId)?.nome || 'Desconectado');
-      const infoT = n.tipo === 'topico' ? '🔵 Tópico' : n.tipo === 'pessoa' ? '🟦 Pessoa / Vereador' : n.tipo === 'setor' ? '⬜ Setor Expansível' : '🔗 Link';
+      let tLabel = 'Indefinido';
+      if(n.tipo==='topico') tLabel='🔵 Tópico'; else if(n.tipo==='pessoa') tLabel='🟦 Pessoa'; else if(n.tipo==='setor') tLabel='⬜ Setor Expansível'; else if(n.tipo==='link') tLabel='🔗 Link'; else if(n.tipo.includes('duplo')) tLabel='🔗 Dupla Lado a Lado';
+      
+      const title = n.tipo.includes('duplo') ? `${n.nome} & ${n.nome2}` : n.nome;
       return `<div class="item-admin">
-        <div class="item-admin-info"><strong>${n.nome}</strong><span>${infoT} · ↳ Ligado debaixo de: <b>${parentName}</b></span></div>
+        <div class="item-admin-info"><strong>${title}</strong><span>${tLabel} · ↳ Ligado debaixo de: <b>${parentName}</b></span></div>
         <button class="btn-edit" onclick="abrirEdicaoNode('${aba}', '${n.id}')">⚙️ Configurar</button>
         <button class="btn-del" onclick="delNode('${aba}', '${n.id}')">✕</button>
       </div>`;
     }).join('');
   };
+  
   renderNodes(DB.nodes_pref, 'listaSetoresPref', 'pref');
   renderNodes(DB.nodes_cam, 'listaSetoresCam', 'cam');
 
@@ -541,14 +611,17 @@ let nodeEmEdicao = null;
 
 window.adaptarForm = function() {
   const t = document.getElementById('nNodeTipo').value;
-  document.getElementById('boxNodeCargo').style.display = (t==='pessoa'||t==='link') ? 'block' : 'none';
-  document.getElementById('boxNodeIcone').style.display = (t==='setor'||t==='pessoa') ? 'block' : 'none';
-  // Exibe o input do Link apenas para o tipo Pessoa
-  document.getElementById('boxNodeLink').style.display = (t==='pessoa') ? 'block' : 'none';
+  
+  document.getElementById('boxBloco2').style.display = t.includes('duplo') ? 'block' : 'none';
+  document.getElementById('boxNodeCargo').style.display = (t==='pessoa'||t==='link'||t==='duplo_pessoa') ? 'block' : 'none';
+  document.getElementById('boxNodeIcone').style.display = (t==='setor'||t==='pessoa'||t==='duplo_pessoa') ? 'block' : 'none';
+  document.getElementById('boxNodeLink').style.display = (t==='pessoa'||t==='duplo_pessoa') ? 'block' : 'none';
+  
+  document.getElementById('lblBloco1').style.display = t.includes('duplo') ? 'block' : 'none';
 };
 
 window.abrirNovoNode = function(aba) {
-  nodeEmEdicao = { isNew: true, aba, obj: { id: (aba==='pref'?'n_':'c_')+uid(), tipo: 'topico', nome: '', cargo: '', icone: '', link: '', parentId: 'root', pessoas: [] } };
+  nodeEmEdicao = { isNew: true, aba, obj: { id: (aba==='pref'?'n_':'c_')+uid(), tipo: 'topico', nome: '', cargo: '', icone: '', link: '', nome2: '', cargo2: '', icone2: '', link2: '', parentId: 'root', pessoas: [] } };
   prepararModalNode(aba);
 };
 
@@ -566,13 +639,19 @@ function prepararModalNode(aba) {
   document.getElementById('nNodeIcone').value = n.icone || '';
   document.getElementById('nNodeLink').value = n.link || '';
   
+  document.getElementById('nNodeNome2').value = n.nome2 || '';
+  document.getElementById('nNodeCargo2').value = n.cargo2 || '';
+  document.getElementById('nNodeIcone2').value = n.icone2 || '';
+  document.getElementById('nNodeLink2').value = n.link2 || '';
+  
   adaptarForm();
   
   const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
-  let opts = `<option value="root">Topo Master (Sairá direto da raiz)</option>`;
+  let opts = `<option value="root">Topo Master (Sairá direto da raiz principal)</option>`;
   lista.forEach(x => {
     if (x.id !== n.id) { 
-      opts += `<option value="${x.id}" ${x.id === n.parentId ? 'selected' : ''}>↳ Abaixo de: ${x.nome} (${x.tipo})</option>`;
+      const label = x.tipo.includes('duplo') ? `${x.nome} & ${x.nome2}` : x.nome;
+      opts += `<option value="${x.id}" ${x.id === n.parentId ? 'selected' : ''}>↳ Abaixo de: ${label}</option>`;
     }
   });
   document.getElementById('nNodePai').innerHTML = opts;
@@ -586,6 +665,12 @@ window.salvarNode = function() {
   n.cargo = document.getElementById('nNodeCargo').value.trim();
   n.icone = document.getElementById('nNodeIcone').value.trim();
   n.link = document.getElementById('nNodeLink').value.trim();
+  
+  n.nome2 = document.getElementById('nNodeNome2').value.trim();
+  n.cargo2 = document.getElementById('nNodeCargo2').value.trim();
+  n.icone2 = document.getElementById('nNodeIcone2').value.trim();
+  n.link2 = document.getElementById('nNodeLink2').value.trim();
+  
   n.parentId = document.getElementById('nNodePai').value;
   
   if (nodeEmEdicao.isNew) {
@@ -596,7 +681,7 @@ window.salvarNode = function() {
 };
 
 window.delNode = function(aba, id) {
-  if(!confirm("Remover bloco? Se houver blocos ligados embaixo dele, eles também sumirão!")) return;
+  if(!confirm("Remover bloco da árvore? CUIDADO: Se houver blocos ligados embaixo dele, eles também serão deletados!")) return;
   const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
   
   const idsToDel = new Set([id]);
@@ -615,7 +700,7 @@ window.addPessoa = function(aba) {
   const idNode = document.getElementById(`addPessoaSetor${aba==='pref'?'Pref':'Cam'}`).value;
   const nome = document.getElementById(`addPessoaNome${aba==='pref'?'Pref':'Cam'}`).value.trim();
   const cargo = document.getElementById(`addPessoaCargo${aba==='pref'?'Pref':'Cam'}`).value.trim();
-  if(!idNode || !nome) return alert("Selecione a Caixa e digite o nome!");
+  if(!idNode || !nome) return alert("Selecione a Caixa Branca e digite o nome!");
   
   const lista = aba === 'pref' ? DB.nodes_pref : DB.nodes_cam;
   const node = lista.find(n => n.id === idNode);
@@ -623,7 +708,7 @@ window.addPessoa = function(aba) {
   
   document.getElementById(`addPessoaNome${aba==='pref'?'Pref':'Cam'}`).value = '';
   document.getElementById(`addPessoaCargo${aba==='pref'?'Pref':'Cam'}`).value = '';
-  renderAdmin(); alert("Pessoa injetada na caixa!");
+  renderAdmin(); alert("Pessoa adicionada com sucesso!");
 };
 
 window.editTopo = function(lado) {
