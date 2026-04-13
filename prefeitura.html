@@ -228,6 +228,11 @@ input:focus, select:focus { outline: none; border-color: var(--azul-claro); back
 
 /* Destaque Formulario Admin */
 .box-bloco-2 { border-top: 1px dashed var(--fundo-escuro); margin-top: 8px; padding-top: 16px; }
+
+.mesa-grid { display:flex; justify-content:center; align-items:flex-start; gap:24px; flex-wrap:wrap; position:relative; }
+.mesa-grid > li { padding-top: 24px; }
+.mesa-subgrupo { margin-top: 24px; }
+.mesa-subgrupo > ul { padding-top: 24px; display:flex; justify-content:center; }
 </style>
 </head>
 <body>
@@ -497,9 +502,41 @@ function renderNodeHTML(node) {
   return html;
 }
 
+function renderMesaDiretora() {
+  const mesa = DB.nodes_cam.find(n => n.id === 'c_mesa');
+  if (!mesa) return '';
+
+  const filhosMesa = DB.nodes_cam.filter(n => n.parentId === 'c_mesa');
+  const vereadores = filhosMesa.find(n => n.id === 'c_vere');
+  const membrosMesa = filhosMesa.filter(n => n.id !== 'c_vere');
+  const membrosHTML = membrosMesa.map(n => renderNodeHTML({ ...n, filhos: [] })).join('');
+
+  const vereadoresTree = vereadores
+    ? { ...vereadores, filhos: buildTree(DB.nodes_cam, vereadores.id) }
+    : null;
+
+  return `
+    <ul>
+      <li style="padding-top:0">
+        <div class="node-wrapper"><div class="node-topico">${mesa.nome}</div></div>
+        <ul>
+          <li>
+            <div class="node-wrapper">
+              <ul class="mesa-grid">${membrosHTML}</ul>
+            </div>
+            ${vereadoresTree ? `<ul class="mesa-subgrupo">${renderNodeHTML(vereadoresTree)}</ul>` : ''}
+          </li>
+        </ul>
+      </li>
+    </ul>`;
+}
+
 window.drawOrganograma = function() {
   const actionEsq = DB.pref_topo.esq.link ? `window.open('${DB.pref_topo.esq.link}', '_blank')` : `alert('Link não configurado no Admin.')`;
   const actionDir = DB.pref_topo.dir.link ? `window.open('${DB.pref_topo.dir.link}', '_blank')` : `alert('Link não configurado no Admin.')`;
+
+  const savedVereadores = DB.nodes_cam.find(n => n.id === 'c_vere');
+  if (savedVereadores && savedVereadores.parentId !== 'c_mesa') savedVereadores.parentId = 'c_mesa';
 
   // Prefeitura
   const tPref = buildTree(DB.nodes_pref, 'root');
@@ -523,8 +560,7 @@ window.drawOrganograma = function() {
   document.getElementById('tree-pref').innerHTML = `<ul>${htmlPref}</ul>`;
 
   // Câmara
-  const tCam = buildTree(DB.nodes_cam, 'root');
-  document.getElementById('tree-cam').innerHTML = tCam.length > 0 ? `<ul>${tCam.map(renderNodeHTML).join('').replace(/<li>/, '<li style="padding-top:0">')}</ul>` : '';
+  document.getElementById('tree-cam').innerHTML = renderMesaDiretora();
 }
 
 // ==========================================
