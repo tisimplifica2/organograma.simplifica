@@ -7,158 +7,172 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --azul: #1565a8; --azul-claro: #1e7ecf; --azul-neon: #5ab4f0;
-    --fundo: #f0f5fb; --fundo-escuro: #dce8f5;
-    --cinza: #2d3a4a; --cinza-claro: #7a8fa6; --branco: #ffffff;
-    --sombra: 0 4px 24px rgba(21,101,168,0.10);
-    --sombra-hover: 0 8px 32px rgba(21,101,168,0.18);
-    --radius: 16px;
+    --azul:#1565a8;--azul-claro:#1e7ecf;--azul-neon:#5ab4f0;
+    --verde:#16a34a;--verde-claro:#dcfce7;
+    --fundo:#f0f5fb;--fundo-escuro:#dce8f5;
+    --cinza:#2d3a4a;--cinza-claro:#7a8fa6;--branco:#fff;
+    --sombra:0 4px 24px rgba(21,101,168,.10);
+    --sombra-h:0 8px 32px rgba(21,101,168,.18);
+    --radius:16px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--cinza); min-height: 100vh; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--fundo);color:var(--cinza);min-height:100vh;}
 
-  header { background: var(--azul); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 70px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.15); }
-  .header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--branco); letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
-  .header-logo span { background: var(--azul-neon); color: var(--azul); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .header-actions { display: flex; gap: 12px; align-items: center; }
-  .btn-header { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-  .btn-header:hover { background: rgba(255,255,255,0.25); }
-  .btn-admin { background: var(--azul-neon); color: var(--azul); border: none; padding: 7px 18px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  .btn-admin:hover { background: white; }
+  /* ── HEADER ── */
+  header{background:var(--azul);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:70px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.15);}
+  .header-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;color:#fff;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;}
+  .header-logo span{background:var(--azul-neon);color:var(--azul);padding:2px 8px;border-radius:6px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .header-actions{display:flex;gap:12px;align-items:center;}
+  .btn-header{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s;}
+  .btn-header:hover{background:rgba(255,255,255,.25);}
+  .btn-admin{background:var(--azul-neon);color:var(--azul);border:none;padding:7px 18px;border-radius:8px;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-admin:hover{background:#fff;}
 
-  .hero { background: linear-gradient(135deg, var(--azul) 0%, #0f4a7a 100%); padding: 40px 40px 36px; color: white; position: relative; overflow: hidden; }
-  .hero::before { content:''; position:absolute; top:-40px; right:-40px; width:280px; height:280px; border-radius:50%; background:rgba(90,180,240,0.1); }
-  .hero h1 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 6px; position: relative; }
-  .hero p { color: rgba(255,255,255,0.7); font-size: 0.9rem; position: relative; }
-  .hero-stats { display: flex; gap: 28px; margin-top: 20px; position: relative; }
-  .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--azul-neon); line-height: 1; }
-  .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  /* ── HERO ── */
+  .hero{background:linear-gradient(135deg,var(--azul) 0%,#0f4a7a 100%);padding:40px 40px 36px;color:#fff;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:280px;height:280px;border-radius:50%;background:rgba(90,180,240,.1);}
+  .hero h1{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:6px;position:relative;}
+  .hero p{color:rgba(255,255,255,.7);font-size:.9rem;position:relative;}
+  .hero-stats{display:flex;gap:28px;margin-top:20px;position:relative;}
+  .stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--azul-neon);line-height:1;}
+  .stat-label{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:2px;}
 
-  /* BUSCA */
-  .busca-bar { background: white; border-bottom: 1px solid var(--fundo-escuro); padding: 14px 40px; display: flex; gap: 12px; align-items: center; }
-  .busca-wrap { position: relative; flex: 1; max-width: 400px; }
-  .busca-input { width: 100%; padding: 9px 14px 9px 36px; border: 1.5px solid var(--fundo-escuro); border-radius: 20px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--cinza); background: var(--fundo); transition: all 0.2s; }
-  .busca-input:focus { outline: none; border-color: var(--azul-claro); background: white; }
-  .busca-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; }
-  .busca-info { font-size: 0.8rem; color: var(--cinza-claro); }
+  /* ── ABAS ── */
+  .abas-bar{background:#fff;border-bottom:1px solid var(--fundo-escuro);padding:0 40px;display:flex;gap:4px;}
+  .aba-btn{padding:12px 20px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--cinza-claro);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+  .aba-btn:hover{color:var(--azul);}
+  .aba-btn.ativa{color:var(--azul);border-bottom-color:var(--azul);font-weight:600;}
+  .aba-badge{background:var(--fundo-escuro);color:var(--cinza-claro);font-size:.68rem;padding:2px 7px;border-radius:10px;font-weight:600;}
+  .aba-btn.ativa .aba-badge{background:var(--azul);color:#fff;}
 
-  /* GRID DE SETORES */
-  .main { padding: 32px 40px; }
-  .setores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; align-items: start; }
+  /* ── BUSCA ── */
+  .busca-bar{background:#fff;border-bottom:1px solid var(--fundo-escuro);padding:12px 40px;display:flex;gap:12px;align-items:center;}
+  .busca-wrap{position:relative;flex:1;max-width:400px;}
+  .busca-input{width:100%;padding:9px 14px 9px 36px;border:1.5px solid var(--fundo-escuro);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--cinza);background:var(--fundo);transition:all .2s;}
+  .busca-input:focus{outline:none;border-color:var(--azul-claro);background:#fff;}
+  .busca-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none;}
+  .busca-info{font-size:.8rem;color:var(--cinza-claro);}
 
-  /* CARD SETOR */
-  .setor-card { background: white; border-radius: var(--radius); box-shadow: var(--sombra); overflow: hidden; transition: box-shadow 0.2s; }
-  .setor-card.sem-resultado { display: none; }
-  .setor-header { background: linear-gradient(135deg, var(--azul) 0%, #1257a0 100%); padding: 14px 18px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
-  .setor-header:hover { filter: brightness(1.08); }
-  .setor-titulo { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; color: white; flex: 1; }
-  .setor-tel { font-size: 0.72rem; color: rgba(255,255,255,0.7); margin-top: 2px; }
-  .setor-count { font-size: 0.72rem; background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .setor-toggle { color: rgba(255,255,255,0.8); font-size: 0.8rem; transition: transform 0.3s; }
-  .setor-card.aberto .setor-toggle { transform: rotate(180deg); }
-  .ramais-lista { display: none; }
-  .setor-card.aberto .ramais-lista { display: block; }
+  /* ── GRID ── */
+  .main{padding:32px 40px;}
+  .setores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;align-items:start;}
 
-  /* LINHA DE RAMAL */
-  .ramal-item { display: flex; align-items: center; gap: 12px; padding: 11px 16px; transition: background 0.15s; }
-  .ramal-item:hover { background: var(--fundo); }
-  .ramal-item + .ramal-item { border-top: 1px solid var(--fundo-escuro); }
-  .ramal-item.oculto-busca { display: none !important; }
-  .ramal-nome { flex: 1; font-size: 0.88rem; font-weight: 500; color: var(--cinza); }
-  .ramal-num { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--azul); background: var(--fundo-escuro); padding: 4px 12px; border-radius: 8px; white-space: nowrap; min-width: 60px; text-align: center; }
-  .ramal-num.vazio { color: var(--cinza-claro); background: #f5f5f5; font-weight: 400; font-size: 0.78rem; }
-  .ramal-wpp { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: #dcfce7; border-radius: 8px; text-decoration: none; font-size: 1rem; flex-shrink: 0; transition: background 0.15s; }
-  .ramal-wpp:hover { background: #bbf7d0; }
-  .setor-wpp { font-size: 0.7rem; color: #16a34a; margin-top: 1px; }
+  /* ── CARD SETOR ── */
+  .setor-card{background:#fff;border-radius:var(--radius);box-shadow:var(--sombra);overflow:hidden;transition:box-shadow .2s;}
+  .setor-card.sem-resultado{display:none;}
+  .setor-header{background:linear-gradient(135deg,var(--azul) 0%,#1257a0 100%);padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  .setor-header:hover{filter:brightness(1.08);}
+  .setor-titulo{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#fff;flex:1;}
+  .setor-tel{font-size:.72rem;color:rgba(255,255,255,.7);margin-top:2px;}
+  .setor-count{font-size:.72rem;background:rgba(255,255,255,.2);color:#fff;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+  .setor-toggle{color:rgba(255,255,255,.8);font-size:.8rem;transition:transform .3s;}
+  .setor-card.aberto .setor-toggle{transform:rotate(180deg);}
+  .ramais-lista{display:none;}
+  .setor-card.aberto .ramais-lista{display:block;}
 
-  /* MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
-  .modal-overlay.aberto { display: flex; }
-  @keyframes slideUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  /* Setor com telefone apenas (sem pessoas) */
+  .setor-card.telefone-only .setor-header{cursor:default;}
+  .setor-card.telefone-only .setor-toggle{display:none;}
 
-  .modal-login { background: white; border-radius: 20px; padding: 36px; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: slideUp 0.25s ease; }
-  .modal-login h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--azul); margin-bottom: 6px; }
-  .modal-login p { font-size: 0.88rem; color: var(--cinza-claro); margin-bottom: 24px; }
-  .modal-login input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--cinza); background: var(--fundo); margin-bottom: 12px; }
-  .modal-login input:focus { outline: none; border-color: var(--azul-claro); background: white; }
-  .modal-btns { display: flex; gap: 10px; margin-top: 8px; }
-  .btn-primary { flex: 1; background: var(--azul); color: white; border: none; padding: 12px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
-  .btn-primary:hover { background: var(--azul-claro); }
-  .btn-secondary { background: var(--fundo); color: var(--cinza); border: none; padding: 12px 20px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; }
-  .erro-msg { color: #dc2626; font-size: 0.82rem; margin-top: -4px; margin-bottom: 8px; display: none; }
+  /* ── LINHA RAMAL ── */
+  .ramal-item{display:flex;align-items:center;gap:10px;padding:11px 16px;transition:background .15s;}
+  .ramal-item:hover{background:var(--fundo);}
+  .ramal-item+.ramal-item{border-top:1px solid var(--fundo-escuro);}
+  .ramal-item.oculto-busca{display:none!important;}
+  .ramal-nome{flex:1;font-size:.88rem;font-weight:500;color:var(--cinza);}
 
-  /* PAINEL ADMIN */
-  .painel { display: none; position: fixed; inset: 0; background: var(--fundo); z-index: 200; overflow-y: auto; }
-  .painel.aberto { display: block; }
-  .painel-header { background: var(--azul); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
-  .painel-header h2 { font-family: 'Syne', sans-serif; font-weight: 800; color: white; font-size: 1.2rem; }
-  .btn-fechar { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; }
-  .btn-fechar:hover { background: rgba(255,255,255,0.3); }
-  .painel-body { padding: 32px 40px; max-width: 860px; }
-  .painel-body h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--azul); margin-bottom: 16px; margin-top: 36px; padding-bottom: 8px; border-bottom: 2px solid var(--fundo-escuro); }
-  .painel-body h3:first-child { margin-top: 0; }
-  .form-section { background: white; border-radius: var(--radius); padding: 24px; box-shadow: var(--sombra); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .form-grid-3 { display: grid; grid-template-columns: 2fr 1fr auto; gap: 12px; align-items: end; }
-  .form-full { grid-column: 1 / -1; }
-  .field-label { font-size: 0.72rem; font-weight: 600; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-  .form-section input, .form-section select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; background: var(--fundo); color: var(--cinza); transition: border-color 0.2s; }
-  .form-section input:focus, .form-section select:focus { outline: none; border-color: var(--azul-claro); background: white; }
-  .btn-add { background: var(--azul); color: white; border: none; padding: 11px 20px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; white-space: nowrap; }
-  .btn-add:hover { background: var(--azul-claro); }
+  /* Número clicável para copiar */
+  .ramal-num{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--azul);background:var(--fundo-escuro);padding:4px 10px;border-radius:8px;white-space:nowrap;min-width:56px;text-align:center;cursor:pointer;transition:all .15s;border:none;position:relative;}
+  .ramal-num:hover{background:var(--azul);color:#fff;}
+  .ramal-num.vazio{color:var(--cinza-claro);background:#f5f5f5;font-weight:400;font-size:.78rem;cursor:default;}
+  .ramal-num.vazio:hover{background:#f5f5f5;color:var(--cinza-claro);}
 
-  .lista-admin { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .item-admin { background: white; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .item-admin-info { flex: 1; min-width: 0; }
-  .item-admin-info strong { font-size: 0.88rem; font-weight: 600; color: var(--cinza); display: block; }
-  .item-admin-info span { font-size: 0.75rem; color: var(--cinza-claro); }
-  .item-admin-acoes { display: flex; gap: 6px; flex-shrink: 0; }
-  .btn-edit { background: #e0f0ff; color: var(--azul); border: none; padding: 5px 10px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; }
-  .btn-edit:hover { background: #c7e2fa; }
-  .btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 5px 10px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; }
-  .btn-del:hover { background: #fecaca; }
-  .ramal-badge { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--azul); background: var(--fundo-escuro); padding: 3px 10px; border-radius: 6px; flex-shrink: 0; }
+  /* Tel do setor clicável */
+  .setor-tel-btn{background:none;border:none;color:rgba(255,255,255,.85);font-size:.72rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px;transition:opacity .15s;}
+  .setor-tel-btn:hover{opacity:.7;}
 
-  .btn-salvar-tudo { background: var(--azul-neon); color: var(--azul); border: none; padding: 14px 32px; border-radius: 12px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 32px; transition: all 0.2s; }
-  .btn-salvar-tudo:hover { background: white; box-shadow: var(--sombra-hover); }
-  .btn-salvar-tudo:disabled { opacity: 0.6; cursor: not-allowed; }
-  .aviso-salvar { padding: 12px 16px; border-radius: 10px; font-size: 0.85rem; margin-top: 16px; display: none; }
-  .aviso-salvar.sucesso { background: var(--fundo-escuro); color: var(--azul); }
-  .aviso-salvar.erro { background: #fee2e2; color: #dc2626; }
+  /* WhatsApp */
+  .ramal-wpp{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--verde-claro);border-radius:8px;text-decoration:none;font-size:1rem;flex-shrink:0;transition:background .15s;border:none;cursor:pointer;}
+  .ramal-wpp:hover{background:#bbf7d0;}
 
-  /* MODAL EDITAR RAMAL */
-  .modal-editar { background: white; border-radius: 20px; padding: 32px; width: 90%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: slideUp 0.25s ease; }
-  .modal-editar h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--azul); margin-bottom: 20px; }
-  .modal-editar input, .modal-editar select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--cinza); background: var(--fundo); margin-bottom: 12px; }
-  .modal-editar input:focus, .modal-editar select:focus { outline: none; border-color: var(--azul-claro); background: white; }
+  /* Toast de cópia */
+  .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:12px;font-size:.85rem;font-weight:500;opacity:0;transition:all .25s;z-index:9999;pointer-events:none;white-space:nowrap;}
+  .toast.visivel{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(240,245,251,0.9); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
-  .loading-overlay.ativo { display: flex; }
-  .spinner { width: 48px; height: 48px; border: 4px solid var(--fundo-escuro); border-top-color: var(--azul); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-txt { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--azul); font-size: 0.9rem; }
+  /* ── MODAIS ── */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+  .modal-overlay.aberto{display:flex;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  .modal-login{background:#fff;border-radius:20px;padding:36px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .25s ease;}
+  .modal-login h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--azul);margin-bottom:6px;}
+  .modal-login p{font-size:.88rem;color:var(--cinza-claro);margin-bottom:24px;}
+  .modal-login input{width:100%;padding:12px 16px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--cinza);background:var(--fundo);margin-bottom:12px;}
+  .modal-login input:focus{outline:none;border-color:var(--azul-claro);background:#fff;}
+  .modal-btns{display:flex;gap:10px;margin-top:8px;}
+  .btn-primary{flex:1;background:var(--azul);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;}
+  .btn-primary:hover{background:var(--azul-claro);}
+  .btn-secondary{background:var(--fundo);color:var(--cinza);border:none;padding:12px 20px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;cursor:pointer;}
+  .erro-msg{color:#dc2626;font-size:.82rem;margin-top:-4px;margin-bottom:8px;display:none;}
+  .modal-editar{background:#fff;border-radius:20px;padding:32px;width:90%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .25s ease;}
+  .modal-editar h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--azul);margin-bottom:20px;}
+  .modal-editar input,.modal-editar select{width:100%;padding:11px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--cinza);background:var(--fundo);margin-bottom:12px;}
+  .modal-editar input:focus,.modal-editar select:focus{outline:none;border-color:var(--azul-claro);background:#fff;}
 
-  footer { background: var(--azul); color: rgba(255,255,255,0.6); text-align: center; padding: 20px; font-size: 0.8rem; margin-top: 48px; }
-  footer strong { color: white; }
-
-  @media (max-width: 640px) {
-    header { padding: 0 16px; }
-    .hero { padding: 28px 16px 24px; }
-    .busca-bar { padding: 10px 16px; }
-    .main { padding: 20px 12px; }
-    .setores-grid { grid-template-columns: 1fr; }
-    .painel-body { padding: 20px 16px; }
-    .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
-    .form-full { grid-column: 1; }
+  /* ── PAINEL ADMIN ── */
+  .painel{display:none;position:fixed;inset:0;background:var(--fundo);z-index:200;overflow-y:auto;}
+  .painel.aberto{display:block;}
+  .painel-header{background:var(--azul);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+  .painel-header h2{font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:1.2rem;}
+  .btn-fechar{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;}
+  .btn-fechar:hover{background:rgba(255,255,255,.3);}
+  .painel-body{padding:32px 40px;max-width:860px;}
+  .painel-body h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--azul);margin-bottom:16px;margin-top:36px;padding-bottom:8px;border-bottom:2px solid var(--fundo-escuro);}
+  .painel-body h3:first-child{margin-top:0;}
+  .form-section{background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--sombra);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-grid-3{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end;}
+  .form-full{grid-column:1/-1;}
+  .field-label{font-size:.72rem;font-weight:600;color:var(--cinza-claro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+  .form-section input,.form-section select{width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;background:var(--fundo);color:var(--cinza);transition:border-color .2s;}
+  .form-section input:focus,.form-section select:focus{outline:none;border-color:var(--azul-claro);background:#fff;}
+  .btn-add{background:var(--azul);color:#fff;border:none;padding:11px 20px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;white-space:nowrap;}
+  .btn-add:hover{background:var(--azul-claro);}
+  .lista-admin{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+  .item-admin{background:#fff;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .item-admin-info{flex:1;min-width:0;}
+  .item-admin-info strong{font-size:.88rem;font-weight:600;color:var(--cinza);display:block;}
+  .item-admin-info span{font-size:.75rem;color:var(--cinza-claro);}
+  .item-admin-acoes{display:flex;gap:6px;flex-shrink:0;}
+  .btn-edit{background:#e0f0ff;color:var(--azul);border:none;padding:5px 10px;border-radius:7px;font-size:.8rem;cursor:pointer;}
+  .btn-edit:hover{background:#c7e2fa;}
+  .btn-del{background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:7px;font-size:.8rem;cursor:pointer;}
+  .btn-del:hover{background:#fecaca;}
+  .ramal-badge{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:var(--azul);background:var(--fundo-escuro);padding:3px 10px;border-radius:6px;flex-shrink:0;}
+  .btn-salvar-tudo{background:var(--azul-neon);color:var(--azul);border:none;padding:14px 32px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;margin-top:32px;transition:all .2s;}
+  .btn-salvar-tudo:hover{background:#fff;box-shadow:var(--sombra-h);}
+  .btn-salvar-tudo:disabled{opacity:.6;cursor:not-allowed;}
+  .aviso-salvar{padding:12px 16px;border-radius:10px;font-size:.85rem;margin-top:16px;display:none;}
+  .aviso-salvar.sucesso{background:var(--fundo-escuro);color:var(--azul);}
+  .aviso-salvar.erro{background:#fee2e2;color:#dc2626;}
+  .loading-overlay{display:none;position:fixed;inset:0;background:rgba(240,245,251,.9);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+  .loading-overlay.ativo{display:flex;}
+  .spinner{width:48px;height:48px;border:4px solid var(--fundo-escuro);border-top-color:var(--azul);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-txt{font-family:'Syne',sans-serif;font-weight:700;color:var(--azul);font-size:.9rem;}
+  footer{background:var(--azul);color:rgba(255,255,255,.6);text-align:center;padding:20px;font-size:.8rem;margin-top:48px;}
+  footer strong{color:#fff;}
+  @media(max-width:640px){
+    header{padding:0 16px;}.hero{padding:28px 16px 24px;}
+    .abas-bar{padding:0 16px;}.busca-bar{padding:10px 16px;}
+    .main{padding:20px 12px;}.setores-grid{grid-template-columns:1fr;}
+    .painel-body{padding:20px 16px;}.form-grid,.form-grid-3{grid-template-columns:1fr;}.form-full{grid-column:1;}
   }
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-txt" id="loadingTxt">Carregando ramais...</div>
-</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-txt" id="loadingTxt">Carregando ramais...</div></div>
+<div class="toast" id="toast"></div>
 
 <header>
   <div class="header-logo">Simplifica Timbó <span>Ramais</span></div>
@@ -175,6 +189,16 @@
     <div class="stat"><div class="stat-num" id="totalRamais">—</div><div class="stat-label">Ramais</div></div>
     <div class="stat"><div class="stat-num" id="totalSetores">—</div><div class="stat-label">Setores</div></div>
   </div>
+</div>
+
+<!-- ABAS: Prefeitura / Simplifica -->
+<div class="abas-bar">
+  <button class="aba-btn ativa" id="abaBtn-prefeitura" onclick="trocarAba('prefeitura',this)">
+    🏛️ Prefeitura <span class="aba-badge" id="abaBadge-prefeitura">—</span>
+  </button>
+  <button class="aba-btn" id="abaBtn-simplifica" onclick="trocarAba('simplifica',this)">
+    🏢 Simplifica Timbó <span class="aba-badge" id="abaBadge-simplifica">—</span>
+  </button>
 </div>
 
 <div class="busca-bar">
@@ -214,8 +238,13 @@
     <input type="text" id="editarSetorNome" placeholder="Ex: Recursos Humanos">
     <div class="field-label">Telefone geral</div>
     <input type="text" id="editarSetorTelEdit" placeholder="Ex: 3380-7062">
-    <div class="field-label">WhatsApp do setor</div>
-    <input type="text" id="editarSetorWppEdit" placeholder="Ex: 47991798758 (só números)">
+    <div class="field-label">WhatsApp do setor (só números)</div>
+    <input type="text" id="editarSetorWppEdit" placeholder="Ex: 47991798758">
+    <div class="field-label">Aba</div>
+    <select id="editarSetorAba">
+      <option value="prefeitura">🏛️ Prefeitura (Externo)</option>
+      <option value="simplifica">🏢 Simplifica (Interno)</option>
+    </select>
     <div class="modal-btns">
       <button class="btn-primary" onclick="salvarEdicaoSetor()">💾 Salvar</button>
       <button class="btn-secondary" onclick="fecharEditarSetor()">Cancelar</button>
@@ -233,8 +262,8 @@
     <input type="text" id="editarNome" placeholder="Nome da pessoa">
     <div class="field-label">Ramal</div>
     <input type="text" id="editarRamal" placeholder="Ex: 7041">
-    <div class="field-label">WhatsApp (opcional)</div>
-    <input type="text" id="editarWpp" placeholder="Ex: 47991798758 (só números)">
+    <div class="field-label">WhatsApp (opcional, só números)</div>
+    <input type="text" id="editarWpp" placeholder="Ex: 47991798758">
     <div class="modal-btns">
       <button class="btn-primary" onclick="salvarEdicao()">💾 Salvar</button>
       <button class="btn-secondary" onclick="fecharEditar()">Cancelar</button>
@@ -249,13 +278,19 @@
     <button class="btn-fechar" onclick="fecharPainel()">✕ Fechar</button>
   </div>
   <div class="painel-body">
-
     <h3>➕ Adicionar Setor</h3>
     <div class="form-section">
       <div class="form-grid">
         <div><div class="field-label">Nome do setor</div><input type="text" id="novoSetorNome" placeholder="Ex: Recursos Humanos"></div>
         <div><div class="field-label">Telefone geral (opcional)</div><input type="text" id="novoSetorTel" placeholder="Ex: 3380-7062"></div>
-        <div><div class="field-label">WhatsApp do setor (opcional)</div><input type="text" id="novoSetorWpp" placeholder="Ex: 47991798758 (só números)"></div>
+        <div><div class="field-label">WhatsApp (opcional, só números)</div><input type="text" id="novoSetorWpp" placeholder="Ex: 47991798758"></div>
+        <div>
+          <div class="field-label">Aba</div>
+          <select id="novoSetorAba">
+            <option value="prefeitura">🏛️ Prefeitura (Externo)</option>
+            <option value="simplifica">🏢 Simplifica (Interno)</option>
+          </select>
+        </div>
         <div class="form-full" style="display:flex;justify-content:flex-end">
           <button class="btn-add" onclick="adicionarSetor()">+ Adicionar Setor</button>
         </div>
@@ -268,18 +303,9 @@
     <h3>➕ Adicionar Ramal</h3>
     <div class="form-section">
       <div class="form-grid-3">
-        <div>
-          <div class="field-label">Nome da pessoa</div>
-          <input type="text" id="novaNome" placeholder="Nome completo">
-        </div>
-        <div>
-          <div class="field-label">Ramal</div>
-          <input type="text" id="novoRamal" placeholder="Ex: 7041">
-        </div>
-        <div>
-          <div class="field-label">WhatsApp (opcional)</div>
-          <input type="text" id="novoWpp" placeholder="Ex: 47991798758">
-        </div>
+        <div><div class="field-label">Nome da pessoa</div><input type="text" id="novaNome" placeholder="Nome completo"></div>
+        <div><div class="field-label">Ramal</div><input type="text" id="novoRamal" placeholder="Ex: 7041"></div>
+        <div><div class="field-label">WhatsApp (opcional)</div><input type="text" id="novoWpp" placeholder="Ex: 47991798758"></div>
       </div>
       <div style="margin-top:12px">
         <div class="field-label">Setor</div>
@@ -290,9 +316,9 @@
       </div>
     </div>
 
-    <h3>📋 Setores e Ramais cadastrados</h3>
+    <h3>📋 Ramais cadastrados</h3>
     <div class="filtro-admin-wrap" style="margin-bottom:8px">
-      <select id="filtroSetorAdmin" onchange="renderListaAdmin()" style="padding:8px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:white;color:var(--cinza);max-width:300px;width:100%">
+      <select id="filtroSetorAdmin" onchange="renderListaAdmin()" style="padding:8px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;background:#fff;color:var(--cinza);max-width:300px;width:100%">
         <option value="">Todos os setores</option>
       </select>
     </div>
@@ -304,258 +330,343 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
-    authDomain: "simplifica-timbo.firebaseapp.com",
-    projectId: "simplifica-timbo",
-    storageBucket: "simplifica-timbo.firebasestorage.app",
-    messagingSenderId: "651621474575",
-    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
-  };
+const firebaseConfig={apiKey:"AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",authDomain:"simplifica-timbo.firebaseapp.com",projectId:"simplifica-timbo",storageBucket:"simplifica-timbo.firebasestorage.app",messagingSenderId:"651621474575",appId:"1:651621474575:web:f9d75bcb41069038971e7a"};
+const app=initializeApp(firebaseConfig), db=getFirestore(app), SENHA_ADMIN="simplifica2024";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const SENHA_ADMIN = "simplifica2024";
+// ── DADOS PADRÃO (extraídos do DOCX Março/2025) ──────────────
+const RAMAIS_PADRAO = [{"nome":"Administração","tel":"3380-7041","wpp":"","pessoas":[{"nome":"João Luiz Merini Moser","ramal":"7041","wpp":""},{"nome":"Fabiana Knopka","ramal":"7041","wpp":""}],"aba":"prefeitura"},{"nome":"Assistência Social","tel":"3380-7160","wpp":"4733807160","pessoas":[{"nome":"Cristiane E. Longo","ramal":"7167","wpp":""},{"nome":"Deise Hahnebach","ramal":"7171","wpp":""},{"nome":"Franciele Sasse","ramal":"7161","wpp":""},{"nome":"Recepção Assistência Social","ramal":"7160","wpp":""},{"nome":"Renata dos Santos Klee","ramal":"7174","wpp":""},{"nome":"Thereza C. L. Barros","ramal":"7163","wpp":""}],"aba":"prefeitura"},{"nome":"Cadastro Imobiliário","tel":"","wpp":"","pessoas":[{"nome":"Camile Buck","ramal":"7140","wpp":""},{"nome":"Christian Ruan Teske","ramal":"7134","wpp":""},{"nome":"Ellen Habeck","ramal":"7142","wpp":""},{"nome":"Joice A. Guthner","ramal":"7141","wpp":""}],"aba":"prefeitura"},{"nome":"Câmara de Vereadores","tel":"3382-2177","wpp":"","pessoas":[{"nome":"Ailton Bertoldi","ramal":"209","wpp":""},{"nome":"Angélica Krieser Spiess","ramal":"216","wpp":""},{"nome":"Cristiano R. D. Poli","ramal":"214","wpp":""},{"nome":"Djonatha Cristofolini","ramal":"201","wpp":""},{"nome":"Giani Z. Seidel","ramal":"215","wpp":""},{"nome":"Joel R. Raiter","ramal":"226","wpp":""},{"nome":"Marjorie Borges de Lima","ramal":"231","wpp":""},{"nome":"Patrícia Agostini","ramal":"200","wpp":""},{"nome":"Ruben Parno","ramal":"206","wpp":""},{"nome":"Vanessa G. Maas","ramal":"224","wpp":""}],"aba":"prefeitura"},{"nome":"Setor de Compras","tel":"","wpp":"","pessoas":[{"nome":"André Luiz dos Santos","ramal":"7048","wpp":""},{"nome":"Edio Frankenberger","ramal":"7049","wpp":""},{"nome":"Pablo A. dos Santos","ramal":"7050","wpp":""},{"nome":"Tayná Lais Hiller","ramal":"7048","wpp":""}],"aba":"prefeitura"},{"nome":"Comunicação","tel":"3380-7025","wpp":"","pessoas":[{"nome":"Rafael Ávila Diniz","ramal":"7025","wpp":""},{"nome":"Renan Rafael Ribeiro","ramal":"7025","wpp":""},{"nome":"Rodrigo Rogerio Ramos","ramal":"7026","wpp":""},{"nome":"Maria da Silva","ramal":"7028","wpp":""}],"aba":"prefeitura"},{"nome":"Conselho Tutelar","tel":"3380-7180","wpp":"","pessoas":[{"nome":"Cleusa V. Bommel","ramal":"7182","wpp":""},{"nome":"Graziela Cattoni Buzzi","ramal":"7183","wpp":""},{"nome":"Ivoni B. Correia","ramal":"7180","wpp":""},{"nome":"Mayke Heidrich","ramal":"7182","wpp":""},{"nome":"Mayara Gellert","ramal":"7180","wpp":""},{"nome":"Recepção Conselho Tutelar","ramal":"7180","wpp":""},{"nome":"Rosangela A. S. Gumz","ramal":"7181","wpp":""},{"nome":"Sonia Ribeiro","ramal":"7180","wpp":""}],"aba":"prefeitura"},{"nome":"Plantão Conselho Tutelar","tel":"99179-3997","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"Motorista Conselho Tutelar","tel":"99179-9395 99268-0737","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"Contabilidade","tel":"3380-7052","wpp":"","pessoas":[{"nome":"Cristiane Cardozo","ramal":"7054","wpp":""},{"nome":"Juliana C. C. Eloy","ramal":"7054","wpp":""},{"nome":"Kathia E. Gumz","ramal":"7052","wpp":""},{"nome":"Meyke E. D. Eloy","ramal":"7053","wpp":""},{"nome":"Rodrigo Dall´Onder Spaniol","ramal":"7044","wpp":""},{"nome":"Romero Espindola e Silva","ramal":"7042","wpp":""}],"aba":"prefeitura"},{"nome":"Controladoria","tel":"3380-7039","wpp":"","pessoas":[{"nome":"Graciela I. Uber Gomes","ramal":"7039","wpp":""},{"nome":"Karine Kaspareit","ramal":"7039","wpp":""},{"nome":"Thomaz H. Campregher","ramal":"7039","wpp":""}],"aba":"prefeitura"},{"nome":"CRAS","tel":"3380-7440","wpp":"4733807440","pessoas":[{"nome":"Cristiana R. P. S. Giovanella","ramal":"7445","wpp":""},{"nome":"Recepção CRAS","ramal":"7440","wpp":""},{"nome":"Sandra B. K. Fernandes","ramal":"7441","wpp":""},{"nome":"Silvia F. B. Dalagnolo","ramal":"7442","wpp":""},{"nome":"Telma","ramal":"7443","wpp":""}],"aba":"prefeitura"},{"nome":"Demutran","tel":"3380-7145","wpp":"47999430831","pessoas":[{"nome":"Deivid Maas","ramal":"7145","wpp":""},{"nome":"Fabiane Klitzke","ramal":"7145","wpp":""}],"aba":"prefeitura"},{"nome":"Educação","tel":"3380-7700","wpp":"","pessoas":[{"nome":"Alcilene C. S. Silva","ramal":"7723","wpp":""},{"nome":"Angela Hahnebach","ramal":"7708","wpp":""},{"nome":"Bruna N. Butzke","ramal":"7721","wpp":""},{"nome":"Carla Soraya Groni","ramal":"7725","wpp":""},{"nome":"Carlos C. Morastoni","ramal":"7705","wpp":""},{"nome":"Claracy M. F. Butzke","ramal":"7722","wpp":""},{"nome":"Cristiane Bonatti","ramal":"7707","wpp":""},{"nome":"Dirlene V. Salvador","ramal":"7706","wpp":""},{"nome":"Flavia Menestrina","ramal":"7711","wpp":""},{"nome":"Jovina M. Berri","ramal":"7712","wpp":""},{"nome":"Jéssica D. Soares","ramal":"7724","wpp":""},{"nome":"Josiane Bosse","ramal":"7724","wpp":""},{"nome":"Juliana G. M. Gonçalves","ramal":"7723","wpp":""},{"nome":"Leocadia R. T. Bogo","ramal":"7709","wpp":""},{"nome":"Leogir A. Vilvert (Recepção)","ramal":"7700","wpp":""},{"nome":"Mayra E. Mike","ramal":"7715","wpp":""},{"nome":"Roger D. P. Drews","ramal":"7726","wpp":""},{"nome":"Rubia Campregher","ramal":"7704","wpp":""},{"nome":"Sabrina Muraro","ramal":"7717","wpp":""},{"nome":"Sandra R. Sardagna","ramal":"7705","wpp":""}],"aba":"prefeitura"},{"nome":"Empenhos","tel":"3380-7045","wpp":"","pessoas":[{"nome":"Anderson H. Azevedo","ramal":"7045","wpp":""},{"nome":"Elisete Gadotti","ramal":"7046","wpp":""},{"nome":"Nathalya B. G. dos Santos","ramal":"7045","wpp":""},{"nome":"Scheila H. Zickuhr","ramal":"7045","wpp":""}],"aba":"prefeitura"},{"nome":"Fundação de Cultura e Turismo","tel":"3380-7600","wpp":"","pessoas":[{"nome":"Arquivo Público","ramal":"7636","wpp":""},{"nome":"Auxiliar Compras CIC","ramal":"7612","wpp":""},{"nome":"David M. Camargo","ramal":"7613","wpp":""},{"nome":"Denielle Parno","ramal":"7604","wpp":""},{"nome":"Inês Klaumann","ramal":"7600","wpp":""},{"nome":"Jarbas Dallabrida","ramal":"7606","wpp":""},{"nome":"Kenia G. Nunes","ramal":"7610","wpp":""}],"aba":"prefeitura"},{"nome":"Fluxo de Processo","tel":"3380-7001","wpp":"","pessoas":[{"nome":"Marciana T. Berri","ramal":"7001","wpp":""},{"nome":"Sâmara O. Tinoco","ramal":"7001","wpp":""},{"nome":"Vitor A. B. L. Zoboli","ramal":"7001","wpp":""}],"aba":"prefeitura"},{"nome":"FME","tel":"3380-7650","wpp":"","pessoas":[{"nome":"Anderson E. Pedrelli","ramal":"7656","wpp":""},{"nome":"Simone Sebold","ramal":"7657","wpp":""}],"aba":"prefeitura"},{"nome":"Gabinete Prefeito","tel":"3380-7002","wpp":"","pessoas":[{"nome":"Elis M. Possamai","ramal":"7002","wpp":""},{"nome":"Gabriel Nones","ramal":"7002","wpp":""},{"nome":"Jean F. Schutz","ramal":"7002","wpp":""}],"aba":"prefeitura"},{"nome":"Gabinete Vice-Prefeito","tel":"3380-7007","wpp":"","pessoas":[{"nome":"Christiane B. Vieweg","ramal":"7007","wpp":""}],"aba":"prefeitura"},{"nome":"Guarita Prefeitura","tel":"3380-7102","wpp":"","pessoas":[{"nome":"Guarita","ramal":"7102","wpp":""}],"aba":"prefeitura"},{"nome":"Jurídico","tel":"3380-7010","wpp":"","pessoas":[{"nome":"Cassiano S. Karsten","ramal":"7013","wpp":""},{"nome":"Daniel A. Hornburg","ramal":"7017","wpp":""},{"nome":"Fabiana N. K. Siega","ramal":"7011","wpp":""},{"nome":"Jorge Mateus M. Junior","ramal":"7018","wpp":""},{"nome":"Jean P. B. Museka","ramal":"7016","wpp":""},{"nome":"Léia Durcksen (Recepção)","ramal":"7010","wpp":""},{"nome":"Marcos Gadotti","ramal":"7012","wpp":""},{"nome":"Otávio F. Betanin","ramal":"7015","wpp":""},{"nome":"Pamela A. Campregher","ramal":"7014","wpp":""}],"aba":"prefeitura"},{"nome":"Licitações","tel":"3380-7035","wpp":"","pessoas":[{"nome":"Ainá Vital","ramal":"7034","wpp":""},{"nome":"Amanda Zumach","ramal":"7038","wpp":""},{"nome":"Angela Preuss","ramal":"7036","wpp":""},{"nome":"Barbara Hochheim","ramal":"7037","wpp":""},{"nome":"Patrícia Conzatti","ramal":"7038","wpp":""},{"nome":"Rose Maria D. da Silva","ramal":"7038","wpp":""}],"aba":"prefeitura"},{"nome":"Medicina do Trabalho","tel":"3380-7100","wpp":"","pessoas":[{"nome":"Maiza F. dos Reis Silva","ramal":"7100","wpp":""}],"aba":"prefeitura"},{"nome":"Meio Ambiente","tel":"3380-7147","wpp":"47999431641","pessoas":[{"nome":"Carla Groni","ramal":"7147","wpp":""},{"nome":"Letícia B. Fávaro","ramal":"7147","wpp":""}],"aba":"prefeitura"},{"nome":"Obras","tel":"3380-7550","wpp":"","pessoas":[{"nome":"Anderson D. Raddatz","ramal":"7557","wpp":""},{"nome":"Cristiani Butzke","ramal":"7554","wpp":""},{"nome":"Felipe Kunz","ramal":"7557","wpp":""},{"nome":"Lidiane Reinicke","ramal":"7557","wpp":""},{"nome":"Tatiane F. Silva","ramal":"7557","wpp":""}],"aba":"prefeitura"},{"nome":"Patrimônio","tel":"3380-7090","wpp":"4733807090","pessoas":[{"nome":"André V. De Mello","ramal":"7090","wpp":""},{"nome":"Lucas E. Maus","ramal":"7090","wpp":""}],"aba":"prefeitura"},{"nome":"Patrimônio Imóveis","tel":"3380-7095","wpp":"","pessoas":[{"nome":"Adriana M. G. Frankenberger","ramal":"7095","wpp":""},{"nome":"Edson José Bona","ramal":"7095","wpp":""}],"aba":"prefeitura"},{"nome":"Planejamento","tel":"3380-7125","wpp":"","pessoas":[{"nome":"Ana P. C. Santos","ramal":"7125","wpp":""},{"nome":"Bernardo A. Cezarotto","ramal":"7132","wpp":""},{"nome":"Carla Inês Fachini","ramal":"7130","wpp":""},{"nome":"Cledir Ferrari","ramal":"7130","wpp":""},{"nome":"Convênios - Pamela","ramal":"7133","wpp":""},{"nome":"Daysi C. Longen","ramal":"7124","wpp":""},{"nome":"Debora Barth","ramal":"7122","wpp":""},{"nome":"Gabriele D. Rocha","ramal":"7126","wpp":""},{"nome":"Gladys I. K. Taparello","ramal":"7121","wpp":""},{"nome":"Jaime J. Ferens","ramal":"7126","wpp":""},{"nome":"Jean Vargas","ramal":"7151","wpp":""},{"nome":"Jonathan S. Nunes","ramal":"7126","wpp":""},{"nome":"Lainara de Souza","ramal":"7124","wpp":""},{"nome":"Leandro Ludwig","ramal":"7131","wpp":""},{"nome":"Luiza T. Muller","ramal":"7124","wpp":""},{"nome":"Luiz C. Gama A. Junior","ramal":"7125","wpp":""},{"nome":"Marcela Oberziner","ramal":"7124","wpp":""},{"nome":"Nágila Lucietti Schmidt","ramal":"7124","wpp":""},{"nome":"Osvaldo R. Brodwolf","ramal":"7124","wpp":""},{"nome":"Paulo Henrique Kaus","ramal":"7121","wpp":""},{"nome":"Rafael Constante","ramal":"7129","wpp":""},{"nome":"Robertson Frare","ramal":"7123","wpp":""},{"nome":"Rodrigo Becker","ramal":"7133","wpp":""},{"nome":"Silvana S. Toresan","ramal":"7132","wpp":""},{"nome":"Thaenne H. Beber","ramal":"7126","wpp":""},{"nome":"Vivian L. Maas Barbosa","ramal":"7128","wpp":""}],"aba":"prefeitura"},{"nome":"Recursos Humanos","tel":"3380-7062 / 3380-7063","wpp":"47996130090","pessoas":[{"nome":"Daiane Gonçalves","ramal":"7065","wpp":""},{"nome":"Junior Pasold","ramal":"7061","wpp":""},{"nome":"Katia F. R. Schwaemmle","ramal":"7063","wpp":""},{"nome":"Ketiuli D. A. de Oliveira Matos","ramal":"7063","wpp":""},{"nome":"Larissa T. Bayer","ramal":"7061","wpp":""},{"nome":"Lourdes Moser","ramal":"7064","wpp":""},{"nome":"Mara R. Borchardt","ramal":"7064","wpp":""},{"nome":"Matheus H. Bendotti","ramal":"7062","wpp":""}],"aba":"prefeitura"},{"nome":"Samae","tel":"3380-7500","wpp":"","pessoas":[{"nome":"Anderson Sperber","ramal":"7532","wpp":""},{"nome":"Fabio Valdir Caikoski","ramal":"7510","wpp":""},{"nome":"Rodrigo Catafesta","ramal":"7522","wpp":""},{"nome":"Maurilia Maukewich","ramal":"7500","wpp":""},{"nome":"Anna Paula Bona","ramal":"7518","wpp":""},{"nome":"Mariana Machado Arantes","ramal":"7512","wpp":""},{"nome":"Hilton","ramal":"7549","wpp":""},{"nome":"Fabio M.","ramal":"7549","wpp":""},{"nome":"Beatris Z. Campregher","ramal":"7525","wpp":""},{"nome":"James M. Zatelli","ramal":"7507","wpp":""},{"nome":"Paola M. Marchetti","ramal":"7508","wpp":""},{"nome":"Gustavo","ramal":"7543","wpp":""},{"nome":"Cleiton","ramal":"7543","wpp":""},{"nome":"Cláudio Klitzke","ramal":"7542","wpp":""},{"nome":"Luciane Zenke","ramal":"7509","wpp":""},{"nome":"Keli F. Cattoni","ramal":"7519","wpp":""},{"nome":"Rosângela C. de Jesus","ramal":"7517","wpp":""},{"nome":"Graziele B. Belarmino","ramal":"7513","wpp":""},{"nome":"Andressa","ramal":"7505","wpp":""},{"nome":"Ademir","ramal":"7538","wpp":""},{"nome":"Felipe","ramal":"7538","wpp":""},{"nome":"Osni","ramal":"7538","wpp":""},{"nome":"Roger","ramal":"7538","wpp":""},{"nome":"Ernani Siebert","ramal":"7529","wpp":""},{"nome":"Silvio S. Sdrigotti","ramal":"7521","wpp":""},{"nome":"Ana Paula Pacheco","ramal":"7531","wpp":""},{"nome":"Walter Mazzi","ramal":"7521","wpp":""},{"nome":"Luciana G. Giovanella","ramal":"7526","wpp":""},{"nome":"Sergio","ramal":"7527","wpp":""},{"nome":"Rafael C. Neto","ramal":"7516","wpp":""},{"nome":"Edson Adam","ramal":"7536","wpp":""},{"nome":"Andressa Largura","ramal":"7536","wpp":""},{"nome":"Antônio M. Roza","ramal":"7537","wpp":""},{"nome":"Adriano Adam","ramal":"7537","wpp":""},{"nome":"Felipe T. Schiocchet","ramal":"7537","wpp":""},{"nome":"Sandro da R. Figueiredo","ramal":"7537","wpp":""}],"aba":"prefeitura"},{"nome":"Segurança do Trabalho","tel":"3380-7098","wpp":"","pessoas":[{"nome":"Horst Sonntag","ramal":"7098","wpp":""}],"aba":"prefeitura"},{"nome":"Simplifica Timbó","tel":"3380-7900","wpp":"","pessoas":[{"nome":"Agricultura - Odair J. Tamanini","ramal":"7941","wpp":""},{"nome":"Agricultura - Wander J. Westphal","ramal":"7942","wpp":""},{"nome":"Atendimento - Maria E. Meyer","ramal":"7923","wpp":""},{"nome":"Call center - Maria A. G. da Silva","ramal":"7901","wpp":""},{"nome":"Call Center - Mariana M. Córdova","ramal":"7900","wpp":""},{"nome":"Call center – Neusa Maria F. Machado","ramal":"7901","wpp":""},{"nome":"CITRAN - Carlos H. Borchardt","ramal":"7925","wpp":""},{"nome":"CITRAN - Guilherme de Campos","ramal":"7924","wpp":""},{"nome":"Coordenação - Murilo F. Grisolia","ramal":"7995","wpp":""},{"nome":"Demutran - Francisca P. F. Fuchs","ramal":"7913","wpp":""},{"nome":"Demutran - Kayo Moreira da Cunha","ramal":"7924","wpp":""},{"nome":"Demutran - Leonardo Aragão Bertolo","ramal":"7924","wpp":""},{"nome":"Demutran - Sidnei Vargas","ramal":"7913","wpp":""},{"nome":"Gestão - Deisy Anne P. Gama","ramal":"7991","wpp":""},{"nome":"Gestão - Thaigor Yan Schakowoski","ramal":"7992","wpp":""},{"nome":"Gestão - Viviane C. M. Santiago Pires","ramal":"7992","wpp":""},{"nome":"ICASA","ramal":"7912","wpp":""},{"nome":"Identidade - Alana Lais Bodemuller","ramal":"7920","wpp":""},{"nome":"Identidade - Caroline Amaral de Freitas","ramal":"7920","wpp":""},{"nome":"Identidade - Cristopher F. Borchardt","ramal":"7920","wpp":""},{"nome":"Identidade - Dandara Kauane Uecker","ramal":"7920","wpp":""},{"nome":"Identidade - Fernando Frankenberger","ramal":"7920","wpp":""},{"nome":"Identidade – Francine de Jesus da Silva","ramal":"7920","wpp":""},{"nome":"Identidade - Gabriela Alves Fernandes","ramal":"7920","wpp":""},{"nome":"Identidade - Jennifer Natalia Correa","ramal":"7920","wpp":""},{"nome":"Identidade - Monalisa Ayumi Kuroki","ramal":"7920","wpp":""},{"nome":"Identidade - Thais Colaço","ramal":"7920","wpp":""},{"nome":"JSM/CTPS/Conta gov.br – João Marcelo Pisetta","ramal":"7917","wpp":""},{"nome":"Obras - Gabriel Fabio Klitzke","ramal":"7944","wpp":""},{"nome":"Obras - Kaua Ricardo Benjamin","ramal":"7944","wpp":""},{"nome":"Receita Federal - Ana Clara B. da silva","ramal":"7910","wpp":""},{"nome":"Receita Federal - Gabriela Tamanini","ramal":"7910","wpp":""},{"nome":"Receita Federal - Jhonatan A. Steffen","ramal":"7910","wpp":""},{"nome":"Receita Federal - Kaiki G. Schuetze","ramal":"7910","wpp":""},{"nome":"Receita Federal - Kaique da Silva","ramal":"7910","wpp":""},{"nome":"Receita Federal - Leonardo J. S. Junior","ramal":"7910","wpp":""},{"nome":"Receita Federal","ramal":"7910","wpp":""},{"nome":"Samae – Paulo Henrique Rossi","ramal":"7916","wpp":""},{"nome":"Sine - Jackson Charles Serra","ramal":"7919","wpp":""},{"nome":"SINE - Maysa Rossi","ramal":"7919","wpp":""},{"nome":"TI - Henrique J. D. Pereira","ramal":"7908","wpp":""},{"nome":"TI - Maria Eduarda Odorizzi","ramal":"7908","wpp":""},{"nome":"TI - Simplifica","ramal":"7908","wpp":""},{"nome":"Trâmite Sup. - Aline H.G. Azevedo","ramal":"7911","wpp":""},{"nome":"Triagem - Bianca Souza","ramal":"7929","wpp":""},{"nome":"Triagem - Carlos H. C. do Nascimento","ramal":"7920","wpp":""},{"nome":"Triagem - Denise Costa","ramal":"7929","wpp":""},{"nome":"Triagem - Liz A. Almeida","ramal":"7929","wpp":""},{"nome":"Tributos/Planej.","ramal":"7923","wpp":""},{"nome":"Tributos/Planej. - Vinicius C. Voltolini","ramal":"7923","wpp":""},{"nome":"Tributos/Planej.- João Arthur Padaratz","ramal":"7923","wpp":""},{"nome":"Tributos/Planejamento - Plínio S Junior","ramal":"7923","wpp":""}],"aba":"simplifica"},{"nome":"Simplifica Timbó - PROCON","tel":"3380-7930","wpp":"","pessoas":[{"nome":"Alicia M. V. F. dos Santos","ramal":"7914","wpp":""},{"nome":"Amanda Cipriani","ramal":"7914","wpp":""},{"nome":"Diogo Roncalho","ramal":"7932","wpp":""},{"nome":"Gabriel L. Uecker","ramal":"7914","wpp":""},{"nome":"Jenifer Nadiny Stedile","ramal":"7914","wpp":""},{"nome":"Kathlen C. Engel","ramal":"7914","wpp":""},{"nome":"Raquel Basílio dos Santos","ramal":"7914","wpp":""},{"nome":"Vanessa L. Bahr","ramal":"7931","wpp":""}],"aba":"simplifica"},{"nome":"Simplifica Timbó - Sala do Empreendedor","tel":"","wpp":"","pessoas":[{"nome":"Andersson M. Neves","ramal":"7952","wpp":""},{"nome":"Bibiana Longo Kretzer Borck","ramal":"7951","wpp":""},{"nome":"Débora Kayla Leite de Moura","ramal":"7951","wpp":""},{"nome":"Débora Roiwas","ramal":"7954","wpp":""},{"nome":"Elias Lopes de Lima","ramal":"7951","wpp":""},{"nome":"Jean Lucas de Borba","ramal":"7955","wpp":""},{"nome":"Joanita Rohda Zanluca","ramal":"7955","wpp":""},{"nome":"Kriscia Harbs Maass","ramal":"7953","wpp":""},{"nome":"Liz A. Almeida","ramal":"7953","wpp":""},{"nome":"Paulo Ricardo Maciel","ramal":"7951","wpp":""},{"nome":"Tabata Eduarda Fiebs","ramal":"7953","wpp":""},{"nome":"Tamara Moreira","ramal":"7950","wpp":""}],"aba":"simplifica"},{"nome":"Simplifica Timbó - Unidade de Conciliação","tel":"","wpp":"","pessoas":[{"nome":"José Davi B. Oliveira","ramal":"7979","wpp":""},{"nome":"Lana L. Peyerl","ramal":"7903","wpp":""},{"nome":"Pamela A. Campregher","ramal":"7903","wpp":""},{"nome":"Pamela Longo","ramal":"7977","wpp":""},{"nome":"Silvana Vicente","ramal":"7980","wpp":""},{"nome":"Yasmin Larissa Pacheco","ramal":"7979","wpp":""}],"aba":"simplifica"},{"nome":"Tesouraria","tel":"","wpp":"","pessoas":[{"nome":"Aline C. Rosário","ramal":"7057","wpp":""},{"nome":"Anderson H. Azevedo","ramal":"7057","wpp":""},{"nome":"Leticia R. da Silva Kuehl","ramal":"7057","wpp":""},{"nome":"Luciana R. Bottner","ramal":"7058","wpp":""},{"nome":"Tatiane Schuhli","ramal":"7058","wpp":""}],"aba":"prefeitura"},{"nome":"TI - Setor de Informática","tel":"3380-7030 / - 3380-7031","wpp":"","pessoas":[{"nome":"Marcelo Kaipers","ramal":"7030","wpp":""},{"nome":"Marcos J. Kisner","ramal":"7031","wpp":""}],"aba":"prefeitura"},{"nome":"Instituto de Previdência – TIMBOPREV","tel":"3380-7191","wpp":"4733807160","pessoas":[{"nome":"Artur F. Faria","ramal":"7191","wpp":""},{"nome":"Breno G. Vercosa","ramal":"7193","wpp":""},{"nome":"Carmelinde Brandt","ramal":"7195","wpp":""},{"nome":"Greyce Nardelli","ramal":"7197","wpp":""},{"nome":"Pamela C. P. da Luz","ramal":"7196","wpp":""},{"nome":"Tiago T. Larangeira","ramal":"7194","wpp":""}],"aba":"prefeitura"},{"nome":"Tributos","tel":"","wpp":"","pessoas":[{"nome":"Daniela R. W. Krambeck","ramal":"7080","wpp":""},{"nome":"Elisa Menestrina","ramal":"7066","wpp":""},{"nome":"João Paulo Lucas","ramal":"7078","wpp":""},{"nome":"Mariane Fachi","ramal":"7079","wpp":""},{"nome":"Nilo Luiz Ronchetti","ramal":"7073","wpp":""},{"nome":"Rafael Tubiana","ramal":"7076","wpp":""},{"nome":"Samara C. Lazarini","ramal":"7074","wpp":""}],"aba":"prefeitura"},{"nome":"Unidades Escolares","tel":"","wpp":"","pessoas":[{"nome":"EM Erwin Prade","ramal":"7733","wpp":""},{"nome":"EM Mauricio Germer","ramal":"7735","wpp":""},{"nome":"EM Pe. Martinho Stein","ramal":"7747","wpp":""},{"nome":"EM Polidoro Santiago","ramal":"7878","wpp":""},{"nome":"EM Prof. Nestor Margarida","ramal":"7755","wpp":""},{"nome":"EM São Roque – UPE Comecinho de Vida","ramal":"7770","wpp":""},{"nome":"EM Tiroleses","ramal":"7780","wpp":""},{"nome":"NEI Arco Iris","ramal":"7820","wpp":""},{"nome":"NEI Beija-Flor","ramal":"7825","wpp":""},{"nome":"NEI Lar da Criança","ramal":"7830","wpp":""},{"nome":"NEI Luar Encantado – UPE Pinguinho de Gente","ramal":"7838","wpp":""},{"nome":"NEI Mundo Mágico","ramal":"7840","wpp":""},{"nome":"NEI Paraíso da Criança","ramal":"7845","wpp":""},{"nome":"NEI Primeiros Passos","ramal":"7850","wpp":""},{"nome":"NEI Prof.ª Maria Luiza Bell - UPE Hortência","ramal":"7870","wpp":""},{"nome":"NEI Raio de Sol","ramal":"7855","wpp":""},{"nome":"NEI Sonho da Criança","ramal":"7860","wpp":""},{"nome":"NEI Vida de Criança","ramal":"7865","wpp":""},{"nome":"UPE Alecrim","ramal":"7780","wpp":""},{"nome":"UPE Amor Perfeito","ramal":"7788","wpp":""},{"nome":"UPE Chapeuzinho Vermelho","ramal":"7790","wpp":""},{"nome":"UPE Cinderela","ramal":"7795","wpp":""},{"nome":"UPE Girassol","ramal":"7800","wpp":""},{"nome":"UPE Jasmim","ramal":"7808","wpp":""},{"nome":"UPE Pequeno Príncipe","ramal":"7755","wpp":""},{"nome":"UPE Primavera","ramal":"7810","wpp":""},{"nome":"UPE Violeta","ramal":"7815","wpp":""}],"aba":"prefeitura"},{"nome":"Secretaria da Saúde","tel":"3380-7200","wpp":"","pessoas":[{"nome":"Tiago – Diretor","ramal":"7264","wpp":""},{"nome":"Joice Sec. de Saúde","ramal":"7203","wpp":""},{"nome":"Rosilene (Recepção Secretaria)","ramal":"7277","wpp":""},{"nome":"Viviana (Coord. ESF)","ramal":"7272","wpp":""},{"nome":"Fernanda (Coord. NEPSHU)","ramal":"7275","wpp":""},{"nome":"Elisiane (Coord. Saúde Mulher)","ramal":"7287","wpp":""},{"nome":"Lidiane (Coord. Saúde Mental)","ramal":"7287","wpp":""},{"nome":"Cintia (Controle e Aval CNES)","ramal":"7288","wpp":""},{"nome":"Josiane (Coord. Regulação)","ramal":"7284","wpp":""},{"nome":"Maikow (Controle e Aval TFD/Exames)","ramal":"7289","wpp":""},{"nome":"Raiane (Controle e Aval TFD/Exames)","ramal":"7274","wpp":""},{"nome":"Thaina (Controle e Avaliação Oftalmo)","ramal":"7253","wpp":""},{"nome":"Eduarda (Controle e Avaliação CISAMVI)","ramal":"7290","wpp":""},{"nome":"Enfermagem","ramal":"7220","wpp":""},{"nome":"Consultório Odonto","ramal":"7252","wpp":""},{"nome":"Elaine (CENTRUS)","ramal":"7276","wpp":""},{"nome":"Vitória (CENTRUS)","ramal":"7231","wpp":""},{"nome":"Sol (CENTRUS)","ramal":"7204","wpp":""},{"nome":"Debora (CENTRUS)","ramal":"7271","wpp":""},{"nome":"Nutrição/Fisioterapia","ramal":"7250","wpp":""},{"nome":"Ricardo (Informática/TI)","ramal":"7281","wpp":""},{"nome":"Informática/Sistema","ramal":"7291","wpp":""},{"nome":"Vigilância Epidemiológica","ramal":"7257","wpp":""},{"nome":"Vigilância Epidemiológica","ramal":"7261","wpp":""},{"nome":"Vigilância Epidemiológica","ramal":"7266","wpp":""},{"nome":"Vigilância Epidemiológica","ramal":"7262","wpp":""},{"nome":"Vigilância Epidemiológica","ramal":"7267","wpp":""},{"nome":"Vigilância Epidemiológica","ramal":"7265","wpp":""},{"nome":"Carlos Toy (Coord. Vigilância Sanitária)","ramal":"7230","wpp":""},{"nome":"Graziela (Vigilância Sanitária)","ramal":"7254","wpp":""},{"nome":"Clóvis (Vigilância Sanitária)","ramal":"7251","wpp":""},{"nome":"Vigilância Sanitária","ramal":"7255","wpp":""},{"nome":"Luzia (Recepção)","ramal":"7268","wpp":""},{"nome":"Anna (Recepção)","ramal":"7295","wpp":""},{"nome":"Bianca/Kauê","ramal":"7205","wpp":""},{"nome":"Marjorie/Vivian (Recepção Farmácia)","ramal":"7206","wpp":""},{"nome":"Wesley/Katy (Coord. Farmácia)","ramal":"7207","wpp":""},{"nome":"Rubia (Assistência Social)","ramal":"7210","wpp":""},{"nome":"Arquivo","ramal":"7233","wpp":""},{"nome":"Recepção Raio X","ramal":"7245","wpp":""},{"nome":"Recepção Raio X","ramal":"7296","wpp":""},{"nome":"Luciene (Coord. Raio X)","ramal":"7228","wpp":""},{"nome":"Michael (Transporte)","ramal":"7247","wpp":""},{"nome":"Enfermagem","ramal":"7232","wpp":""},{"nome":"Silvana (Coord. Policlínica)","ramal":"7209","wpp":""},{"nome":"Michael — Frotas Saúde","ramal":"","wpp":""},{"nome":"Mattos — Frotas Saúde","ramal":"","wpp":""},{"nome":"Adriano — Frotas Saúde","ramal":"","wpp":""},{"nome":"Luiz Godoy — Frotas Saúde","ramal":"","wpp":""},{"nome":"Edgar — Frotas Saúde","ramal":"","wpp":""}],"aba":"prefeitura"},{"nome":"Almoxarifado","tel":"3380-7408","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"USF Araponguinhas","tel":"3380-7380","wpp":"","pessoas":[{"nome":"Capitais (Solidária) 3380-7338 ou","ramal":"7338","wpp":""},{"nome":"Estados (F. Saudável) 3380-7310 ou","ramal":"7310","wpp":""},{"nome":"Imigrantes (Integrada) 3380-7300 ou","ramal":"7300","wpp":""},{"nome":"Nações 3380-7358 ou","ramal":"7358","wpp":""},{"nome":"PE. Martinho Stein 3380-7390 ou","ramal":"7390","wpp":""},{"nome":"Pomeranos 3380-7370 ou","ramal":"7370","wpp":""},{"nome":"Quintino (Coletiva) 3380-7320 ou","ramal":"7320","wpp":""},{"nome":"Tiroleses 3380-7350 ou","ramal":"7350","wpp":""},{"nome":"Vila Germer 3380-7330 ou","ramal":"7330","wpp":""},{"nome":"Dona Clara 3380-7450 ou","ramal":"7450","wpp":""}],"aba":"prefeitura"},{"nome":"Ambulância SAMU","tel":"(47) 98498-1728","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"Ambulância Branca","tel":"(47) 99185-9397","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"SAMU","tel":"(47) 3380-7410","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"CAPS","tel":"(47) 3380-7409","wpp":"","pessoas":[],"aba":"prefeitura"},{"nome":"Central Prefeitura","tel":"(47) 3380-7000","wpp":"","pessoas":[],"aba":"prefeitura"}];
 
-  // ============================================================
-  // DADOS PADRÃO (do Excel)
-  // ============================================================
-  const RAMAIS_PADRAO = [{"nome":"Adminstração","tel":"3380-7041","pessoas":[{"nome":"Fabiana Knopka","ramal":"7041"},{"nome":"SEFAZ- João Luiz Merini Moser","ramal":"7041"}]},{"nome":"Assistência Social","tel":"3380-7160","pessoas":[{"nome":"Cristiane E. Longo","ramal":"7167"},{"nome":"Deise Hahnebach Maus","ramal":"7171"},{"nome":"Deise Mendes","ramal":"7166"},{"nome":"Franciéle Sasse","ramal":"7161"},{"nome":"Livian Fernanda G. Santos","ramal":"7162"},{"nome":"Raquel Teske","ramal":"7168"},{"nome":"Thaís","ramal":"7160"},{"nome":"Thereza C. L. Barros","ramal":"7163"}]},{"nome":"Cadastro Imobiliário","tel":"","pessoas":[{"nome":"Ana P. C. Santos","ramal":""},{"nome":"Camile Buck","ramal":"7134"},{"nome":"Cristian","ramal":"7140"},{"nome":"Ellen","ramal":"7142"},{"nome":"Joice A. Guthner","ramal":"7141"}]},{"nome":"Câmara de Vereadores","tel":"3382-2177","pessoas":[{"nome":"Andrezza S. Milke","ramal":"202"},{"nome":"Giani Z. Seidel","ramal":"215"},{"nome":"Joel R. Raiter","ramal":"226"},{"nome":"Raquel B. Piske","ramal":"212"},{"nome":"Ruben Parno","ramal":"206"},{"nome":"Ubyrajara P. Heredia","ramal":"204"},{"nome":"Vanessa G. Maas","ramal":"224"},{"nome":"Éverton B. Pedroso","ramal":"208"}]},{"nome":"Compras","tel":"","pessoas":[{"nome":"Andre Luiz dos Santos","ramal":"7048"},{"nome":"Edio Frankenberger","ramal":"7049"},{"nome":"Pablo A. dos Santos","ramal":"7050"},{"nome":"Tayná Lais Hiller","ramal":"7051"},{"nome":"André Luis de Santos","ramal":"7048"}]},{"nome":"Comunicação","tel":"3380-7025","pessoas":[{"nome":"Rodrigo Roderio Ramos","ramal":"7026"},{"nome":"Maria da Silva","ramal":"7180"},{"nome":"Renan","ramal":"7027"},{"nome":"Sonia Ribeiro","ramal":"7180"}]},{"nome":"Conselho Tutelar","tel":"3380-7180","pessoas":[{"nome":"Mayara","ramal":"7184"},{"nome":"Mayke Heidrch","ramal":"7182"},{"nome":"Recepção Conselho Tutelar","ramal":"7180"},{"nome":"Rosangela","ramal":"7181"},{"nome":"Ivoni","ramal":"7183"},{"nome":"Sonia Ribeiro","ramal":"7179"}]},{"nome":"Contabilidade","tel":"3380-7052","pessoas":[{"nome":"Juliana C.C. Eloy","ramal":"7054"},{"nome":"Kathia E. Gumz","ramal":"7052"},{"nome":"Meyke E. D. Freitas","ramal":"7053"},{"nome":"Romero Espindola e Silva","ramal":"7042"}]},{"nome":"Controladoria","tel":"3380-7039","pessoas":[{"nome":"Graciela I. Uber Gomes","ramal":"7039"},{"nome":"Karine Kaspareit","ramal":"7039"},{"nome":"Thomaz H. Campregher","ramal":"7039"}]},{"nome":"CRAS","tel":"3380-7440","pessoas":[{"nome":"Psicologa","ramal":"7442"},{"nome":"Assistente Social - Sandra","ramal":"7441"},{"nome":"Assistente Social - Thelma","ramal":"7443"}]},{"nome":"Demutran","tel":"3380-7145","pessoas":[{"nome":"Deivid Maas","ramal":"7145"},{"nome":"Fabiane Klitzke","ramal":"7145"}]},{"nome":"Educação","tel":"3380-7700","pessoas":[{"nome":"Angela B. Wetzel","ramal":"7724"},{"nome":"Jéssica D. Soares","ramal":"7724"},{"nome":"SEMED - Alicinene C. S. Silva","ramal":"7723"},{"nome":"Angela Hahnebach","ramal":"7708"},{"nome":"SEMED - Claracy M. F. Butzke","ramal":"7722"},{"nome":"SEMED - Cristiane Bonatti","ramal":"7707"},{"nome":"SEMED - Flavia Menestrina","ramal":"7711"},{"nome":"SEMED - Jovina M. Berri","ramal":"7712"},{"nome":"SEMED - Leogir A. Vilvert","ramal":"7700"},{"nome":"SEMED - Roger D. P. Drews","ramal":"7726"},{"nome":"SEMED - Rubia Campregher","ramal":"7704"},{"nome":"SEMED - Sabrina Muraro","ramal":"7717"},{"nome":"SEMED - Sandra R. Sardagna","ramal":"7705"},{"nome":"Thaiana Volkmann","ramal":"7724"}]},{"nome":"Empenhos","tel":"3380-7045","pessoas":[{"nome":"Anderson H. Azevedo","ramal":"7045"},{"nome":"Elisete","ramal":"7046"},{"nome":"Scheila H. Zickuhr","ramal":"7045"}]},{"nome":"Fluxo de Processos","tel":"3380-7001","pessoas":[{"nome":"Marciana T. Berri","ramal":"7001"}]},{"nome":"FME","tel":"3380-7650","pessoas":[{"nome":"FME - Anderson E. Pedrelli","ramal":"7656"},{"nome":"FME - Igor Rick","ramal":"7657"}]},{"nome":"Fundação de Cultura e Turismo","tel":"3380-7600","pessoas":[{"nome":"CIC - Thais Zanona Lopes","ramal":"7612"},{"nome":"Recepção","ramal":"7610"},{"nome":"Danilo","ramal":"7601"},{"nome":"Cristiano","ramal":"7602"},{"nome":"Kenia","ramal":"7603"},{"nome":"Denni","ramal":"7604"},{"nome":"Bilheteria","ramal":"7600"},{"nome":"Biblioteca","ramal":"7605"},{"nome":"Tina","ramal":"7606"},{"nome":"Selma","ramal":"7607"},{"nome":"João","ramal":"7609"},{"nome":"Museu da Música","ramal":"7626"},{"nome":"Casa do Poeta","ramal":"7628"},{"nome":"Museu do Imigrante","ramal":"7632"},{"nome":"Arquivo Público","ramal":"7636"},{"nome":"Meri Duwe","ramal":"7613"}]},{"nome":"Gabinete","tel":"3380-7002","pessoas":[{"nome":"Gab. Vice Prefeito - Christiane B. Vieweg","ramal":""},{"nome":"Gabinete - Elis M. Possamai","ramal":"7002"},{"nome":"Jean Felipe Schutz","ramal":""}]},{"nome":"Jurídico","tel":"3380-7010","pessoas":[{"nome":"Procuradoria - Cassiano S.Karsten","ramal":"7013"},{"nome":"Procuradoria - Daniel A. Hornburg","ramal":"7017"},{"nome":"Procuradoria - Jorge Mateus M. Junior","ramal":"7018"},{"nome":"Procuradoria - Marcos Gadotti","ramal":"7012"},{"nome":"Procuradoria - Otavio F. Betanim","ramal":"7015"},{"nome":"Procuradoria - Jean P. B. Museka","ramal":"7016"},{"nome":"Procuradoria - Léia Durcksen","ramal":"7010"},{"nome":"Procuradoria - Fabiana","ramal":"7011"},{"nome":"Procuradoria - Pamela A. Campregher","ramal":"7014"}]},{"nome":"Licitações","tel":"3380-7035","pessoas":[{"nome":"Ainá Vital","ramal":"7034"},{"nome":"Amanda Zumach","ramal":"7038"},{"nome":"Angela Preuss","ramal":"7036"},{"nome":"Barbara Hochheim","ramal":"7037"},{"nome":"Flavia M. Dalcanale","ramal":"7035"},{"nome":"Patricia Conzatti","ramal":"7038"},{"nome":"Rose Maria D. da Silva","ramal":"7038"}]},{"nome":"Medicina do Trabalho","tel":"3380-7100","pessoas":[{"nome":"Dr. Marcelo","ramal":"7100"},{"nome":"Maisa","ramal":"7100"}]},{"nome":"Meio Ambiente","tel":"3380-7147","pessoas":[{"nome":"Letícia B. Fávaro","ramal":"7147"},{"nome":"Ricardo","ramal":"7147"}]},{"nome":"Obras","tel":"3380-7550","pessoas":[{"nome":"Anderson D. Raddatz","ramal":"7557"},{"nome":"Central","ramal":"7550"},{"nome":"Felipe Kunz","ramal":"7557"},{"nome":"Lidiane Reinicke","ramal":"7557"}]},{"nome":"Patrimônio","tel":"3380-7090","pessoas":[{"nome":"André Vinícius de Mello","ramal":"7090"},{"nome":"Lucas E. Maus","ramal":"7090"},{"nome":"Lucas R. Amaral","ramal":"7090"}]},{"nome":"Patrimônio Imóveis","tel":"3380-7095","pessoas":[{"nome":"Adriana M. G. Frankenberger","ramal":"7095"},{"nome":"Edson José Bona","ramal":"7095"}]},{"nome":"Planejamento","tel":"3380-7125","pessoas":[{"nome":"Bernardo A. Cezarotto","ramal":"7132"},{"nome":"Carla Inês Fachini","ramal":"7130"},{"nome":"Cledir Ferrari","ramal":"7130"},{"nome":"Daysi C. Longen","ramal":"7124"},{"nome":"Gladys I. K. Taparello","ramal":"7121"},{"nome":"Jaime J. Ferens","ramal":"7126"},{"nome":"Jonathan de Souza Nunes","ramal":"7126"},{"nome":"João Carlos Galboardi","ramal":"7124"},{"nome":"Lainara de Souza","ramal":"7124"},{"nome":"Leandro Ludwig","ramal":"7131"},{"nome":"Luiza T. Muller","ramal":"7124"},{"nome":"Paulo Henrique Kaus","ramal":"7121"},{"nome":"Planejamento - Djonny Miranda","ramal":"7025"},{"nome":"Rafael Constante","ramal":"7129"},{"nome":"Robertson Frare","ramal":"7123"},{"nome":"Tatiane F. Silva","ramal":"7150"},{"nome":"Vivian L. Maas Barbosa","ramal":"7128"}]},{"nome":"Recursos Humanos","tel":"3380-7062 / 3380-7063","pessoas":[{"nome":"Junior Pasold","ramal":"7061"},{"nome":"Katia F. R. Schwaemmle","ramal":"7063"},{"nome":"Ketiuli D. A. de Oliveira Matos","ramal":"7063"},{"nome":"Larissa T. Bayer","ramal":"7061"},{"nome":"Lourdes Moser","ramal":"7064"},{"nome":"Mara R. Borchardt","ramal":"7064"},{"nome":"Daiane","ramal":"7065"},{"nome":"Matheus H. Bendotti","ramal":"7062"}]},{"nome":"Samae","tel":"3380-7500","pessoas":[{"nome":"Atendimento - Letícia Korc","ramal":"7501"},{"nome":"Atendimento - Luana Giovanella","ramal":"7502"},{"nome":"Atendimento - James","ramal":"7503"},{"nome":"Coleta - Uilson Maia","ramal":"7532"},{"nome":"Coleta Chefe - Anderson Sperber","ramal":"7533"},{"nome":"Compras - Anna Paula Bona","ramal":"7518"},{"nome":"Comunicação - João Pedro Santos Schroeder","ramal":"7505"},{"nome":"Contabilidade - Luciane Zenke","ramal":"7509"},{"nome":"DA - James","ramal":"7500"},{"nome":"DA - Paola M. Marchetti","ramal":"7525"},{"nome":"Dir. Administrativa - Fabio V. Caikoski","ramal":"7510"},{"nome":"Engenharia - Thaenne H. Beber","ramal":"7530"},{"nome":"Fiscalização - Cleiton M. Moloies","ramal":""},{"nome":"Fiscalização - Gustavo M. Bitelbrum","ramal":""},{"nome":"Manutenção Chefe - Walter Mazzi","ramal":"7521"},{"nome":"Patrimônio - Hilton L. Kretzer","ramal":"1749"},{"nome":"Presidência - Rodrigo C. Francisco","ramal":"7522"},{"nome":"RH - Graziele B. Belarmino","ramal":"7513"},{"nome":"RH/Eng. Estágio - Andressa R. Bublitz","ramal":"7505"},{"nome":"Tec. Segurança - Ana P. Pacheco","ramal":"7531"},{"nome":"Tesouraria/Compras - Kelly","ramal":"7519"},{"nome":"TI - Ernani Siebert","ramal":"7529"}]},{"nome":"Saúde","tel":"3380-7200","pessoas":[{"nome":"Adm. Veículos e Transportes","ramal":"7247"},{"nome":"Assist. Social","ramal":"7210"},{"nome":"CAPS/Consultório Médico - Jorge Schlichting Neto","ramal":"7411"},{"nome":"CAPS/Recepção -  Julia/Letícia","ramal":"3382 8473"},{"nome":"CAPS/Triagem - Letícia Demuth","ramal":"3382 8473"},{"nome":"Centro de Imagens/Coordenação","ramal":"7239"},{"nome":"Centro de Imagens/Recepção 1","ramal":"7245"},{"nome":"CENTRUS 2/Policlínica","ramal":"7231"},{"nome":"Controle de Avaliação - Anna Paula Busarello","ramal":"7288"},{"nome":"Controle de Avaliação - Coord. Cintia Volani","ramal":"7288"},{"nome":"Diretor - Tiago R. Krieser","ramal":"7264"},{"nome":"Farmácia","ramal":"7206"},{"nome":"Farmácia Coordenação","ramal":"7207"},{"nome":"NASF","ramal":"7305"},{"nome":"Policlínica - C. O. E","ramal":"7252"},{"nome":"Policlínica/Enfermagem - Dilma T. Girardi","ramal":"7232"},{"nome":"Policlínica/Enfermagem - Térreo 2","ramal":"7232"},{"nome":"Policlínica/Enfermagem Térreo","ramal":"7232"},{"nome":"Policlínica/Recepção - Luzia A. G. Felippi","ramal":"7268"},{"nome":"Policlínica/Recepção 2","ramal":"7295"},{"nome":"RH/Compras - Carla T. Raduenz","ramal":"7244"},{"nome":"Lucas Curtareli","ramal":"7281"},{"nome":"Ricardo M. Moser","ramal":"7281"},{"nome":"Rubia Graziela Tomasoni","ramal":"7274"},{"nome":"Vig. Epidemiológica - Mauricio Germer","ramal":"7262"},{"nome":"Vig. Epidemiológica - Michelle Stolfi","ramal":"7257"},{"nome":"Vig. Epidemiológica - Tayna Tonet","ramal":"7262"},{"nome":"Vig. Sanitária -Carlos B. Busarello","ramal":"7230"},{"nome":"Vig. Sanitária - Jaelson Sabino","ramal":"7254"}]},{"nome":"USF Araponguinhas","tel":"","pessoas":[{"nome":"USF Araponguinhas","ramal":"7380"},{"nome":"USF Araponguinhas - Cons. Enfermagem","ramal":"7380"},{"nome":"USF Araponguinhas Farmácia","ramal":"7380"}]},{"nome":"USF Coletiva - Quintino","tel":"","pessoas":[{"nome":"USF Coletiva (Quintino)","ramal":"7320"}]},{"nome":"USF Pomeranos","tel":"","pessoas":[{"nome":"USF Pomeranos - Cons. Enfermagem 2","ramal":"7370"},{"nome":"USF Pomeranos","ramal":"7370"},{"nome":"USF Pomeranos - Cons. Enfermagem","ramal":"7370"}]},{"nome":"USF Saudável - Estados","tel":"","pessoas":[{"nome":"USF Saudável - Estados -Odontontologia","ramal":"7311"},{"nome":"USF Saudável - Estados -Médico","ramal":"7312"},{"nome":"USF Saudável - Estados -Enfermeira","ramal":"7313"},{"nome":"USF Saudável - Estados -Vacina","ramal":"7314"},{"nome":"USF Saudável - Estados -Agentes de saúde","ramal":"7315"},{"nome":"USF Saudável - Estados - Cons. Enfermagem","ramal":"7310"}]},{"nome":"USF Solidária - Capitais","tel":"","pessoas":[{"nome":"USF Capitais - Cons. Enfermagem 2","ramal":"7338"}]},{"nome":"USF - Tiroleses","tel":"","pessoas":[{"nome":"USF Tiroleses - Triagem","ramal":"7350"}]},{"nome":"USF - Dona Clara","tel":"","pessoas":[{"nome":"Enfermeira","ramal":"7451"},{"nome":"Médico","ramal":"7452"},{"nome":"Procedimentos","ramal":"7453"},{"nome":"Agentes de Saúde","ramal":"7454"},{"nome":"USF Dona Clara - recepção","ramal":"7450"}]},{"nome":"USF - Vila Germer","tel":"","pessoas":[{"nome":"USF Vila Germer - Consultório 2","ramal":"7403"},{"nome":"USF Vila Germer - Saúde","ramal":"7401"},{"nome":"USF Vila Germer - Consultorio 1","ramal":"7335"},{"nome":"USF Vila Germer - Odontologia","ramal":"7331"},{"nome":"USF Vila Germer - Farmácia","ramal":"7402"},{"nome":"USF Vila Germer - Vacina","ramal":"7334"},{"nome":"USF Vila Germer - Recepção","ramal":"7330"},{"nome":"USF Vila Germer - Psicóloga","ramal":"7337"},{"nome":"USF Vila Germer - Acolhimento","ramal":"7333"},{"nome":"USF Vila Germer - Enfermeira","ramal":"7336"}]},{"nome":"Segurança do Trabalho","tel":"3380-7098","pessoas":[{"nome":"Segurança do Trabalho - Horst Sonntag","ramal":"7098"}]},{"nome":"Tesouraria","tel":"","pessoas":[{"nome":"Luciana R. Bottner","ramal":"7058"},{"nome":"Tatiane Schuhli","ramal":"7058"},{"nome":"Aline","ramal":"7057"},{"nome":"Priscila","ramal":"7057"},{"nome":"Vitor H. Mutschaewschi","ramal":"7058"}]},{"nome":"TI - Setor de Informática","tel":"3380-7030 / 3380-7031","pessoas":[{"nome":"Marcelo Kaipers","ramal":"7030"},{"nome":"Marcos J. Kisner","ramal":"7031"}]},{"nome":"TIMBOPREV","tel":"3380-7191","pessoas":[{"nome":"Breno G. Vercosa","ramal":"7193"},{"nome":"Greyce Nardelli","ramal":"7197"},{"nome":"Pamela C. P. da Luz","ramal":"7196"},{"nome":"Tiago T. Larangeira","ramal":"7194"}]},{"nome":"Tributos","tel":"","pessoas":[{"nome":"Fiscal de Tributos - Daniela R. W. Krambeck","ramal":"7080"},{"nome":"Fiscal de Tributos - Elisa Menestrina","ramal":"7066"},{"nome":"Fiscal de Tributos - João Paulo Lucas","ramal":"7078"},{"nome":"Rafael","ramal":"7076"},{"nome":"Samara","ramal":"7074"},{"nome":"Fiscal de Tributos- Mariane Fachi","ramal":"7079"},{"nome":"Tributos - Nilo Luiz Ronchetti","ramal":"7073"}]},{"nome":"Unidades Escolares","tel":"","pessoas":[{"nome":"EM Erwin Prade","ramal":"7733"},{"nome":"EM Mauricio Germer","ramal":"7735"},{"nome":"EM Pe. Martinho Stein","ramal":"7747"},{"nome":"EM Polidoro Santiago","ramal":"7878"},{"nome":"EM Prof. Nestor Margarida","ramal":"7755"},{"nome":"EM São Roque","ramal":"7770"},{"nome":"EM Tiroleses","ramal":"7780"},{"nome":"NEI Arco Iris","ramal":"7820"},{"nome":"NEI Beija-Flor","ramal":"7825"},{"nome":"NEI Lar da Criança","ramal":"7830"},{"nome":"NEI Luar Encantado","ramal":"7838"},{"nome":"NEI Mundo Mágico","ramal":"7840"},{"nome":"NEI Paraíso da Criança","ramal":"7845"},{"nome":"NEI Primeiros Passos","ramal":"7850"},{"nome":"NEI Profª Maria Luiza Bell","ramal":"7870"},{"nome":"NEI Raio de Sol","ramal":"7855"},{"nome":"NEI Sonho da Criança","ramal":"7860"},{"nome":"NEI Vida de Criança","ramal":"7865"},{"nome":"UPE Alecrim","ramal":"7780"},{"nome":"UPE Amor Perfeito","ramal":"7788"},{"nome":"UPE Chapeuzinho Vermelho","ramal":"7790"},{"nome":"UPE Cinderela","ramal":"7795"},{"nome":"UPE Comecinho de Vida","ramal":"7770"},{"nome":"UPE Girassol","ramal":"7800"},{"nome":"UPE Hortênsia","ramal":"7870"},{"nome":"UPE Jasmim","ramal":"7808"},{"nome":"UPE Pequeno Príncipe","ramal":"7755"},{"nome":"UPE Pinguinho de Gente","ramal":"7838"},{"nome":"UPE Primavera","ramal":"7810"},{"nome":"UPE Violeta","ramal":"7815"}]},{"nome":"Gestão","tel":"","pessoas":[{"nome":"Deisy","ramal":"7991"},{"nome":"Murilo","ramal":"7995"},{"nome":"Viviane","ramal":"7992"},{"nome":"Dirt.Estg","ramal":"7993"},{"nome":"DIir.Estg 2","ramal":"7994"}]},{"nome":"Triagem","tel":"","pessoas":[{"nome":"Cibeli Vitória","ramal":"7929"},{"nome":"Fiorella","ramal":"7929"},{"nome":"Kriscia","ramal":"7929"},{"nome":"Bianca","ramal":"7929"},{"nome":"Maycon","ramal":"7929"},{"nome":"Yasmin","ramal":"7929"}]},{"nome":"TI - Tecnologia","tel":"","pessoas":[{"nome":"Henrique","ramal":"7908"}]},{"nome":"Call Center","tel":"","pessoas":[{"nome":"Julia","ramal":"7900"},{"nome":"Heloísa","ramal":"7901"},{"nome":"Neusa","ramal":"7901"},{"nome":"Carlos","ramal":"7900"}]},{"nome":"Trâmite","tel":"","pessoas":[{"nome":"Aline","ramal":"7911"},{"nome":"Julia","ramal":"7912"}]},{"nome":"Agricultura","tel":"","pessoas":[{"nome":"Odair","ramal":"7941"},{"nome":"Wander","ramal":"7942"}]},{"nome":"Tributos e Planejamento","tel":"","pessoas":[{"nome":"Aline","ramal":"7911"},{"nome":"Eduada","ramal":"7923"},{"nome":"Kaique","ramal":"7923"},{"nome":"Gabriel F.","ramal":"7923"},{"nome":"Gabriel","ramal":"7923"},{"nome":"Emilly","ramal":"7923"},{"nome":"Isabela","ramal":"7923"}]},{"nome":"Unidade de conciliação","tel":"","pessoas":[{"nome":"Kelly","ramal":"7979"},{"nome":"Isabela","ramal":"7979"},{"nome":"Karina","ramal":"7978"},{"nome":"Pamela","ramal":"7977"},{"nome":"Sofya","ramal":"7981"},{"nome":"Simone","ramal":"7980"},{"nome":"Bruna","ramal":"7979"},{"nome":"Julia","ramal":"7912"}]},{"nome":"MEI - Sala do empreendedor","tel":"","pessoas":[{"nome":"Juliano","ramal":"7950"},{"nome":"Agatha","ramal":"7955"},{"nome":"Elias","ramal":"7957"},{"nome":"Anderson","ramal":"7952"},{"nome":"Vitória","ramal":"7951"}]},{"nome":"Cadastro Econômico","tel":"","pessoas":[{"nome":"Débora","ramal":"7954"}]},{"nome":"PROCON","tel":"","pessoas":[{"nome":"Vanessa","ramal":"7931"},{"nome":"Alicia","ramal":"7930"},{"nome":"Amanda","ramal":"7930"},{"nome":"Jéssica","ramal":"7930"},{"nome":"Raquel","ramal":"7930"},{"nome":"Gabriel","ramal":"7930"},{"nome":"Diogo","ramal":"7932"},{"nome":"Claudiana","ramal":""}]},{"nome":"SINE","tel":"","pessoas":[{"nome":"Maysa","ramal":"7919"}]},{"nome":"ICASA","tel":"","pessoas":[{"nome":"Regiane","ramal":"8008"}]},{"nome":"EPAGRI","tel":"","pessoas":[{"nome":"Kátia","ramal":""},{"nome":"Valdomiro","ramal":""}]},{"nome":"Foto CNH","tel":"","pessoas":[{"nome":"Vanessa","ramal":""}]},{"nome":"Citran","tel":"","pessoas":[{"nome":"Carlos","ramal":"7925"},{"nome":"Bryan","ramal":"7924"}]},{"nome":"Receita Federal","tel":"","pessoas":[{"nome":"João","ramal":"7917"},{"nome":"Pietra","ramal":"7910"},{"nome":"Gabriela","ramal":"7960"},{"nome":"Rafael","ramal":"7961"}]},{"nome":"Junta Militar","tel":"","pessoas":[{"nome":"João","ramal":"7917"}]},{"nome":"Identidade","tel":"","pessoas":[{"nome":"Ian","ramal":"7920"},{"nome":"Rafael","ramal":"7920"},{"nome":"Alexandra","ramal":"7920"},{"nome":"Ana laura","ramal":"7920"},{"nome":"Maria Clara","ramal":"7920"},{"nome":"Silvana","ramal":"7921"}]}];
+// ── ESTADO ───────────────────────────────────────────────────
+let ramais = [], abaAtiva = 'prefeitura';
 
-  let ramais = [];
+// ── UTILS ────────────────────────────────────────────────────
+function loading(s,t){document.getElementById('loadingTxt').textContent=t||'Carregando...';document.getElementById('loadingOverlay').classList.toggle('ativo',s);}
 
-  function loading(show, txt) {
-    document.getElementById('loadingTxt').textContent = txt||'Carregando...';
-    document.getElementById('loadingOverlay').classList.toggle('ativo', show);
-  }
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visivel');
+  setTimeout(() => t.classList.remove('visivel'), 2000);
+}
 
-  async function carregarDados() {
-    loading(true, 'Carregando ramais...');
-    try {
-      const snap = await getDoc(doc(db, "ramais", "dados"));
-      if (snap.exists()) { ramais = snap.data().setores || RAMAIS_PADRAO; }
-      else { ramais = RAMAIS_PADRAO; await setDoc(doc(db,"ramais","dados"),{setores:ramais}); }
-    } catch(e) { console.error(e); ramais = RAMAIS_PADRAO; }
-    loading(false);
-    renderTudo();
-  }
+function copiar(texto, label) {
+  if (!texto) return;
+  navigator.clipboard.writeText(texto).then(() => {
+    mostrarToast(`✅ ${label} copiado!`);
+  }).catch(() => {
+    // Fallback para navegadores antigos
+    const el = document.createElement('textarea');
+    el.value = texto;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    mostrarToast(`✅ ${label} copiado!`);
+  });
+}
 
-  window.salvarTudo = async function() {
-    const btn=document.getElementById('btnSalvar'), aviso=document.getElementById('avisoSalvar');
-    btn.disabled=true; btn.textContent='⏳ Salvando...'; aviso.style.display='none';
-    try {
+// ── FIREBASE ────────────────────────────────────────────────
+async function carregarDados() {
+  loading(true,'Carregando ramais...');
+  try {
+    const snap = await getDoc(doc(db,"ramais","dados"));
+    if (snap.exists()) {
+      ramais = snap.data().setores || RAMAIS_PADRAO;
+      // Garantir campo 'aba' em dados antigos
+      ramais.forEach(s => { if (!s.aba) s.aba = 'prefeitura'; });
+    } else {
+      ramais = RAMAIS_PADRAO;
       await setDoc(doc(db,"ramais","dados"),{setores:ramais});
-      aviso.textContent='✅ Salvo! Todos já verão as mudanças.';
-      aviso.className='aviso-salvar sucesso'; aviso.style.display='block';
-    } catch(e) {
-      aviso.textContent='❌ Erro ao salvar. Verifique a conexão.';
-      aviso.className='aviso-salvar erro'; aviso.style.display='block';
     }
-    btn.disabled=false; btn.textContent='💾 Salvar no Firebase';
-    setTimeout(()=>aviso.style.display='none', 5000);
-  };
+  } catch(e) { console.error(e); ramais = RAMAIS_PADRAO; }
+  loading(false);
+  atualizarBadges();
+  renderTudo();
+}
 
-  // RENDER
-  function renderTudo() {
-    const grid = document.getElementById('setoresGrid');
-    grid.innerHTML = '';
-    let totalR = 0;
-    ramais.forEach((s, si) => {
-      totalR += s.pessoas.length;
-      const card = document.createElement('div');
-      card.className = 'setor-card';
-      card.dataset.si = si;
-      const telHTML = s.tel ? `<div class="setor-tel">☎️ ${s.tel}</div>` : '';
-      const wppSetorHTML = s.wpp ? `<div class="setor-wpp">💬 WhatsApp: ${s.wpp}</div>` : '';
-      const linhas = s.pessoas.map((p, pi) => {
-        const wppBtn = p.wpp ? `<a class="ramal-wpp" href="https://wa.me/55${p.wpp.replace(/\D/g,'')}" target="_blank" title="WhatsApp">💬</a>` : '';
-        return `<div class="ramal-item" data-nome="${p.nome.toLowerCase()}" data-ramal="${p.ramal}">
-          <span class="ramal-nome">${p.nome}</span>
-          ${wppBtn}
-          <span class="ramal-num${!p.ramal?' vazio':''}">${p.ramal||'—'}</span>
-        </div>`;
-      }).join('');
-      card.innerHTML = `
-        <div class="setor-header" onclick="toggleSetor(this)">
-          <div style="flex:1">
-            <div class="setor-titulo">${s.nome}</div>
+window.salvarTudo = async function() {
+  const btn=document.getElementById('btnSalvar'), aviso=document.getElementById('avisoSalvar');
+  btn.disabled=true; btn.textContent='⏳ Salvando...'; aviso.style.display='none';
+  try {
+    await setDoc(doc(db,"ramais","dados"),{setores:ramais});
+    aviso.textContent='✅ Salvo! Todos já verão as mudanças.';
+    aviso.className='aviso-salvar sucesso'; aviso.style.display='block';
+  } catch(e) {
+    aviso.textContent='❌ Erro ao salvar. Verifique a conexão.';
+    aviso.className='aviso-salvar erro'; aviso.style.display='block';
+  }
+  btn.disabled=false; btn.textContent='💾 Salvar no Firebase';
+  setTimeout(()=>aviso.style.display='none',5000);
+};
+
+// ── ABAS ─────────────────────────────────────────────────────
+function atualizarBadges() {
+  const contPref = ramais.filter(s=>s.aba==='prefeitura').length;
+  const contSimp = ramais.filter(s=>s.aba==='simplifica').length;
+  document.getElementById('abaBadge-prefeitura').textContent = contPref;
+  document.getElementById('abaBadge-simplifica').textContent = contSimp;
+}
+
+window.trocarAba = function(aba, btn) {
+  abaAtiva = aba;
+  document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  document.getElementById('buscaInput').value = '';
+  document.getElementById('buscaInfo').textContent = '';
+  renderTudo();
+};
+
+// ── RENDER ───────────────────────────────────────────────────
+function renderTudo() {
+  const grid = document.getElementById('setoresGrid');
+  grid.innerHTML = '';
+  let totalR = 0, totalS = 0;
+  const filtrados = ramais.filter(s => s.aba === abaAtiva);
+
+  filtrados.forEach((s, idx) => {
+    const si = ramais.indexOf(s); // índice real no array global
+    totalR += s.pessoas.length;
+    totalS++;
+
+    const card = document.createElement('div');
+    card.className = 'setor-card';
+    card.dataset.si = si;
+
+    const temPessoas = s.pessoas.length > 0;
+    if (!temPessoas) card.classList.add('telefone-only');
+
+    // Header — telefone do setor clicável para copiar
+    const telNum = s.tel ? s.tel.replace(/[^\d]/g,'') : '';
+    const telHTML = s.tel
+      ? `<button class="setor-tel-btn" onclick="event.stopPropagation();copiar('${s.tel}','Telefone ${s.nome}')" title="Clique para copiar">
+           ☎️ ${s.tel}
+         </button>`
+      : '';
+    const wppSetorHTML = s.wpp
+      ? `<a class="ramal-wpp" style="width:auto;padding:0 8px;font-size:.7rem;gap:4px;" href="https://wa.me/55${s.wpp.replace(/\D/g,'')}" target="_blank" title="WhatsApp do setor" onclick="event.stopPropagation()">💬 WhatsApp</a>`
+      : '';
+
+    // Linhas de ramal
+    const linhas = s.pessoas.map((p, pi) => {
+      const wppBtn = p.wpp
+        ? `<a class="ramal-wpp" href="https://wa.me/55${p.wpp.replace(/\D/g,'')}" target="_blank" title="WhatsApp de ${p.nome}">💬</a>`
+        : '';
+      const numHTML = p.ramal
+        ? `<button class="ramal-num" onclick="copiar('${p.ramal}','Ramal ${p.nome}')" title="Clique para copiar ramal">${p.ramal}</button>`
+        : `<span class="ramal-num vazio">—</span>`;
+      return `<div class="ramal-item" data-nome="${p.nome.toLowerCase()}" data-ramal="${p.ramal||''}">
+        <span class="ramal-nome">${p.nome}</span>
+        ${wppBtn}
+        ${numHTML}
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="setor-header" onclick="${temPessoas?'toggleSetor(this)':''}">
+        <div style="flex:1">
+          <div class="setor-titulo">${s.nome}</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:${s.tel?'4px':'0'};flex-wrap:wrap">
             ${telHTML}
             ${wppSetorHTML}
           </div>
-          <span class="setor-count">${s.pessoas.length}</span>
-          <span class="setor-toggle">▼</span>
         </div>
-        <div class="ramais-lista">${linhas}</div>`;
-      grid.appendChild(card);
-    });
-    document.getElementById('totalRamais').textContent = totalR;
-    document.getElementById('totalSetores').textContent = ramais.length;
-  }
+        ${temPessoas?`<span class="setor-count">${s.pessoas.length}</span>`:''}
+        ${temPessoas?`<span class="setor-toggle">▼</span>`:''}
+      </div>
+      ${temPessoas?`<div class="ramais-lista">${linhas}</div>`:''}`;
 
-  window.toggleSetor = function(header) {
-    header.closest('.setor-card').classList.toggle('aberto');
-  };
-
-  // BUSCA
-  window.buscar = function(termo) {
-    const t = termo.toLowerCase().trim();
-    let encontrados = 0;
-    document.querySelectorAll('.setor-card').forEach(card => {
-      let tem = false;
-      card.querySelectorAll('.ramal-item').forEach(item => {
-        const bate = !t || item.dataset.nome.includes(t) || item.dataset.ramal.includes(t);
-        item.classList.toggle('oculto-busca', !bate);
-        if (bate) { tem = true; encontrados++; }
-      });
-      if (t) { card.classList.toggle('aberto', tem); card.classList.toggle('sem-resultado', !tem); }
-      else { card.classList.remove('sem-resultado'); }
-    });
-    document.getElementById('buscaInfo').textContent = t ? `${encontrados} resultado(s)` : '';
-  };
-
-  // LOGIN
-  window.abrirLogin = () => { document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
-  window.fecharLogin = () => { document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
-  window.verificarSenha = () => {
-    if(document.getElementById('senhaInput').value===SENHA_ADMIN){ fecharLogin(); abrirPainel(); }
-    else { document.getElementById('erroSenha').style.display='block'; document.getElementById('senhaInput').value=''; document.getElementById('senhaInput').focus(); }
-  };
-
-  // PAINEL
-  window.abrirPainel = () => { document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); };
-  window.fecharPainel = () => document.getElementById('painelAdmin').classList.remove('aberto');
-
-  function popularSelects() {
-    const opts = ramais.map((s,i)=>`<option value="${i}">${s.nome}</option>`).join('');
-    document.getElementById('novoSetorRamal').innerHTML = '<option value="">Selecione o setor</option>'+opts;
-    document.getElementById('filtroSetorAdmin').innerHTML = '<option value="">Todos os setores</option>'+opts;
-  }
-
-  window.adicionarSetor = function() {
-    const nome = document.getElementById('novoSetorNome').value.trim();
-    if(!nome) return alert('Digite o nome do setor.');
-    const tel = document.getElementById('novoSetorTel').value.trim();
-    const wpp = document.getElementById('novoSetorWpp').value.trim();
-    ramais.push({nome, tel, wpp, pessoas:[]});
-    document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorTel').value=''; document.getElementById('novoSetorWpp').value='';
-    popularSelects(); renderListaAdmin(); renderTudo();
-  };
-
-  window.adicionarRamal = function() {
-    const nome = document.getElementById('novaNome').value.trim();
-    const ramal = document.getElementById('novoRamal').value.trim();
-    const wpp = document.getElementById('novoWpp').value.trim();
-    const si = document.getElementById('novoSetorRamal').value;
-    if(!nome||si==='') return alert('Preencha nome e setor.');
-    ramais[si].pessoas.push({nome, ramal, wpp});
-    document.getElementById('novaNome').value=''; document.getElementById('novoRamal').value=''; document.getElementById('novoWpp').value='';
-    renderListaAdmin(); renderTudo();
-  };
-
-  function renderListaSetoresAdmin() {
-    const lista = document.getElementById('listaSetoresAdmin');
-    if(!lista) return;
-    lista.innerHTML = ramais.map((s,si)=>`
-      <div class="item-admin">
-        <div class="item-admin-info">
-          <strong>${s.nome}</strong>
-          <span>${s.tel?'☎️ '+s.tel:'Sem telefone'}${s.wpp?' · 💬 '+s.wpp:''} · ${s.pessoas.length} ramal(is)</span>
-        </div>
-        <div class="item-admin-acoes">
-          <button class="btn-edit" onclick="abrirEditarSetor(${si})">✏️ Editar</button>
-          <button class="btn-del" onclick="removerSetor(${si})">✕ Remover</button>
-        </div>
-      </div>`).join('') || '<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhum setor.</div>';
-  }
-
-  window.abrirEditarSetor = function(si) {
-    document.getElementById('editarSetorEditIdx').value = si;
-    document.getElementById('editarSetorNome').value = ramais[si].nome||'';
-    document.getElementById('editarSetorTelEdit').value = ramais[si].tel||'';
-    document.getElementById('editarSetorWppEdit').value = ramais[si].wpp||'';
-    document.getElementById('modalEditarSetor').classList.add('aberto');
-  };
-  window.fecharEditarSetor = () => document.getElementById('modalEditarSetor').classList.remove('aberto');
-  window.salvarEdicaoSetor = function() {
-    const si = document.getElementById('editarSetorEditIdx').value;
-    const nome = document.getElementById('editarSetorNome').value.trim();
-    if(!nome) return alert('Digite o nome do setor.');
-    ramais[si].nome = nome;
-    ramais[si].tel = document.getElementById('editarSetorTelEdit').value.trim();
-    ramais[si].wpp = document.getElementById('editarSetorWppEdit').value.trim();
-    fecharEditarSetor(); popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); renderTudo();
-  };
-  window.removerSetor = function(si) {
-    const qtd = ramais[si].pessoas.length;
-    if(!confirm(`Remover setor "${ramais[si].nome}"${qtd>0?' e seus '+qtd+' ramal(is)':''}?`)) return;
-    ramais.splice(si,1);
-    popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); renderTudo();
-  };
-
-  window.renderListaAdmin = function() {
-    const filtro = document.getElementById('filtroSetorAdmin').value;
-    const lista = document.getElementById('listaAdmin');
-    if(filtro !== '') {
-      const s = ramais[filtro];
-      lista.innerHTML = `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--azul);padding:8px 0 4px">${s.nome}</div>` +
-        s.pessoas.map((p,pi)=>`
-          <div class="item-admin">
-            <div class="item-admin-info"><strong>${p.nome}</strong><span>Ramal: ${p.ramal||'—'}${p.wpp?' · 💬 '+p.wpp:''}</span></div>
-            <div class="item-admin-acoes">
-              <button class="btn-edit" onclick="abrirEditar(${filtro},${pi})">✏️</button>
-              <button class="btn-del" onclick="removerRamal(${filtro},${pi})">✕</button>
-            </div>
-          </div>`).join('') || '<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhum ramal.</div>';
-    } else {
-      lista.innerHTML = ramais.map((s,si)=>
-        s.pessoas.map((p,pi)=>`
-          <div class="item-admin">
-            <span class="ramal-badge" style="flex-shrink:0;min-width:52px">${p.ramal||'—'}</span>
-            <div class="item-admin-info"><strong>${p.nome}</strong><span>${s.nome}</span></div>
-            <div class="item-admin-acoes">
-              <button class="btn-edit" onclick="abrirEditar(${si},${pi})">✏️</button>
-              <button class="btn-del" onclick="removerRamal(${si},${pi})">✕</button>
-            </div>
-          </div>`).join('')).join('');
-    }
-  };
-
-  window.removerRamal = function(si, pi) {
-    if(!confirm(`Remover "${ramais[si].pessoas[pi].nome}"?`)) return;
-    ramais[si].pessoas.splice(pi,1);
-    renderListaAdmin(); renderTudo();
-  };
-
-  // EDITAR RAMAL
-  window.abrirEditar = function(si, pi) {
-    document.getElementById('editarSetorIdx').value = si;
-    document.getElementById('editarPessoaIdx').value = pi;
-    document.getElementById('editarNome').value = ramais[si].pessoas[pi].nome;
-    document.getElementById('editarRamal').value = ramais[si].pessoas[pi].ramal;
-    document.getElementById('editarWpp').value = ramais[si].pessoas[pi].wpp||'';
-    document.getElementById('modalEditar').classList.add('aberto');
-  };
-  window.fecharEditar = () => document.getElementById('modalEditar').classList.remove('aberto');
-  window.salvarEdicao = function() {
-    const si = document.getElementById('editarSetorIdx').value;
-    const pi = document.getElementById('editarPessoaIdx').value;
-    const nome = document.getElementById('editarNome').value.trim();
-    const ramal = document.getElementById('editarRamal').value.trim();
-    if(!nome) return alert('Digite o nome.');
-    const wpp = document.getElementById('editarWpp').value.trim();
-    ramais[si].pessoas[pi] = {nome, ramal, wpp};
-    fecharEditar(); renderListaAdmin(); renderTudo();
-  };
-
-  // Fechar ao clicar fora
-  ['modalLogin','modalEditar','modalEditarSetor'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalLogin') fecharLogin(); else if(id==='modalEditarSetor') fecharEditarSetor(); else fecharEditar(); } });
+    grid.appendChild(card);
   });
 
-  carregarDados();
+  document.getElementById('totalRamais').textContent = totalR;
+  document.getElementById('totalSetores').textContent = totalS;
+}
+
+window.toggleSetor = function(header) {
+  header.closest('.setor-card').classList.toggle('aberto');
+};
+
+// ── BUSCA ────────────────────────────────────────────────────
+window.buscar = function(termo) {
+  const t = termo.toLowerCase().trim();
+  let encontrados = 0;
+  document.querySelectorAll('.setor-card').forEach(card => {
+    let tem = false;
+    card.querySelectorAll('.ramal-item').forEach(item => {
+      const bate = !t || item.dataset.nome.includes(t) || item.dataset.ramal.includes(t);
+      item.classList.toggle('oculto-busca', !bate);
+      if (bate) { tem = true; encontrados++; }
+    });
+    // Também bate no nome do setor
+    const titulo = card.querySelector('.setor-titulo')?.textContent?.toLowerCase() || '';
+    if (!t || titulo.includes(t) || tem) {
+      card.classList.remove('sem-resultado');
+      if (t && (tem || titulo.includes(t))) card.classList.add('aberto');
+    } else {
+      card.classList.add('sem-resultado');
+    }
+    if (!t) { card.classList.remove('sem-resultado'); }
+  });
+  document.getElementById('buscaInfo').textContent = t ? `${encontrados} resultado(s)` : '';
+};
+
+// ── LOGIN ────────────────────────────────────────────────────
+window.abrirLogin  = () => { document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
+window.fecharLogin = () => { document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
+window.verificarSenha = () => {
+  if(document.getElementById('senhaInput').value===SENHA_ADMIN){ fecharLogin(); abrirPainel(); }
+  else { document.getElementById('erroSenha').style.display='block'; document.getElementById('senhaInput').value=''; document.getElementById('senhaInput').focus(); }
+};
+
+// ── PAINEL ───────────────────────────────────────────────────
+window.abrirPainel = () => { document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaSetoresAdmin(); renderListaAdmin(); };
+window.fecharPainel = () => document.getElementById('painelAdmin').classList.remove('aberto');
+
+function popularSelects() {
+  const opts = ramais.map((s,i)=>`<option value="${i}">${s.nome} (${s.aba==='simplifica'?'Simplifica':'Prefeitura'})</option>`).join('');
+  document.getElementById('novoSetorRamal').innerHTML = '<option value="">Selecione o setor</option>'+opts;
+  document.getElementById('filtroSetorAdmin').innerHTML = '<option value="">Todos os setores</option>'+opts;
+}
+
+window.adicionarSetor = function() {
+  const nome = document.getElementById('novoSetorNome').value.trim();
+  if(!nome) return alert('Digite o nome do setor.');
+  const tel  = document.getElementById('novoSetorTel').value.trim();
+  const wpp  = document.getElementById('novoSetorWpp').value.trim();
+  const aba  = document.getElementById('novoSetorAba').value;
+  ramais.push({nome,tel,wpp,pessoas:[],aba});
+  document.getElementById('novoSetorNome').value='';
+  document.getElementById('novoSetorTel').value='';
+  document.getElementById('novoSetorWpp').value='';
+  popularSelects(); renderListaSetoresAdmin(); atualizarBadges(); renderTudo();
+};
+
+window.adicionarRamal = function() {
+  const nome  = document.getElementById('novaNome').value.trim();
+  const ramal = document.getElementById('novoRamal').value.trim();
+  const wpp   = document.getElementById('novoWpp').value.trim();
+  const si    = document.getElementById('novoSetorRamal').value;
+  if(!nome||si==='') return alert('Preencha nome e setor.');
+  ramais[si].pessoas.push({nome,ramal,wpp});
+  document.getElementById('novaNome').value='';
+  document.getElementById('novoRamal').value='';
+  document.getElementById('novoWpp').value='';
+  renderListaAdmin(); renderTudo();
+};
+
+function renderListaSetoresAdmin() {
+  const lista = document.getElementById('listaSetoresAdmin');
+  if(!lista) return;
+  lista.innerHTML = ramais.map((s,si)=>`
+    <div class="item-admin">
+      <div class="item-admin-info">
+        <strong>${s.nome}</strong>
+        <span>${s.aba==='simplifica'?'🏢 Simplifica':'🏛️ Prefeitura'} · ${s.tel?'☎️ '+s.tel:'Sem tel'}${s.wpp?' · 💬 '+s.wpp:''} · ${s.pessoas.length} ramal(is)</span>
+      </div>
+      <div class="item-admin-acoes">
+        <button class="btn-edit" onclick="abrirEditarSetor(${si})">✏️</button>
+        <button class="btn-del" onclick="removerSetor(${si})">✕</button>
+      </div>
+    </div>`).join('') || '<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhum setor.</div>';
+}
+
+window.abrirEditarSetor = function(si) {
+  document.getElementById('editarSetorEditIdx').value = si;
+  document.getElementById('editarSetorNome').value    = ramais[si].nome||'';
+  document.getElementById('editarSetorTelEdit').value = ramais[si].tel||'';
+  document.getElementById('editarSetorWppEdit').value = ramais[si].wpp||'';
+  document.getElementById('editarSetorAba').value     = ramais[si].aba||'prefeitura';
+  document.getElementById('modalEditarSetor').classList.add('aberto');
+};
+window.fecharEditarSetor = () => document.getElementById('modalEditarSetor').classList.remove('aberto');
+window.salvarEdicaoSetor = function() {
+  const si = document.getElementById('editarSetorEditIdx').value;
+  const nome = document.getElementById('editarSetorNome').value.trim();
+  if(!nome) return alert('Digite o nome.');
+  ramais[si].nome = nome;
+  ramais[si].tel  = document.getElementById('editarSetorTelEdit').value.trim();
+  ramais[si].wpp  = document.getElementById('editarSetorWppEdit').value.trim();
+  ramais[si].aba  = document.getElementById('editarSetorAba').value;
+  fecharEditarSetor(); popularSelects(); renderListaSetoresAdmin(); atualizarBadges(); renderTudo();
+};
+window.removerSetor = function(si) {
+  const qtd = ramais[si].pessoas.length;
+  if(!confirm(`Remover setor "${ramais[si].nome}"${qtd>0?' e seus '+qtd+' ramal(is)':''}?`)) return;
+  ramais.splice(si,1);
+  popularSelects(); renderListaSetoresAdmin(); atualizarBadges(); renderTudo();
+};
+
+window.renderListaAdmin = function() {
+  const filtro = document.getElementById('filtroSetorAdmin').value;
+  const lista  = document.getElementById('listaAdmin');
+  if (filtro !== '') {
+    const s = ramais[filtro];
+    lista.innerHTML = `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--azul);padding:8px 0 4px">${s.nome}</div>` +
+      (s.pessoas.map((p,pi)=>`
+        <div class="item-admin">
+          <div class="item-admin-info"><strong>${p.nome}</strong><span>Ramal: ${p.ramal||'—'}${p.wpp?' · 💬 '+p.wpp:''}</span></div>
+          <div class="item-admin-acoes">
+            <button class="btn-edit" onclick="abrirEditar(${filtro},${pi})">✏️</button>
+            <button class="btn-del" onclick="removerRamal(${filtro},${pi})">✕</button>
+          </div>
+        </div>`).join('') || '<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhum ramal.</div>');
+  } else {
+    lista.innerHTML = ramais.map((s,si)=>
+      s.pessoas.map((p,pi)=>`
+        <div class="item-admin">
+          <span class="ramal-badge" style="flex-shrink:0;min-width:52px">${p.ramal||'—'}</span>
+          <div class="item-admin-info"><strong>${p.nome}</strong><span>${s.nome} · ${s.aba==='simplifica'?'Simplifica':'Prefeitura'}</span></div>
+          <div class="item-admin-acoes">
+            <button class="btn-edit" onclick="abrirEditar(${si},${pi})">✏️</button>
+            <button class="btn-del" onclick="removerRamal(${si},${pi})">✕</button>
+          </div>
+        </div>`).join('')).join('');
+  }
+};
+
+window.removerRamal = function(si, pi) {
+  if(!confirm(`Remover "${ramais[si].pessoas[pi].nome}"?`)) return;
+  ramais[si].pessoas.splice(pi,1);
+  renderListaAdmin(); renderTudo();
+};
+
+window.abrirEditar = function(si, pi) {
+  document.getElementById('editarSetorIdx').value  = si;
+  document.getElementById('editarPessoaIdx').value = pi;
+  document.getElementById('editarNome').value  = ramais[si].pessoas[pi].nome;
+  document.getElementById('editarRamal').value = ramais[si].pessoas[pi].ramal;
+  document.getElementById('editarWpp').value   = ramais[si].pessoas[pi].wpp||'';
+  document.getElementById('modalEditar').classList.add('aberto');
+};
+window.fecharEditar = () => document.getElementById('modalEditar').classList.remove('aberto');
+window.salvarEdicao = function() {
+  const si   = document.getElementById('editarSetorIdx').value;
+  const pi   = document.getElementById('editarPessoaIdx').value;
+  const nome = document.getElementById('editarNome').value.trim();
+  if(!nome) return alert('Digite o nome.');
+  ramais[si].pessoas[pi] = {
+    nome,
+    ramal: document.getElementById('editarRamal').value.trim(),
+    wpp  : document.getElementById('editarWpp').value.trim()
+  };
+  fecharEditar(); renderListaAdmin(); renderTudo();
+};
+
+// Fechar modais ao clicar fora
+['modalLogin','modalEditar','modalEditarSetor'].forEach(id=>{
+  document.getElementById(id).addEventListener('click', e=>{
+    if(e.target.id===id){
+      if(id==='modalLogin') fecharLogin();
+      else if(id==='modalEditarSetor') fecharEditarSetor();
+      else fecharEditar();
+    }
+  });
+});
+
+carregarDados();
 </script>
 </body>
 </html>
