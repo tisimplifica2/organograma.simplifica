@@ -1,0 +1,21 @@
+{
+  "name": "Chamada Simplifica Timbó",
+  "short_name": "Chamada",
+  "description": "Sistema de controlo de presença do Simplifica Timbó",
+  "start_url": "lista_chamada.html",
+  "display": "standalone",
+  "background_color": "#1a7a5e",
+  "theme_color": "#1a7a5e",
+  "icons": [
+    {
+      "src": "https://ui-avatars.com/api/?name=C&background=1a7a5e&color=fff&size=192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ui-avatars.com/api/?name=Chamada&background=1a7a5e&color=fff&size=512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
