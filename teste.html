@@ -71,10 +71,9 @@
   .setores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; align-items: start; }
   .setor-card { background: white; border-radius: var(--radius); box-shadow: var(--sombra); overflow: hidden; }
   .setor-card.sem-resultado { display: none; }
-  .setor-header { background: linear-gradient(135deg, var(--azul) 0%, #1257a0 100%); padding: 16px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; transition: filter 0.2s; }
+  .setor-header { background: linear-gradient(135deg, var(--azul) 0%, #1257a0 100%); padding: 16px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; transition: filter 0.2s; }
   .setor-header:hover { filter: brightness(1.1); }
   
-  /* LÓGICA DO ÍCONE DOS SETORES (Logo em retângulo) */
   .setor-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
   .setor-icon-emoji { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); font-size: 1.3rem; }
   .setor-icon-img { width: 90px; height: 40px; border-radius: 8px; background: var(--branco); border: 2px solid var(--azul-neon); padding: 3px; }
@@ -95,9 +94,7 @@
   .pessoa-item + .pessoa-item { border-top: 1px solid var(--fundo-escuro); }
   .pessoa-item.oculto-busca { display: none !important; }
 
-  /* FOTOS PERFEITAS E SEM DESFOQUE (Classe idêntica ao original) */
   .pessoa-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2.5px solid var(--fundo-escuro); flex-shrink: 0; background: var(--fundo-escuro); }
-  
   .pessoa-info { flex: 1; min-width: 0; }
   .pessoa-nome { font-weight: 600; font-size: 0.92rem; color: var(--cinza); }
   .pessoa-cargo { font-size: 0.73rem; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
@@ -132,6 +129,7 @@
   .perfil-acoes { display: flex; gap: 10px; margin-top: 20px; }
   .btn-cracha { flex: 1; background: var(--azul); color: white; border: none; padding: 11px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .btn-cracha:hover { background: var(--azul-claro); }
+  .btn-cracha:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .modal-login { background: white; border-radius: 20px; padding: 36px; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: slideUp 0.25s ease; }
   .modal-login h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--azul); margin-bottom: 6px; }
@@ -183,7 +181,7 @@
 
   .lista-admin { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
   .item-admin { background: white; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .item-admin img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--fundo-escuro); flex-shrink: 0; background: white; }
+  .item-admin img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--fundo-escuro); flex-shrink: 0; }
   .item-admin-info { flex: 1; min-width: 0; }
   .item-admin-info strong { font-size: 0.88rem; font-weight: 600; color: var(--cinza); display: block; }
   .item-admin-info span { font-size: 0.75rem; color: var(--cinza-claro); }
@@ -225,7 +223,7 @@
   .cracha-campo.full { grid-column: 1 / -1; }
   .cracha-rodape { background: #f0f5fb; padding: 10px 20px; text-align: center; font-size: 0.68rem; color: #7a8fa6; border-top: 1px solid #dce8f5; }
 
-  footer { background: var(--azul); color: rgba(255,255,255,0.6); text-align: center; padding: 24px; font-size: 0.8rem; margin-top: 48px; }
+  footer { background: var(--azul); color: rgba(255,255,255,0.6); text-align: center; padding: 20px; font-size: 0.8rem; margin-top: 48px; }
   footer strong { color: white; }
   .footer-dev { font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 8px; }
   .footer-dev a { color: var(--azul-neon); text-decoration: none; font-weight: bold; transition: color 0.2s; }
@@ -296,14 +294,25 @@
 
 <div class="hero">
   <h1>Equipe Simplifica Timbó</h1>
+  <p>Clique em um setor para ver a equipe</p>
   <div class="hero-stats">
-    <div class="stat"><div class="stat-num" id="totalPessoas">—</div><div class="stat-label">Colaboradores</div></div>
-    <div class="stat"><div class="stat-num" id="totalSetores">—</div><div class="stat-label">Setores</div></div>
+    <div class="stat">
+      <div class="stat-num" id="totalPessoas">—</div>
+      <div class="stat-label">Colaboradores</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="totalSetores">—</div>
+      <div class="stat-label">Setores</div>
+    </div>
   </div>
 </div>
 
 <div class="filtros-bar">
+  <label>Turno:</label>
   <button class="chip ativo" onclick="filtrar('todos',this)">Todos</button>
+  <button class="chip" onclick="filtrar('mat',this)">☀️ Matutino</button>
+  <button class="chip" onclick="filtrar('ves',this)">🌇 Vespertino</button>
+  <button class="chip" onclick="filtrar('int',this)">🕐 Integral</button>
   <div class="busca-wrap">
     <span class="busca-icon">🔍</span>
     <input class="busca-input" id="buscaInput" type="text" placeholder="Buscar por nome..." oninput="buscarPessoa(this.value)">
@@ -314,7 +323,7 @@
   <div class="diretoria-card" id="diretoriaCard">
     <div class="diretoria-header" onclick="toggleDiretoria()">
       <div class="diretoria-avatar-wrap">
-        <img id="fotoDiretor" class="avatar-img" src="" alt="Capa" onerror="this.src='https://ui-avatars.com/api/?name=D&background=1565a8&color=fff'">
+        <img id="fotoDiretor" class="avatar-img" src="" alt="Foto do Diretor" onerror="this.src='https://ui-avatars.com/api/?name=Diretor&background=0d3561&color=fff&size=88&bold=true'">
       </div>
       <div style="flex:1;min-width:0">
         <div class="diretoria-titulo">Simplifica — Diretoria</div>
@@ -325,7 +334,7 @@
     </div>
     <div class="diretoria-body">
       <div class="pessoa-item" onclick="abrirPerfilDiretor()">
-        <img id="fotoDiretorInner" class="pessoa-avatar" src="" alt="Perfil">
+        <img id="fotoDiretorInner" class="pessoa-avatar avatar-img" src="" alt="Foto do Diretor" onerror="this.src='https://ui-avatars.com/api/?name=Diretor&background=0d3561&color=fff&size=128&bold=true'" loading="lazy">
         <div class="pessoa-info">
           <div class="pessoa-nome" id="diretorNomeCard">—</div>
           <div class="pessoa-cargo" id="diretorCargoInner">Diretor</div>
@@ -336,6 +345,11 @@
   </div>
   <div class="setores-grid" id="setoresGrid"></div>
 </div>
+
+<footer>
+  <strong>Simplifica Timbó</strong> — Rua Japão, 408 - Bairro das Nações · (47) 3380-7900
+  <div class="footer-dev">Desenvolvido com 💻 por <a href="https://github.com/Kirby6567" target="_blank">Cristhian Lucinger (@Kirby6567)</a></div>
+</footer>
 
 <div class="modal-overlay" id="modalPerfil">
   <div class="modal-perfil">
@@ -455,8 +469,9 @@
 <div class="modal-overlay" id="modalLogin">
   <div class="modal-login">
     <h2>🔐 Área Administrativa</h2>
+    <p>Digite a senha para acessar o painel de edição.</p>
     <input type="password" id="senhaInput" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha()">
-    <div class="erro-msg" id="erroSenha">Senha incorreta.</div>
+    <div class="erro-msg" id="erroSenha">Senha incorreta. Tente novamente.</div>
     <div class="modal-btns">
       <button class="btn-primary" onclick="verificarSenha()">Entrar</button>
       <button class="btn-secondary" onclick="fecharLogin()">Cancelar</button>
@@ -485,17 +500,18 @@
     </div>
   </div>
   <div class="painel-body">
+
     <h3>👤 Editar Diretor</h3>
     <div class="form-section">
       <div style="background: var(--fundo-escuro); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
         <div class="field-label">Foto de Capa (Logotipo do Card)</div>
         <input type="text" id="diretorFotoCapaUrl" placeholder="URL da Logo" style="width: 100%; padding: 10px 14px; border: 1.5px solid white; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; margin-top: 5px;">
       </div>
-      <div class="field-label">Foto de Perfil Pessoal</div>
+      <div class="field-label" style="margin-bottom:8px">Foto do Diretor (Perfil Pessoal)</div>
       <div class="foto-upload-area">
-        <input type="file" onchange="previewFotoDiretor(this)">
-        <img class="foto-preview" id="diretorFotoPreview" src="">
-        <div class="foto-upload-txt">Clique para escolher a foto</div>
+        <input type="file" id="diretorFotoArquivo" accept="image/*" onchange="previewFotoDiretor(this)">
+        <img class="foto-preview" id="diretorFotoPreview" src="" alt="Preview">
+        <div class="foto-upload-txt" id="diretorFotoUploadTxt"><strong>Clique para escolher uma foto</strong><br>JPG, PNG ou WEBP</div>
       </div>
       <div style="margin-top:10px;margin-bottom:20px">
         <div class="field-label">Ou cole a URL da foto</div>
@@ -538,17 +554,23 @@
           <div class="field-label">Observação</div>
           <textarea id="diretorObs" placeholder="Observações sobre o diretor..."></textarea>
         </div>
-        <div class="form-full"><button class="btn-add" onclick="salvarDiretor()" style="width:100%">💾 Atualizar Pré-visualização</button></div>
+        <div class="form-full" style="margin-top:4px">
+          <button class="btn-add" onclick="salvarDiretor()" style="width:100%">💾 Atualizar Pré-visualização</button>
+        </div>
       </div>
     </div>
 
     <h3>🏢 Setores cadastrados</h3>
     <div class="lista-admin" id="listaSetoresAdmin"></div>
+
     <div class="form-section" style="margin-top:15px">
       <div class="field-label">Adicionar Novo Setor</div>
       <div class="form-grid">
-        <input type="text" id="novoSetorNome" placeholder="Nome">
-        <input type="text" id="novoSetorIcone" placeholder="Icone (Emoji)">
+        <div><div class="field-label">Nome do setor</div><input type="text" id="novoSetorNome" placeholder="Ex: Triagem"></div>
+        <div>
+          <div class="field-label">Ícone (emoji) <span style="font-weight:400;text-transform:none">— ou use foto abaixo</span></div>
+          <input type="text" id="novoSetorIcone" placeholder="Ex: 📋">
+        </div>
         <div class="form-full">
           <div class="field-label" style="margin-bottom:6px">Foto do setor (substitui o emoji)</div>
           <div class="foto-upload-area">
@@ -619,6 +641,9 @@
               <span class="horario-sep">até</span>
               <input type="time" id="novoHoraFim">
             </div>
+            <div style="font-size:0.71rem;color:var(--cinza-claro);margin-top:8px">
+              Exemplo: 07h00 → 12h00 / 14h00 → 17h00. Se não tiver almoço, deixe os campos do meio em branco.
+            </div>
           </div>
         </div>
 
@@ -643,16 +668,11 @@
       <select id="filtroSetorAdmin" onchange="renderListaAdmin()"><option value="">Todos os setores</option></select>
     </div>
     <div class="lista-admin" id="listaAdmin"></div>
-    
+
     <button class="btn-salvar-tudo" onclick="salvarTudo()" id="btnSalvar">💾 Salvar no Firebase</button>
     <div class="aviso-salvar" id="avisoSalvar"></div>
   </div>
 </div>
-
-<footer>
-  <strong>Simplifica Timbó</strong> — Rua Japão, 408 - Bairro das Nações · (47) 3380-7900
-  <div class="footer-dev">Desenvolvido com 💻 por <a href="https://github.com/Kirby6567" target="_blank">Cristhian Lucinger (@Kirby6567)</a></div>
-</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -672,15 +692,17 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const SENHA_ADMIN = "simplifica2024";
-  
-  let setores = [], pessoas = [], fotoBase64SetorEdit = '', fotoBase64Diretor = '', fotoBase64 = '', pessoaAtualIdx = -1;
+  const BASE = "https://tisimplifica2.github.io/imagens/";
 
-  let diretor = {
+  let setores=[], pessoas=[], fotoBase64='', fotoBase64Setor='', fotoBase64Diretor='', pessoaAtualIdx=-1, fotoBase64SetorEdit='';
+
+  const DIRETOR_PADRAO = {
     nome: 'Murilo', cargo: 'Diretor',
     foto: 'https://tisimplifica2.github.io/imagens/murilo.jpg', fotoCapa: '',
     turno:'int', horaInicio:'08:00', horaAlmocoInicio:'12:00', horaAlmocoFim:'13:00', horaFim:'17:00',
     matricula:'', cpf:'', nascimento:'', telefone:'', obs:''
   };
+  let diretor = {...DIRETOR_PADRAO};
 
   function avatarUrl(nome, foto) {
     if (foto) return foto;
@@ -697,19 +719,25 @@
   }
 
   function fmtData(d) { if (!d) return null; const [a,m,dia]=d.split('-'); return `${dia}/${m}/${a}`; }
-  
+  function calcularIdade(d) {
+    if (!d) return null;
+    const hoje = new Date(), nasc = new Date(d);
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+    return idade;
+  }
   function loading(show, txt) {
     document.getElementById('loadingTxt').textContent=txt||'Carregando...';
     document.getElementById('loadingOverlay').classList.toggle('ativo',show);
   }
 
   async function carregarDados() {
-    loading(true, 'Sincronizando banco...');
+    loading(true,'Carregando organograma...');
     try {
-      const snap = await getDoc(doc(db, "organograma", "dados"));
+      const snap = await getDoc(doc(db,"organograma","dados"));
       if (snap.exists()) {
         const d = snap.data();
-        // A mágica acontece aqui: Puxamos APENAS do Firebase!
         setores = d.setores || [];
         pessoas = d.pessoas || [];
         diretor = d.diretor || diretor;
@@ -719,28 +747,27 @@
   }
 
   window.salvarTudo = async function() {
-    const btn = document.getElementById('btnSalvar'), btnTopo = document.getElementById('btnSalvarTopo'), aviso = document.getElementById('avisoSalvar');
-    if(btn) { btn.disabled = true; btn.textContent = 'Gravando...'; }
-    if(btnTopo) { btnTopo.disabled = true; btnTopo.textContent = 'Gravando...'; }
-    if(aviso) aviso.style.display = 'none';
+    const btn=document.getElementById('btnSalvar'), btnTopo=document.getElementById('btnSalvarTopo'), aviso=document.getElementById('avisoSalvar');
+    if(btn) { btn.disabled=true; btn.textContent='⏳ Salvando...'; }
+    if(btnTopo) { btnTopo.disabled=true; btnTopo.textContent='⏳ Salvando...'; }
+    if(aviso) aviso.style.display='none';
     
     try {
-      await setDoc(doc(db, "organograma", "dados"), { setores, pessoas, diretor });
+      await setDoc(doc(db,"organograma","dados"),{setores,pessoas,diretor});
       if(aviso) { aviso.textContent='✅ Salvo! Todos os visitantes já verão as mudanças.'; aviso.className='aviso-salvar sucesso'; aviso.style.display='block'; }
-    } catch (e) {
+    } catch(e) {
       if(aviso) { aviso.textContent='❌ Erro ao salvar. Verifique a conexão.'; aviso.className='aviso-salvar erro'; aviso.style.display='block'; }
     }
-    
-    if(btn) { btn.disabled = false; btn.textContent = '💾 Salvar no Firebase'; }
-    if(btnTopo) { btnTopo.disabled = false; btnTopo.textContent = '💾 Salvar'; }
-    if(aviso) setTimeout(()=>aviso.style.display='none',5000);
+    if(btn) { btn.disabled=false; btn.textContent='💾 Salvar no Firebase'; }
+    if(btnTopo) { btnTopo.disabled=false; btnTopo.textContent='💾 Salvar'; }
+    setTimeout(()=>aviso.style.display='none',5000);
   };
 
   function renderOrganograma() {
-    const grid = document.getElementById('setoresGrid');
-    grid.innerHTML = '';
-    document.getElementById('totalPessoas').textContent = pessoas.length;
-    document.getElementById('totalSetores').textContent = setores.length;
+    const grid=document.getElementById('setoresGrid');
+    grid.innerHTML='';
+    document.getElementById('totalPessoas').textContent=pessoas.length;
+    document.getElementById('totalSetores').textContent=setores.length;
 
     const fotoSrcCapa = diretor.fotoCapa || diretor.foto || avatarUrl(diretor.nome, '');
     const fotoSrcInner = diretor.foto || avatarUrl(diretor.nome, '');
@@ -748,52 +775,87 @@
     const fdBody   = document.getElementById('fotoDiretorInner');
     fdHeader.src = fotoSrcCapa; fdHeader.onerror = () => { fdHeader.src = avatarUrl(diretor.nome, ''); };
     fdBody.src = fotoSrcInner; fdBody.onerror = () => { fdBody.src = avatarUrl(diretor.nome, ''); };
-    document.getElementById('diretorNomeCard').textContent = diretor.nome || 'Diretor';
+    document.getElementById('diretorNomeCard').textContent  = diretor.nome  || 'Diretor';
     document.getElementById('diretorCargoCard').textContent = diretor.cargo || 'Diretor';
-    document.getElementById('diretorCargoInner').textContent = diretor.cargo || 'Diretor';
+    document.getElementById('diretorCargoInner').textContent= diretor.cargo || 'Diretor';
+    
     const tb = document.getElementById('diretorTurnoBadge');
-    if (diretor.turno === 'mat') { tb.className = 'turno-badge turno-mat'; tb.textContent = '☀️ Mat.'; }
-    else if (diretor.turno === 'ves') { tb.className = 'turno-badge turno-ves'; tb.textContent = '🌇 Ves.'; }
-    else if (diretor.turno === 'int') { tb.className = 'turno-badge turno-int'; tb.textContent = '🕐 Int.'; }
-    else { tb.className = ''; tb.textContent = ''; }
+    if (diretor.turno === 'mat') {
+      tb.className = 'turno-badge turno-mat'; tb.textContent = '☀️ Mat.';
+    } else if (diretor.turno === 'ves') {
+      tb.className = 'turno-badge turno-ves'; tb.textContent = '🌇 Ves.';
+    } else if (diretor.turno === 'int') {
+      tb.className = 'turno-badge turno-int'; tb.textContent = '🕐 Int.';
+    } else {
+      tb.className = ''; tb.textContent = '';
+    }
 
-    setores.forEach((s, idx) => {
-      const membros = pessoas.filter(p => p.setor === s.id);
+    setores.forEach(s => {
+      const membros=pessoas.filter(p=>p.setor===s.id);
       if (!membros.length) return;
-      const card = document.createElement('div'); card.className = 'setor-card'; card.dataset.setorId = s.id;
-      const tagHTML = s.parceiro ? `<span class="setor-tag">Parceiro</span>` : '';
-      
+      const card=document.createElement('div');
+      card.className='setor-card';
+      card.dataset.setorId=s.id;
+      const tagHTML=s.parceiro?`<span class="setor-tag">Parceiro</span>`:'';
+
       const isImg = !!s.foto;
       const iconeClass = isImg ? 'setor-icon setor-icon-img' : 'setor-icon setor-icon-emoji';
       const iconeHTML = isImg ? `<img src="${s.foto}" alt="${s.nome}">` : (s.icone || '📁');
 
-      const pessoasHTML = membros.map(mb => {
-        const turnoClass = mb.turno==='mat'?'turno-mat-item':mb.turno==='ves'?'turno-ves-item':mb.turno==='int'?'turno-int-item':'';
-        const turnoLabel = mb.turno==='mat'?'<span class="turno-badge turno-mat">☀️ Mat.</span>':mb.turno==='ves'?'<span class="turno-badge turno-ves">🌇 Ves.</span>':mb.turno==='int'?'<span class="turno-badge turno-int">🕐 Int.</span>':'';
-        const hor=fmtHorario(mb); const horHTML=hor?`<div class="pessoa-horario">🕐 ${hor}</div>`:'';
+      const pessoasHTML=membros.map(mb=>{
+        const turnoClass=mb.turno==='mat'?'turno-mat-item':mb.turno==='ves'?'turno-ves-item':mb.turno==='int'?'turno-int-item':'';
+        const turnoLabel=mb.turno==='mat'?'<span class="turno-badge turno-mat">☀️ Mat.</span>'
+          :mb.turno==='ves'?'<span class="turno-badge turno-ves">🌇 Ves.</span>'
+          :mb.turno==='int'?'<span class="turno-badge turno-int">🕐 Int.</span>':'';
+        const hor=fmtHorario(mb);
+        const horHTML=hor?`<div class="pessoa-horario">🕐 ${hor}</div>`:'';
         const obsHTML=mb.obs?`<div class="pessoa-obs">📌 ${mb.obs}</div>`:'';
-        const pIdx = pessoas.indexOf(mb);
-        return `<div class="pessoa-item ${turnoClass}" data-nome="${(mb.nome||'').toLowerCase()}" onclick="abrirPerfil(${pIdx})">
-          <img class="pessoa-avatar" src="${avatarUrl(mb.nome,mb.foto)}" alt="${mb.nome}" onerror="this.src='${avatarUrl(mb.nome,'')}'" loading="lazy">
-          <div class="pessoa-info"><div class="pessoa-nome">${mb.nome}</div><div class="pessoa-cargo">${mb.cargo}</div>${horHTML}${obsHTML}</div>
+        const idx=pessoas.indexOf(mb);
+        return `<div class="pessoa-item ${turnoClass}" data-nome="${(mb.nome||'').toLowerCase()}" onclick="abrirPerfil(${idx})">
+          <img class="pessoa-avatar avatar-img" src="${avatarUrl(mb.nome,mb.foto)}" alt="${mb.nome}" onerror="this.src='${avatarUrl(mb.nome,'')}'" loading="lazy">
+          <div class="pessoa-info">
+            <div class="pessoa-nome">${mb.nome}</div>
+            <div class="pessoa-cargo">${mb.cargo}</div>
+            ${horHTML}${obsHTML}
+          </div>
           ${turnoLabel}
         </div>`;
       }).join('');
 
-      card.innerHTML = `<div class="setor-header" onclick="toggleSetor(this)"><div class="${iconeClass}">${iconeHTML}</div><div class="setor-titulo">${s.nome}</div><div class="setor-meta"><span class="setor-count">${membros.length} pessoa${membros.length>1?'s':''}</span>${tagHTML}<span class="setor-toggle">▼</span></div></div><div class="pessoas-lista">${pessoasHTML}</div>`;
+      card.innerHTML=`
+        <div class="setor-header" onclick="toggleSetor(this)">
+          <div class="${iconeClass}">${iconeHTML}</div>
+          <div class="setor-titulo">${s.nome}</div>
+          <div class="setor-meta">
+            <span class="setor-count">${membros.length} pessoa${membros.length>1?'s':''}</span>
+            ${tagHTML}<span class="setor-toggle">▼</span>
+          </div>
+        </div>
+        <div class="pessoas-lista">${pessoasHTML}</div>`;
       grid.appendChild(card);
     });
   }
 
-  window.toggleDiretoria = () => document.getElementById('diretoriaCard').classList.toggle('aberto');
-  window.toggleSetor = (header) => header.closest('.setor-card').classList.toggle('aberto');
+  window.toggleDiretoria = function() {
+    document.getElementById('diretoriaCard').classList.toggle('aberto');
+  };
+
+  window.toggleSetor = function(header) {
+    header.closest('.setor-card').classList.toggle('aberto');
+  };
 
   window.buscarPessoa = function(termo) {
     const t=termo.toLowerCase().trim();
     const diretorCard = document.getElementById('diretoriaCard');
     const diretorNome = (document.getElementById('diretorNomeCard').textContent||'').toLowerCase();
-    if (t) { const bate = diretorNome.includes(t); diretorCard.classList.toggle('aberto', bate); diretorCard.style.display = bate ? '' : 'none'; }
-    else { diretorCard.style.display = ''; }
+    if (t) {
+      const bate = diretorNome.includes(t);
+      diretorCard.classList.toggle('aberto', bate);
+      diretorCard.style.display = bate ? '' : 'none';
+    } else {
+      diretorCard.style.display = '';
+    }
+
     document.querySelectorAll('.setor-card').forEach(card=>{
       let temVisivel=false;
       card.querySelectorAll('.pessoa-item').forEach(item=>{
@@ -808,7 +870,8 @@
 
   window.filtrar = function(turno,btn) {
     document.querySelectorAll('.chip').forEach(c=>c.classList.remove('ativo'));
-    btn.classList.add('ativo'); document.body.classList.remove('filtro-mat','filtro-ves','filtro-int');
+    btn.classList.add('ativo');
+    document.body.classList.remove('filtro-mat','filtro-ves','filtro-int');
     if(turno==='mat') document.body.classList.add('filtro-mat');
     if(turno==='ves') document.body.classList.add('filtro-ves');
     if(turno==='int') document.body.classList.add('filtro-int');
@@ -817,27 +880,57 @@
   window.abrirPerfil = function(idx) {
     pessoaAtualIdx=idx;
     const mb=pessoas[idx], nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor;
-    const foto=document.getElementById('perfilFoto'); foto.src=avatarUrl(mb.nome,mb.foto); foto.onerror=()=>foto.src=avatarUrl(mb.nome,'');
-    document.getElementById('perfilNome').textContent=mb.nome; document.getElementById('perfilCargo').textContent=mb.cargo; document.getElementById('perfilSetor').textContent=nomeSetor;
+    const foto=document.getElementById('perfilFoto');
+    foto.src=avatarUrl(mb.nome,mb.foto); foto.onerror=()=>foto.src=avatarUrl(mb.nome,'');
+    document.getElementById('perfilNome').textContent=mb.nome;
+    document.getElementById('perfilCargo').textContent=mb.cargo;
+    document.getElementById('perfilSetor').textContent=nomeSetor;
     const turnoLabel=mb.turno==='mat'?'☀️ Matutino':mb.turno==='ves'?'🌇 Vespertino':mb.turno==='int'?'🕐 Integral':null;
-    const campos=[ {label:'Turno',valor:turnoLabel},{label:'Horário',valor:fmtHorario(mb)},{label:'Matrícula',valor:mb.matricula||null},{label:'Telefone',valor:mb.telefone||null},{label:'Nascimento',valor:fmtData(mb.nascimento)},{label:'CPF',valor:mb.cpf||null},mb.obs?{label:'Observação',valor:mb.obs,full:true}:null ].filter(Boolean);
-    document.getElementById('perfilGrid').innerHTML=campos.map(c=>`<div class="perfil-item${c.full?' full':''}"><div class="perfil-label">${c.label}</div><div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div></div>`).join('');
+    const campos=[
+      {label:'Turno',valor:turnoLabel},
+      {label:'Horário',valor:fmtHorario(mb)},
+      {label:'Matrícula',valor:mb.matricula||null},
+      {label:'Telefone',valor:mb.telefone||null},
+      {label:'Nascimento',valor:fmtData(mb.nascimento)},
+      {label:'CPF',valor:mb.cpf||null},
+      mb.obs?{label:'Observação',valor:mb.obs,full:true}:null,
+    ].filter(Boolean);
+    document.getElementById('perfilGrid').innerHTML=campos.map(c=>
+      `<div class="perfil-item${c.full?' full':''}">
+        <div class="perfil-label">${c.label}</div>
+        <div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div>
+      </div>`).join('');
     document.getElementById('modalPerfil').classList.add('aberto');
   };
 
   window.abrirPerfilDiretor = function() {
     pessoaAtualIdx=-1;
-    const foto=document.getElementById('perfilFoto'); foto.src = diretor.foto || avatarUrl(diretor.nome,''); foto.onerror = () => foto.src = avatarUrl(diretor.nome,'');
-    document.getElementById('perfilNome').textContent = diretor.nome || 'Diretor'; document.getElementById('perfilCargo').textContent = (diretor.cargo||'DIRETOR').toUpperCase(); document.getElementById('perfilSetor').textContent = 'Simplifica Timbó';
+    const foto=document.getElementById('perfilFoto');
+    foto.src = diretor.foto || avatarUrl(diretor.nome,'');
+    foto.onerror = () => foto.src = avatarUrl(diretor.nome,'');
+    document.getElementById('perfilNome').textContent = diretor.nome || 'Diretor';
+    document.getElementById('perfilCargo').textContent = (diretor.cargo||'DIRETOR').toUpperCase();
+    document.getElementById('perfilSetor').textContent = 'Simplifica Timbó';
     const turnoLabel=diretor.turno==='mat'?'☀️ Matutino':diretor.turno==='ves'?'🌇 Vespertino':diretor.turno==='int'?'🕐 Integral':null;
-    const campos=[ {label:'Turno', valor:turnoLabel},{label:'Horário', valor:fmtHorario(diretor)},{label:'Matrícula', valor:diretor.matricula||null},{label:'Telefone', valor:diretor.telefone||null},{label:'Nascimento', valor:fmtData(diretor.nascimento)},{label:'CPF', valor:diretor.cpf||null},diretor.obs?{label:'Observação',valor:diretor.obs,full:true}:null ].filter(Boolean);
-    document.getElementById('perfilGrid').innerHTML=campos.map(c=>`<div class="perfil-item${c.full?' full':''}"><div class="perfil-label">${c.label}</div><div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div></div>`).join('');
+    const campos=[
+      {label:'Turno', valor:turnoLabel},
+      {label:'Horário', valor:fmtHorario(diretor)},
+      {label:'Matrícula', valor:diretor.matricula||null},
+      {label:'Telefone', valor:diretor.telefone||null},
+      {label:'Nascimento', valor:fmtData(diretor.nascimento)?(fmtData(diretor.nascimento)+' · '+calcularIdade(diretor.nascimento)+' anos'):null},
+      {label:'CPF', valor:diretor.cpf||null},
+      diretor.obs?{label:'Observação',valor:diretor.obs,full:true}:null,
+    ].filter(Boolean);
+    document.getElementById('perfilGrid').innerHTML=campos.map(c=>
+      `<div class="perfil-item${c.full?' full':''}">
+        <div class="perfil-label">${c.label}</div>
+        <div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div>
+      </div>`).join('');
     document.getElementById('modalPerfil').classList.add('aberto');
   };
-
   window.fecharPerfil=()=>document.getElementById('modalPerfil').classList.remove('aberto');
 
-  // DOWNLOAD CRACHÁ
+  // DOWNLOAD CRACHÁ — converte imagem cross-origin para base64
   function toBase64(url) {
     return new Promise((resolve, reject) => {
       if (!url || url.startsWith('data:')) return resolve(url);
@@ -949,98 +1042,284 @@
     btn.textContent='🪪 Baixar Crachá'; btn.disabled=false;
   };
 
+  // LOGIN E SAÍDA DO PAINEL
+  window.abrirLogin=()=>{ document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
+  window.fecharLogin=()=>{ document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
+  window.verificarSenha=()=>{ if(document.getElementById('senhaInput').value===SENHA_ADMIN){fecharLogin();abrirPainel();}else{document.getElementById('erroSenha').style.display='block';document.getElementById('senhaInput').value='';document.getElementById('senhaInput').focus();} };
+
+  window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); preencherFormDiretor(); };
+  
+  window.fecharPainelComConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.add('aberto');
+  window.fecharConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.remove('aberto');
+  window.fecharPainelDireto = () => document.getElementById('painelAdmin').classList.remove('aberto');
+
+  function popularSelects() {
+    const opts=setores.map(s=>`<option value="${s.id}">${s.nome}</option>`).join('');
+    document.getElementById('novoSetor').innerHTML='<option value="">Selecione o setor</option>'+opts;
+    document.getElementById('filtroSetorAdmin').innerHTML='<option value="">Todos os setores</option>'+opts;
+  }
+
+  // PREVIEW DE IMAGENS
+  window.previewFoto=function(input){
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{ fotoBase64=e.target.result; const prev=document.getElementById('fotoPreview'); prev.src=fotoBase64; prev.classList.add('visivel'); document.getElementById('fotoUploadTxt').style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+
+  window.previewFotoDiretor=function(input){
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{ fotoBase64Diretor=e.target.result; const prev=document.getElementById('diretorFotoPreview'); prev.src=fotoBase64Diretor; prev.classList.add('visivel'); document.getElementById('diretorFotoUploadTxt').style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+
+  window.previewFotoSetor=function(input){
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{ fotoBase64Setor=e.target.result; const prev=document.getElementById('setorFotoPreview'); prev.src=fotoBase64Setor; prev.classList.add('visivel'); document.getElementById('setorFotoUploadTxt').style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+
+  // DIRETOR
+  window.salvarDiretor=function(){
+    const nome=document.getElementById('diretorNome').value.trim();
+    if(!nome) return alert('Digite o nome do diretor.');
+    diretor = {
+      nome,
+      cargo: document.getElementById('diretorCargo').value.trim()||'Diretor',
+      foto: fotoBase64Diretor || document.getElementById('diretorFotoUrl').value.trim() || diretor.foto,
+      fotoCapa: document.getElementById('diretorFotoCapaUrl').value.trim() || diretor.fotoCapa,
+      turno: document.getElementById('diretorTurno').value,
+      horaInicio: document.getElementById('diretorHoraInicio').value,
+      horaAlmocoInicio: document.getElementById('diretorHoraAlmocoInicio').value,
+      horaAlmocoFim: document.getElementById('diretorHoraAlmocoFim').value,
+      horaFim: document.getElementById('diretorHoraFim').value,
+      matricula: document.getElementById('diretorMatricula').value.trim(),
+      cpf: document.getElementById('diretorCpf').value.trim(),
+      nascimento: document.getElementById('diretorNascimento').value,
+      telefone: document.getElementById('diretorTelefone').value.trim(),
+      obs: document.getElementById('diretorObs').value.trim(),
+    };
+    fotoBase64Diretor='';
+    renderOrganograma();
+    alert('✅ Dados do diretor atualizados! Não esqueça de clicar em "Salvar no Firebase".');
+  };
+
+  function preencherFormDiretor(){
+    document.getElementById('diretorNome').value = diretor.nome||'';
+    document.getElementById('diretorCargo').value = diretor.cargo||'';
+    document.getElementById('diretorFotoUrl').value = (diretor.foto&&!diretor.foto.startsWith('data:'))?diretor.foto:'';
+    document.getElementById('diretorFotoCapaUrl').value = diretor.fotoCapa||'';
+    document.getElementById('diretorTurno').value = diretor.turno||'';
+    document.getElementById('diretorHoraInicio').value = diretor.horaInicio||'';
+    document.getElementById('diretorHoraAlmocoInicio').value = diretor.horaAlmocoInicio||'';
+    document.getElementById('diretorHoraAlmocoFim').value = diretor.horaAlmocoFim||'';
+    document.getElementById('diretorHoraFim').value = diretor.horaFim||'';
+    document.getElementById('diretorMatricula').value = diretor.matricula||'';
+    document.getElementById('diretorCpf').value = diretor.cpf||'';
+    document.getElementById('diretorNascimento').value = diretor.nascimento||'';
+    document.getElementById('diretorTelefone').value = diretor.telefone||'';
+    document.getElementById('diretorObs').value = diretor.obs||'';
+    if(diretor.foto){ const prev=document.getElementById('diretorFotoPreview'); prev.src=diretor.foto; prev.classList.add('visivel'); document.getElementById('diretorFotoUploadTxt').style.display='none'; }
+  }
+
+  // SETORES
+  window.adicionarSetor=function(){
+    const nome=document.getElementById('novoSetorNome').value.trim();
+    const icone=document.getElementById('novoSetorIcone').value.trim()||'📁';
+    const foto=fotoBase64Setor||document.getElementById('novoSetorFotoUrl').value.trim()||'';
+    const parceiro=document.getElementById('novoSetorParceiro').value==='parceiro';
+    if(!nome) return alert('Digite o nome do setor.');
+    const id=nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    setores.push({id,nome,icone,foto,parceiro});
+    document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorIcone').value='';
+    document.getElementById('novoSetorFotoUrl').value=''; document.getElementById('setorFotoArquivo').value='';
+    document.getElementById('setorFotoPreview').classList.remove('visivel');
+    document.getElementById('setorFotoUploadTxt').style.display='';
+    fotoBase64Setor='';
+    popularSelects(); renderListaSetoresAdmin(); renderOrganograma();
+  };
+
+  let editSetorIdx = -1;
   window.abrirEditarSetor = function(idx) {
-    editSetorIdx = idx; const s = setores[idx];
-    document.getElementById('editSetorNome').value = s.nome; document.getElementById('editSetorIcone').value = s.icone || ''; document.getElementById('editSetorParceiro').value = String(s.parceiro || false);
+    editSetorIdx = idx; 
+    const s = setores[idx];
+    document.getElementById('editSetorNome').value = s.nome; 
+    document.getElementById('editSetorIcone').value = s.icone || ''; 
+    document.getElementById('editSetorParceiro').value = String(s.parceiro || false);
     const prev = document.getElementById('editSetorFotoPrev');
     if (s.foto) { prev.src = s.foto; prev.classList.add('visivel'); } else { prev.classList.remove('visivel'); }
     document.getElementById('modalEditarSetor').classList.add('aberto');
   };
+
   window.fecharEditarSetor = () => document.getElementById('modalEditarSetor').classList.remove('aberto');
+
   window.previewFotoSetorEdit = function(input) {
-    const file = input.files[0]; if (!file) return; const reader = new FileReader();
-    reader.onload = e => { fotoBase64SetorEdit = e.target.result; const prev = document.getElementById('editSetorFotoPrev'); prev.src = fotoBase64SetorEdit; prev.classList.add('visivel'); }; reader.readAsDataURL(file);
+    const file = input.files[0]; if (!file) return; 
+    const reader = new FileReader();
+    reader.onload = e => { 
+      fotoBase64SetorEdit = e.target.result; 
+      const prev = document.getElementById('editSetorFotoPrev'); 
+      prev.src = fotoBase64SetorEdit; 
+      prev.classList.add('visivel'); 
+    }; 
+    reader.readAsDataURL(file);
   };
+
   window.salvarEdicaoSetor = function() {
     if (editSetorIdx < 0) return;
-    setores[editSetorIdx].nome = document.getElementById('editSetorNome').value; setores[editSetorIdx].icone = document.getElementById('editSetorIcone').value; setores[editSetorIdx].parceiro = document.getElementById('editSetorParceiro').value === 'true';
+    setores[editSetorIdx].nome = document.getElementById('editSetorNome').value; 
+    setores[editSetorIdx].icone = document.getElementById('editSetorIcone').value; 
+    setores[editSetorIdx].parceiro = document.getElementById('editSetorParceiro').value === 'true';
     if (fotoBase64SetorEdit) setores[editSetorIdx].foto = fotoBase64SetorEdit;
     fecharEditarSetor(); renderListaSetoresAdmin(); renderOrganograma(); fotoBase64SetorEdit = '';
   };
+
   window.renderListaSetoresAdmin = function() {
     document.getElementById('listaSetoresAdmin').innerHTML = setores.map((s, i) => {
       const imgOrEmoji = s.foto ? `<img src="${s.foto}" style="width:100%;height:100%;object-fit:contain;border-radius:4px">` : (s.icone || '📁');
       const boxStyle = s.foto ? `width:70px;height:36px;background:white;border:2px solid var(--azul-neon);padding:2px;border-radius:6px;` : `font-size:1.5rem;width:40px;height:40px;background:rgba(0,0,0,0.05);border-radius:10px;`;
-      return `<div class="item-admin"><div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div><div class="item-admin-info"><strong>${s.nome}</strong></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button><button class="btn-del" onclick="removerSetor(${i})">Remover</button></div></div>`;
+      return `<div class="item-admin">
+        <div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div>
+        <div class="item-admin-info"><strong>${s.nome}</strong><span>${s.parceiro?'Parceiro':'Setor próprio'} · ${pessoas.filter(p=>p.setor===s.id).length} pessoa(s)</span></div>
+        <div class="item-admin-acoes">
+          <button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button>
+          <button class="btn-del" onclick="removerSetor(${i})">Remover</button>
+        </div>
+      </div>`;
     }).join('');
   };
+  
+  window.removerSetor=function(idx){ const s=setores[idx],qtd=pessoas.filter(p=>p.setor===s.id).length; if(qtd>0&&!confirm(`O setor "${s.nome}" tem ${qtd} pessoa(s). Remover mesmo assim?`)) return; setores.splice(idx,1); popularSelects(); renderListaSetoresAdmin(); renderOrganograma(); };
 
-  window.salvarDiretor=function(){
-    const nome=document.getElementById('diretorNome').value.trim(); if(!nome) return alert('Digite o nome do diretor.');
-    diretor = { nome, cargo: document.getElementById('diretorCargo').value.trim()||'Diretor', foto: fotoBase64Diretor || document.getElementById('diretorFotoUrl').value.trim() || diretor.foto, fotoCapa: document.getElementById('diretorFotoCapaUrl').value.trim() || diretor.fotoCapa, turno: document.getElementById('diretorTurno').value, horaInicio: document.getElementById('diretorHoraInicio').value, horaAlmocoInicio: document.getElementById('diretorHoraAlmocoInicio').value, horaAlmocoFim: document.getElementById('diretorHoraAlmocoFim').value, horaFim: document.getElementById('diretorHoraFim').value, matricula: document.getElementById('diretorMatricula').value.trim(), cpf: document.getElementById('diretorCpf').value.trim(), nascimento: document.getElementById('diretorNascimento').value, telefone: document.getElementById('diretorTelefone').value.trim(), obs: document.getElementById('diretorObs').value.trim(), };
-    fotoBase64Diretor=''; renderOrganograma(); alert('✅ Pré-visualização atualizada! Não esqueça de Salvar no Firebase.');
-  };
-  function preencherFormDiretor(){
-    document.getElementById('diretorNome').value = diretor.nome||''; document.getElementById('diretorCargo').value = diretor.cargo||''; document.getElementById('diretorFotoUrl').value = (diretor.foto&&!diretor.foto.startsWith('data:'))?diretor.foto:''; document.getElementById('diretorFotoCapaUrl').value = diretor.fotoCapa||''; document.getElementById('diretorTurno').value = diretor.turno||''; document.getElementById('diretorHoraInicio').value = diretor.horaInicio||''; document.getElementById('diretorHoraAlmocoInicio').value = diretor.horaAlmocoInicio||''; document.getElementById('diretorHoraAlmocoFim').value = diretor.horaAlmocoFim||''; document.getElementById('diretorHoraFim').value = diretor.horaFim||''; document.getElementById('diretorMatricula').value = diretor.matricula||''; document.getElementById('diretorCpf').value = diretor.cpf||''; document.getElementById('diretorNascimento').value = diretor.nascimento||''; document.getElementById('diretorTelefone').value = diretor.telefone||''; document.getElementById('diretorObs').value = diretor.obs||'';
-    if(diretor.foto){ const prev=document.getElementById('diretorFotoPreview'); prev.src=diretor.foto; prev.classList.add('visivel'); document.getElementById('diretorFotoUploadTxt').style.display='none'; }
-  }
-
-  window.adicionarSetor=function(){
-    const nome=document.getElementById('novoSetorNome').value.trim(); const icone=document.getElementById('novoSetorIcone').value.trim()||'📁'; const foto=fotoBase64SetorEdit||document.getElementById('novoSetorFotoUrl').value.trim()||''; const parceiro=document.getElementById('novoSetorParceiro').value==='parceiro';
-    if(!nome) return alert('Digite o nome do setor.'); const id=nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
-    setores.push({id,nome,icone,foto,parceiro}); document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorIcone').value=''; document.getElementById('novoSetorFotoUrl').value=''; document.getElementById('setorFotoArquivo').value=''; document.getElementById('setorFotoPreview').classList.remove('visivel'); document.getElementById('setorFotoUploadTxt').style.display=''; fotoBase64SetorEdit='';
-    popularSelects(); renderListaSetoresAdmin(); renderOrganograma();
-  };
-
+  // PESSOAS
   window.adicionarPessoa=function(){
-    const nome=document.getElementById('novaNome').value.trim(); const cargo=document.getElementById('novaCargo').value.trim(); const setor=document.getElementById('novoSetor').value;
+    const nome=document.getElementById('novaNome').value.trim();
+    const cargo=document.getElementById('novaCargo').value.trim();
+    const setor=document.getElementById('novoSetor').value;
     if(!nome||!cargo||!setor) return alert('Preencha nome, cargo e setor.');
-    pessoas.push({ nome,cargo,setor,foto:fotoBase64||document.getElementById('novaFotoUrl').value.trim()||'', turno:document.getElementById('novoTurno').value, horaInicio:document.getElementById('novoHoraInicio').value, horaAlmocoInicio:document.getElementById('novoHoraAlmocoInicio').value, horaAlmocoFim:document.getElementById('novoHoraAlmocoFim').value, horaFim:document.getElementById('novoHoraFim').value, matricula:document.getElementById('novaMatricula').value.trim(), cpf:document.getElementById('novaCpf').value.trim(), nascimento:document.getElementById('novaNascimento').value, telefone:document.getElementById('novoTelefone').value.trim(), obs:document.getElementById('novaObs').value.trim() });
-    ['novaNome','novaCargo','novaFotoUrl','novaMatricula','novaCpf','novoTelefone','novoHoraInicio','novoHoraAlmocoInicio','novoHoraAlmocoFim','novoHoraFim','novaNascimento','novaObs'].forEach(id=>document.getElementById(id).value=''); document.getElementById('novoTurno').value=''; document.getElementById('novoSetor').value=''; document.getElementById('fotoArquivo').value=''; document.getElementById('fotoPreview').classList.remove('visivel'); document.getElementById('fotoUploadTxt').style.display=''; fotoBase64='';
+    const foto=fotoBase64||document.getElementById('novaFotoUrl').value.trim()||'';
+    pessoas.push({
+      nome,cargo,setor,foto,
+      turno:document.getElementById('novoTurno').value,
+      horaInicio:document.getElementById('novoHoraInicio').value,
+      horaAlmocoInicio:document.getElementById('novoHoraAlmocoInicio').value,
+      horaAlmocoFim:document.getElementById('novoHoraAlmocoFim').value,
+      horaFim:document.getElementById('novoHoraFim').value,
+      matricula:document.getElementById('novaMatricula').value.trim(),
+      cpf:document.getElementById('novaCpf').value.trim(),
+      nascimento:document.getElementById('novaNascimento').value,
+      telefone:document.getElementById('novoTelefone').value.trim(),
+      obs:document.getElementById('novaObs').value.trim(),
+    });
+    ['novaNome','novaCargo','novaFotoUrl','novaMatricula','novaCpf','novoTelefone',
+      'novoHoraInicio','novoHoraAlmocoInicio','novoHoraAlmocoFim','novoHoraFim','novaNascimento','novaObs'
+    ].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('novoTurno').value=''; document.getElementById('novoSetor').value='';
+    document.getElementById('fotoArquivo').value='';
+    document.getElementById('fotoPreview').classList.remove('visivel');
+    document.getElementById('fotoUploadTxt').style.display='';
+    fotoBase64='';
     renderListaAdmin(); renderOrganograma();
   };
 
   window.renderListaAdmin=function(){
-    const filtro=document.getElementById('filtroSetorAdmin').value; const filtrados=filtro?pessoas.filter(p=>p.setor===filtro):pessoas;
+    const filtro=document.getElementById('filtroSetorAdmin').value;
+    const filtrados=filtro?pessoas.filter(p=>p.setor===filtro):pessoas;
     document.getElementById('listaAdmin').innerHTML=filtrados.map(mb=>{
-      const idx=pessoas.indexOf(mb); const nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor; const tl=mb.turno==='mat'?' · ☀️ Mat':mb.turno==='ves'?' · 🌇 Ves':mb.turno==='int'?' · 🕐 Int':'';
-      return `<div class="item-admin"><img src="${avatarUrl(mb.nome,mb.foto)}" onerror="this.src='${avatarUrl(mb.nome,'')}'" alt="${mb.nome}"><div class="item-admin-info"><strong>${mb.nome}</strong><span>${mb.cargo} · ${nomeSetor}${tl}</span></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEditarPessoa(${idx})">✏️ Editar</button><button class="btn-del" onclick="removerPessoa(${idx})">Remover</button></div></div>`;
+      const idx=pessoas.indexOf(mb);
+      const nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor;
+      const tl=mb.turno==='mat'?' · ☀️ Mat':mb.turno==='ves'?' · 🌇 Ves':mb.turno==='int'?' · 🕐 Int':'';
+      return `<div class="item-admin">
+        <img src="${avatarUrl(mb.nome,mb.foto)}" onerror="this.src='${avatarUrl(mb.nome,'')}'" alt="${mb.nome}">
+        <div class="item-admin-info"><strong>${mb.nome}</strong><span>${mb.cargo} · ${nomeSetor}${tl}</span></div>
+        <div class="item-admin-acoes">
+          <button class="btn-edit" onclick="abrirEditarPessoa(${idx})">✏️ Editar</button>
+          <button class="btn-del" onclick="removerPessoa(${idx})">Remover</button>
+        </div>
+      </div>`;
     }).join('')||'<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhuma pessoa cadastrada.</div>';
   };
 
   window.removerPessoa=function(idx){ if(!confirm(`Remover "${pessoas[idx].nome}"?`)) return; pessoas.splice(idx,1); renderListaAdmin(); renderOrganograma(); };
-  window.removerSetor=function(idx){ if(confirm("Excluir setor?")) { setores.splice(idx, 1); renderListaSetoresAdmin(); renderOrganograma(); } };
-  
+
+  let editandoIdx = -1;
+  let fotoBase64Editar = '';
+
   window.abrirEditarPessoa = function(idx) {
-    editandoIdx = idx; fotoBase64Editar = ''; const mb = pessoas[idx];
-    document.getElementById('editarPessoaSubtitle').textContent = mb.nome; document.getElementById('editarNome').value = mb.nome||''; document.getElementById('editarCargo').value = mb.cargo||''; document.getElementById('editarTurno').value = mb.turno||''; document.getElementById('editarHoraInicio').value = mb.horaInicio||''; document.getElementById('editarHoraAlmocoInicio').value = mb.horaAlmocoInicio||''; document.getElementById('editarHoraAlmocoFim').value = mb.horaAlmocoFim||''; document.getElementById('editarHoraFim').value = mb.horaFim||''; document.getElementById('editarMatricula').value = mb.matricula||''; document.getElementById('editarTelefone').value = mb.telefone||''; document.getElementById('editarCpf').value = mb.cpf||''; document.getElementById('editarNascimento').value = mb.nascimento||''; document.getElementById('editarObs').value = mb.obs||''; document.getElementById('editarFotoUrl').value = (mb.foto&&!mb.foto.startsWith('data:'))?mb.foto:'';
-    const prev = document.getElementById('editarFotoPreview'); if(mb.foto){ prev.src=mb.foto; prev.classList.add('visivel'); document.getElementById('editarFotoUploadTxt').style.display='none'; } else { prev.classList.remove('visivel'); document.getElementById('editarFotoUploadTxt').style.display=''; }
-    const opts = setores.map(s=>`<option value="${s.id}"${s.id===mb.setor?' selected':''}>${s.nome}</option>`).join(''); document.getElementById('editarSetor').innerHTML = '<option value="">Selecione</option>'+opts; document.getElementById('modalEditarPessoa').classList.add('aberto');
+    editandoIdx = idx;
+    fotoBase64Editar = '';
+    const mb = pessoas[idx];
+    document.getElementById('editarPessoaSubtitle').textContent = mb.nome;
+    document.getElementById('editarNome').value = mb.nome||'';
+    document.getElementById('editarCargo').value = mb.cargo||'';
+    document.getElementById('editarTurno').value = mb.turno||'';
+    document.getElementById('editarHoraInicio').value = mb.horaInicio||'';
+    document.getElementById('editarHoraAlmocoInicio').value = mb.horaAlmocoInicio||'';
+    document.getElementById('editarHoraAlmocoFim').value = mb.horaAlmocoFim||'';
+    document.getElementById('editarHoraFim').value = mb.horaFim||'';
+    document.getElementById('editarMatricula').value = mb.matricula||'';
+    document.getElementById('editarTelefone').value = mb.telefone||'';
+    document.getElementById('editarCpf').value = mb.cpf||'';
+    document.getElementById('editarNascimento').value = mb.nascimento||'';
+    document.getElementById('editarObs').value = mb.obs||'';
+    document.getElementById('editarFotoUrl').value = (mb.foto&&!mb.foto.startsWith('data:'))?mb.foto:'';
+    const prev = document.getElementById('editarFotoPreview');
+    if(mb.foto){ prev.src=mb.foto; prev.classList.add('visivel'); document.getElementById('editarFotoUploadTxt').style.display='none'; }
+    else { prev.classList.remove('visivel'); document.getElementById('editarFotoUploadTxt').style.display=''; }
+    const opts = setores.map(s=>`<option value="${s.id}"${s.id===mb.setor?' selected':''}>${s.nome}</option>`).join('');
+    document.getElementById('editarSetor').innerHTML = '<option value="">Selecione</option>'+opts;
+    document.getElementById('modalEditarPessoa').classList.add('aberto');
   };
 
-  window.fecharEditarPessoa = function() { document.getElementById('modalEditarPessoa').classList.remove('aberto'); document.getElementById('editarFotoArquivo').value=''; fotoBase64Editar=''; };
-  window.previewFotoEditar = function(input) { const file=input.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=e=>{ fotoBase64Editar=e.target.result; const prev=document.getElementById('editarFotoPreview'); prev.src=fotoBase64Editar; prev.classList.add('visivel'); document.getElementById('editarFotoUploadTxt').style.display='none'; }; reader.readAsDataURL(file); };
+  window.fecharEditarPessoa = function() {
+    document.getElementById('modalEditarPessoa').classList.remove('aberto');
+    document.getElementById('editarFotoArquivo').value='';
+    fotoBase64Editar='';
+  };
+
+  window.previewFotoEditar = function(input) {
+    const file=input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      fotoBase64Editar=e.target.result;
+      const prev=document.getElementById('editarFotoPreview');
+      prev.src=fotoBase64Editar; prev.classList.add('visivel');
+      document.getElementById('editarFotoUploadTxt').style.display='none';
+    };
+    reader.readAsDataURL(file);
+  };
+
   window.salvarEdicaoPessoa = function() {
-    if(editandoIdx<0) return; const nome = document.getElementById('editarNome').value.trim(); const cargo = document.getElementById('editarCargo').value.trim(); const setor = document.getElementById('editarSetor').value;
+    if(editandoIdx<0) return;
+    const nome = document.getElementById('editarNome').value.trim();
+    const cargo = document.getElementById('editarCargo').value.trim();
+    const setor = document.getElementById('editarSetor').value;
     if(!nome||!cargo||!setor) return alert('Preencha nome, cargo e setor.');
-    pessoas[editandoIdx] = { nome, cargo, setor, foto: fotoBase64Editar || document.getElementById('editarFotoUrl').value.trim() || pessoas[editandoIdx].foto, turno: document.getElementById('editarTurno').value, horaInicio: document.getElementById('editarHoraInicio').value, horaAlmocoInicio: document.getElementById('editarHoraAlmocoInicio').value, horaAlmocoFim: document.getElementById('editarHoraAlmocoFim').value, horaFim: document.getElementById('editarHoraFim').value, matricula: document.getElementById('editarMatricula').value.trim(), telefone: document.getElementById('editarTelefone').value.trim(), cpf: document.getElementById('editarCpf').value.trim(), nascimento: document.getElementById('editarNascimento').value, obs: document.getElementById('editarObs').value.trim() };
-    fecharEditarPessoa(); renderListaAdmin(); renderOrganograma();
+    const fotoAtual = pessoas[editandoIdx].foto;
+    pessoas[editandoIdx] = {
+      nome, cargo, setor,
+      foto: fotoBase64Editar || document.getElementById('editarFotoUrl').value.trim() || fotoAtual,
+      turno: document.getElementById('editarTurno').value,
+      horaInicio: document.getElementById('editarHoraInicio').value,
+      horaAlmocoInicio: document.getElementById('editarHoraAlmocoInicio').value,
+      horaAlmocoFim: document.getElementById('editarHoraAlmocoFim').value,
+      horaFim: document.getElementById('editarHoraFim').value,
+      matricula: document.getElementById('editarMatricula').value.trim(),
+      telefone: document.getElementById('editarTelefone').value.trim(),
+      cpf: document.getElementById('editarCpf').value.trim(),
+      nascimento: document.getElementById('editarNascimento').value,
+      obs: document.getElementById('editarObs').value.trim(),
+    };
+    fecharEditarPessoa();
+    renderListaAdmin();
+    renderOrganograma();
   };
 
-  ['modalPerfil','modalLogin','modalEditarPessoa','modalEditarSetor','modalConfirmarSaida'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditarPessoa') fecharEditarPessoa(); else if(id==='modalEditarSetor') fecharEditarSetor(); else if (id==='modalConfirmarSaida') fecharConfirmacao(); else fecharLogin(); } }); });
-
-  window.previewFotoDiretor = function(input) { const file=input.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=e=>{ fotoBase64Diretor=e.target.result; const prev=document.getElementById('diretorFotoPreview'); prev.src=fotoBase64Diretor; prev.classList.add('visivel'); }; reader.readAsDataURL(file); };
-  window.previewFotoSetor = function(input) { const file=input.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=e=>{ fotoBase64SetorEdit=e.target.result; const prev=document.getElementById('setorFotoPreview'); prev.src=fotoBase64SetorEdit; prev.classList.add('visivel'); }; reader.readAsDataURL(file); };
-  window.previewFoto = function(input) { const file=input.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=e=>{ fotoBase64=e.target.result; const prev=document.getElementById('fotoPreview'); prev.src=fotoBase64; prev.classList.add('visivel'); }; reader.readAsDataURL(file); };
-
-  window.abrirLogin=()=>{ document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
-  window.fecharLogin=()=>{ document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
-  window.verificarSenha=()=>{ if(document.getElementById('senhaInput').value===SENHA_ADMIN){fecharLogin();abrirPainel();}else{document.getElementById('erroSenha').style.display='block';document.getElementById('senhaInput').value='';document.getElementById('senhaInput').focus();} };
-  window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); preencherFormDiretor(); };
-  window.fecharPainelComConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.add('aberto');
-  window.fecharConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.remove('aberto');
-  window.fecharPainelDireto = () => document.getElementById('painelAdmin').classList.remove('aberto');
-  function popularSelects() { const opts=setores.map(s=>`<option value="${s.id}">${s.nome}</option>`).join(''); document.getElementById('novoSetor').innerHTML='<option value="">Selecione o setor</option>'+opts; document.getElementById('filtroSetorAdmin').innerHTML='<option value="">Todos os setores</option>'+opts; }
+  ['modalPerfil','modalLogin','modalEditarPessoa','modalEditarSetor','modalConfirmarSaida'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditarPessoa') fecharEditarPessoa(); else if (id==='modalEditarSetor') fecharEditarSetor(); else if (id==='modalConfirmarSaida') fecharConfirmacao(); else fecharLogin(); } });
+  });
 
   carregarDados();
 </script>
