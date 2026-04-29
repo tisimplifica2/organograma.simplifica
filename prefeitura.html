@@ -396,7 +396,7 @@ const db = getFirestore(app);
 // ESTRUTURA DE DADOS V9 (Linhas Livres e Perfeitas)
 // ==========================================
 const DB_DEFAULT = {
-  pref_topo: { esq: {nome:'Jorge', cargo:'Prefeito', link:''}, dir: {nome:'Mário', cargo:'Vice-Prefeito', link:''} },
+  pref_topo: { esq: {nome:'Jorge', cargo:'Prefeito', foto:'', link:''}, dir: {nome:'Mário', cargo:'Vice-Prefeito', foto:'', link:''} },
   nodes_pref: [
     // Lado a Lado (Agrupador) conectando os dois tópicos!
     { id: 'n_gab_ci', tipo: 'duplo_topico', nome: 'Gabinete', nome2: 'Controle Interno', parentId: 'root' },
@@ -544,12 +544,12 @@ window.drawOrganograma = function() {
     <li style="padding-top:0">
       <div class="root-duplo">
         <div class="card-pessoa" onclick="${actionEsq}">
-          <img src="${getAvatar(DB.pref_topo.esq.nome)}">
+          <img src="${getAvatar(DB.pref_topo.esq.nome, DB.pref_topo.esq.foto)}">
           <div class="nome">${DB.pref_topo.esq.nome}</div>
           <div class="titulo">${DB.pref_topo.esq.cargo}</div>
         </div>
         <div class="card-pessoa" onclick="${actionDir}">
-          <img src="${getAvatar(DB.pref_topo.dir.nome)}">
+          <img src="${getAvatar(DB.pref_topo.dir.nome, DB.pref_topo.dir.foto)}">
           <div class="nome">${DB.pref_topo.dir.nome}</div>
           <div class="titulo">${DB.pref_topo.dir.cargo}</div>
         </div>
@@ -749,8 +749,10 @@ window.addPessoa = function(aba) {
 
 window.editTopo = function(lado) {
   const n = prompt("Novo Nome da Liderança (Prefeito/Vice):", DB.pref_topo[lado].nome); if(!n) return;
+  const f = prompt("URL da Foto (Opcional, deixe em branco para gerar avatar automático):", DB.pref_topo[lado].foto || '');
   const l = prompt("Link de Redirecionamento de Perfil (Opcional):", DB.pref_topo[lado].link || '');
   DB.pref_topo[lado].nome = n; 
+  DB.pref_topo[lado].foto = f;
   DB.pref_topo[lado].link = l;
   renderAdmin();
 };
