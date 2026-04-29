@@ -151,7 +151,7 @@ header { background: var(--azul); padding: 0 40px; display: flex; align-items: c
   text-align: center; 
 }
 .card-pessoa:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(21, 101, 168, 0.25); border-color: var(--azul); }
-.card-pessoa img { width: 86px; height: 86px; border-radius: 14px; object-fit: contain; border: 3px solid var(--azul-claro); margin-bottom: 12px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.card-pessoa img { width: 86px; height: 86px; border-radius: 14px; object-fit: cover; object-position: top; border: 3px solid var(--azul-claro); margin-bottom: 12px; background: var(--fundo-escuro); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .card-pessoa .nome { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--azul-esc); line-height: 1.15; margin-bottom: 4px; }
 .card-pessoa .titulo { font-size: 0.72rem; font-weight: 800; color: var(--azul); text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -186,7 +186,7 @@ header { background: var(--azul); padding: 0 40px; display: flex; align-items: c
 .modal-box { background: white; border-radius: 24px; width: 90%; max-width: 460px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; overflow: hidden; max-height: 90vh; overflow-y: auto; }
 .modal-topo { background: linear-gradient(135deg, var(--azul) 0%, var(--azul-esc) 100%); padding: 32px 24px 24px; text-align: center; position: relative; }
 .modal-fechar { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
-.modal-foto { width: 110px; height: 110px; border-radius: 14px; object-fit: cover; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); background: white;}
+.modal-foto { width: 110px; height: 110px; border-radius: 14px; object-fit: cover; object-position: top; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); background: white;}
 .modal-nome { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
 .modal-cargo { font-size: 0.8rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 700; }
 .modal-setor { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
