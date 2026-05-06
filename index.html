@@ -972,7 +972,20 @@
     document.getElementById('listaSetoresAdmin').innerHTML = setores.map((s, i) => {
       const imgOrEmoji = s.foto ? `<img src="${s.foto}" style="width:100%;height:100%;object-fit:contain;border-radius:4px">` : (s.icone || '📁');
       const boxStyle = s.foto ? `width:70px;height:36px;background:white;border:2px solid var(--azul-neon);padding:2px;border-radius:6px;` : `font-size:1.5rem;width:40px;height:40px;background:rgba(0,0,0,0.05);border-radius:10px;`;
-      return `<div class="item-admin"><div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div><div class="item-admin-info"><strong>${s.nome}</strong></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button><button class="btn-del" onclick="removerSetor(${i})">Remover</button></div></div>`;
+      
+      // Lógica para desativar botão de subir no primeiro item e descer no último
+      const btnCima = i > 0 ? `<button class="btn-edit" style="padding:5px 8px; margin-right:4px;" onclick="moverSetor(-1, ${i})">⬆️</button>` : `<button class="btn-edit" style="padding:5px 8px; margin-right:4px; opacity:0.3; cursor:default;">⬆️</button>`;
+      const btnBaixo = i < setores.length - 1 ? `<button class="btn-edit" style="padding:5px 8px; margin-right:6px;" onclick="moverSetor(1, ${i})">⬇️</button>` : `<button class="btn-edit" style="padding:5px 8px; margin-right:6px; opacity:0.3; cursor:default;">⬇️</button>`;
+
+      return `<div class="item-admin">
+        <div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div>
+        <div class="item-admin-info"><strong>${s.nome}</strong></div>
+        <div class="item-admin-acoes">
+          ${btnCima}${btnBaixo}
+          <button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button>
+          <button class="btn-del" onclick="removerSetor(${i})">Remover</button>
+        </div>
+      </div>`;
     }).join('');
   };
 
@@ -1031,6 +1044,25 @@
   };
 
   ['modalPerfil','modalLogin','modalEditarPessoa','modalEditarSetor','modalConfirmarSaida'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditarPessoa') fecharEditarPessoa(); else if(id==='modalEditarSetor') fecharEditarSetor(); else if (id==='modalConfirmarSaida') fecharConfirmacao(); else fecharLogin(); } }); });
+
+// Função para mover os setores no array (direcao: -1 para cima, 1 para baixo)
+  window.moverSetor = function(direcao, idx) {
+    if (direcao === -1 && idx > 0) {
+      // Troca com o de cima
+      const temp = setores[idx];
+      setores[idx] = setores[idx - 1];
+      setores[idx - 1] = temp;
+    } else if (direcao === 1 && idx < setores.length - 1) {
+      // Troca com o de baixo
+      const temp = setores[idx];
+      setores[idx] = setores[idx + 1];
+      setores[idx + 1] = temp;
+    }
+    
+    // Atualiza a tela do admin e do organograma na mesma hora
+    renderListaSetoresAdmin();
+    renderOrganograma();
+  };
 
   window.abrirLogin=()=>{ document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
   window.fecharLogin=()=>{ document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
