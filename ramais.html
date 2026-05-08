@@ -226,6 +226,39 @@
   footer{background:#fff;color:var(--cinza-claro);text-align:center;padding:12px;font-size:.75rem;border-top:1px solid var(--linha);}
   footer strong{color:var(--cinza-2);}
 
+/* ── MARCA D'ÁGUA DO DESENVOLVEDOR ── */
+  .marca-dagua {
+    position: fixed;
+    bottom: 55px;
+    right: 24px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--azul);
+    background: rgba(255, 255, 255, 0.7);
+    padding: 6px 12px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(21,101,168,0.1);
+    border: 1px solid var(--linha);
+    z-index: 95;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .marca-dagua:hover {
+    background: var(--azul);
+    color: white;
+    transform: translateY(-2px);
+  }
+  @media print {
+    .marca-dagua { display: none !important; }
+  }
+  
   /* ── RESPONSIVO ── */
   @media(max-width:900px){
     .painel-body{grid-template-columns:1fr;}
@@ -317,7 +350,30 @@
   <span class="help-item"><span class="kbd">Esc</span> limpar busca</span>
 </div>
 
-<footer><strong>Simplifica Timbó</strong> · Rua Japão, 408 — Bairro das Nações · (47) 3380-7900</footer>
+</div> <a href="https://linkedin.com/in/cristhian-lucinger" target="_blank" class="marca-dagua" title="Ver perfil do Desenvolvedor">
+  👨‍💻 Sistema Criado por Cristhian Lucinger
+</a>
+
+<footer style="padding: 20px 16px; line-height: 1.6; text-align: center; border-top: 1px solid var(--linha); background: #fff;">
+  <div style="color: var(--cinza-claro); font-size: 0.75rem;">
+    <strong>Simplifica Timbó</strong> · Rua Japão, 408 — Bairro das Nações · (47) 3380-7900
+  </div>
+  
+  <div style="font-size: 0.75rem; color: var(--cinza-claro); margin-top: 8px;">
+    Desenvolvido e mantido por <strong>Cristhian Edilson Lucinger</strong>
+  </div>
+  
+  <div style="margin-top: 10px; display: flex; gap: 16px; justify-content: center; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;">
+    <a href="https://linkedin.com/in/cristhian-lucinger" target="_blank" style="color: #0a66c2; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+      🔗 LinkedIn
+    </a>
+    <a href="https://github.com/Kirby6567/Kirby6567" target="_blank" style="color: #24292f; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+      🐙 GitHub
+    </a>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalLogin">
 
 <!-- MODAL LOGIN -->
 <div class="modal-overlay" id="modalLogin">
