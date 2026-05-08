@@ -255,6 +255,22 @@
     .admin-tabela tbody tr{display:block;padding:10px;}
     .admin-tabela tbody td{display:block;padding:2px 0;border:none;}
   }
+
+.dev-top-credit {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 12px;
+    display: inline-block;
+  }
+  /* Esconde no celular para não apertar os botões */
+  @media(max-width: 640px) {
+    .dev-top-credit { display: none; }
+  }
+
 </style>
 </head>
 <body>
@@ -265,6 +281,7 @@
 <header>
   <div class="header-logo">📞 Ramais Timbó <span class="badge">Call Center</span></div>
   <div class="header-actions">
+    <span class="dev-top-credit">Desenvolvido por Cristhian Lucinger</span>
     <button class="btn-admin" onclick="abrirLogin()">⚙️ <span class="lbl">Admin</span></button>
   </div>
 </header>
@@ -335,8 +352,6 @@
     </a>
   </div>
 </footer>
-
-<div class="modal-overlay" id="modalLogin">
 
 <!-- MODAL LOGIN -->
 <div class="modal-overlay" id="modalLogin">
