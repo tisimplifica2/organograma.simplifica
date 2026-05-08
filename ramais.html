@@ -226,39 +226,6 @@
   footer{background:#fff;color:var(--cinza-claro);text-align:center;padding:12px;font-size:.75rem;border-top:1px solid var(--linha);}
   footer strong{color:var(--cinza-2);}
 
-/* ── MARCA D'ÁGUA DO DESENVOLVEDOR ── */
-  .marca-dagua {
-    position: fixed;
-    bottom: 55px;
-    right: 24px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--azul);
-    background: rgba(255, 255, 255, 0.7);
-    padding: 6px 12px;
-    border-radius: 8px;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 4px 12px rgba(21,101,168,0.1);
-    border: 1px solid var(--linha);
-    z-index: 95;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-decoration: none;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .marca-dagua:hover {
-    background: var(--azul);
-    color: white;
-    transform: translateY(-2px);
-  }
-  @media print {
-    .marca-dagua { display: none !important; }
-  }
-  
   /* ── RESPONSIVO ── */
   @media(max-width:900px){
     .painel-body{grid-template-columns:1fr;}
