@@ -632,7 +632,7 @@ window.aplicarFiltros = function(){
   // Info
   const info = $('buscaInfo');
   if(termo) info.innerHTML = `<b>${linhas.length}</b> resultado${linhas.length===1?'':'s'}`;
-  else info.innerHTML = `<b>${linhas.length}</b> ramal${linhas.length===1?'':'is'}`;
+  else info.innerHTML = `<b>${linhas.length}</b> ${linhas.length===1?'ramal':'ramais'}`;
 
   if(viewAtual==='tabela') renderTabela(termo);
   else renderCards(termo);
@@ -871,7 +871,7 @@ window.renderAdminTabela = function(){
     linhas = linhas.filter(({s,p})=>norm(p.nome).includes(termo) || norm(p.ramal).includes(termo) || norm(s.nome).includes(termo));
   }
 
-  meta.textContent = `${linhas.length} ramal${linhas.length===1?'':'is'}${termo?' (filtrado)':''}`;
+  meta.textContent = `${linhas.length} ${linhas.length===1?'ramal':'ramais'}${termo?' (filtrado)':''}`;
 
   if(linhas.length===0){
     tbody.innerHTML = `<tr><td colspan="4"><div class="empty-admin">Nenhum ramal ${termo?'encontrado':'cadastrado'}.</div></td></tr>`;
