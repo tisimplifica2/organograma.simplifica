@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel BI de Inteligência — Simplifica Timbó</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<style>
+  :root {
+    --azul: #1565a8; --azul-claro: #1e7ecf; --azul-neon: #5ab4f0; --azul-esc: #0d3d6e;
+    --fundo: #f0f5fb; --fundo-escuro: #dce8f5; --cinza: #2d3a4a; --cinza-claro: #7a8fa6; --branco: #ffffff;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--branco); color: var(--cinza); overflow: hidden; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+
+  /* CABEÇALHO PRINCIPAL */
+  header { background: var(--azul); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 70px; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.15); z-index: 20; gap: 20px;}
+  .header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: white; display: flex; align-items: center; gap: 10px; white-space: nowrap;}
+  .header-logo span { background: var(--azul-neon); color: var(--azul); padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+  
+  /* DASHBOARD DE ESTATÍSTICAS */
+  .stats-board { display: flex; gap: 16px; background: rgba(0,0,0,0.15); padding: 6px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+  .stat-item { color: white; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .stat-item span { color: var(--azul-neon); font-family: 'Syne'; font-size: 1.1rem; font-weight: 800; }
+
+  .ferramentas { display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end; }
+  .busca-input { padding: 8px 16px; border-radius: 20px; border: none; font-family: 'DM Sans'; font-size: 0.85rem; width: 220px; outline: none; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+  .busca-input:focus { width: 260px; box-shadow: 0 0 0 3px rgba(90,180,240,0.5); }
+  
+  .btn-acao { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap;}
+  .btn-acao:hover { background: rgba(255,255,255,0.25); }
+  .btn-print { background: var(--azul-neon); color: var(--azul); border: none; padding: 8px 14px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; font-size: 0.8rem;}
+  .btn-print:hover { background: white; }
+
+  /* SUB-CABEÇALHO DE FILTROS RÁPIDOS */
+  .sub-header { background: white; border-bottom: 1px solid var(--fundo-escuro); padding: 8px 40px; display: flex; align-items: center; gap: 12px; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .sub-header-titulo { font-size: 0.75rem; font-weight: 700; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; }
+  .btn-filtro { font-size: 0.72rem; padding: 4px 12px; border-radius: 12px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.2s; background: var(--fundo); color: var(--cinza); }
+  .btn-filtro:hover { filter: brightness(0.95); }
+  .btn-filtro.f-mat { border-color: #fcd34d; color: #b45309; }
+  .btn-filtro.f-ves { border-color: #c4b5fd; color: #5b21b6; }
+  .btn-filtro.f-int { border-color: #86efac; color: #166534; }
+  .btn-filtro.f-clear { border-color: var(--cinza-claro); color: var(--cinza); margin-left: auto; }
+
+  #dash-container { flex: 1; width: 100%; height: 100%; background: var(--fundo); position: relative; cursor: grab; }
+  #dash-container:active { cursor: grabbing; }
+
+  /* CONTROLOS DE ZOOM FLUTUANTES */
+  .zoom-controls { position: absolute; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 8px; z-index: 50; }
+  .btn-zoom { width: 44px; height: 44px; background: white; border: 2px solid var(--azul-claro); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: var(--azul); cursor: pointer; box-shadow: 0 4px 12px rgba(21,101,168,0.2); transition: 0.2s; }
+  .btn-zoom:hover { background: var(--azul); color: white; transform: scale(1.05); }
+
+  /* Estilos do D3 com transições suaves para o Modo Foco */
+  .node { cursor: pointer; transition: opacity 0.3s; }
+  .node rect { rx: 8px; ry: 8px; transition: stroke 0.3s, stroke-width 0.3s, filter 0.3s; }
+  .node text.nome { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; pointer-events: none; text-anchor: middle; }
+  .node text.cargo { font-family: 'DM Sans', sans-serif; font-size: 10px; fill: rgba(255,255,255,0.8); pointer-events: none; text-transform: uppercase; letter-spacing: 0.5px; text-anchor: middle; }
+  .link { fill: none; stroke: var(--azul-neon); stroke-width: 2.5px; opacity: 0.6; transition: opacity 0.3s, stroke-width 0.3s; }
+
+  .loading { position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Syne'; color: var(--azul); font-weight: 700; font-size: 1.2rem; }
+  .spinner { width: 40px; height: 40px; border: 4px solid var(--fundo-escuro); border-top-color: var(--azul); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Modal de Perfil */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.aberto { display: flex; }
+  .modal-box { background: white; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.25s ease; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .modal-topo { background: linear-gradient(135deg, var(--azul) 0%, #0d3561 100%); padding: 30px 20px 20px; text-align: center; position: relative; }
+  .modal-fechar { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+  .modal-foto { width: 100px; height: 100px; border-radius: 50%; border: 4px solid white; object-fit: cover; margin: 0 auto 12px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white;}
+  .modal-nome { font-family: 'Syne', font-weight: 800; font-size: 1.2rem; color: white; }
+  .modal-cargo { font-size: 0.8rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 600;}
+  .modal-body { padding: 20px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .info-item { background: var(--fundo); padding: 10px; border-radius: 8px; border: 1px solid var(--fundo-escuro); }
+  .info-item.full { grid-column: 1 / -1; }
+  .info-label { font-size: 0.65rem; color: var(--cinza-claro); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+  .info-valor { font-size: 0.85rem; color: var(--cinza); font-weight: 500; }
+  .badge-turno { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+
+/* Impressão Limpa e Sem Amassar */
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    header, .sub-header, .zoom-controls, .modal-overlay { display: none !important; }
+    body, html { background: white !important; overflow: visible !important; height: auto !important; display: block !important; }
+    #dash-container { background: white !important; display: block !important; height: auto !important; overflow: visible !important; position: static !important; }
+    #dash-container svg { overflow: visible !important; max-width: none !important; }
+    @page { size: landscape; margin: 10mm; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading"><div class="spinner"></div>Iniciando Inteligência BI...</div>
+
+<header>
+  <div class="header-logo">Painel BI <span>Mapa Estrutural</span></div>
+  <div class="stats-board">
+    <div class="stat-item">👥 <span id="statPessoas">0</span> Colaboradores</div>
+    <div class="stat-item">🏢 <span id="statSetores">0</span> Setores</div>
+  </div>
+  <div class="ferramentas">
+    <input type="text" class="busca-input" id="buscaNome" placeholder="🔍 Buscar colaborador..." onkeyup="buscarNoMapa(this.value)">
+    <button class="btn-acao" onclick="expandirTudo()" title="Expandir todo o mapa">📂 Expandir</button>
+    <button class="btn-acao" onclick="recolherTudo()" title="Recolher e ocultar">📁 Recolher</button>
+    <button class="btn-acao" onclick="exportarPNG()" title="Salvar como Imagem">📸 Exportar PNG</button>
+    <button class="btn-acao" onclick="window.print()" title="Imprimir Organograma">🖨️ Imprimir PDF</button>
+    <button class="btn-print" onclick="toggleFullscreen()" title="Modo Apresentação">🖥️ Ecrã Inteiro</button>
+  </div>
+</header>
+
+<div class="sub-header">
+  <div class="sub-header-titulo">🔦 Foco de Turno:</div>
+  <button class="btn-filtro f-mat" onclick="filtrarTurno('mat')">☀️ Somente Matutino</button>
+  <button class="btn-filtro f-ves" onclick="filtrarTurno('ves')">🌇 Somente Vespertino</button>
+  <button class="btn-filtro f-int" onclick="filtrarTurno('int')">🕐 Somente Integral</button>
+  <button class="btn-filtro f-clear" onclick="filtrarTurno('')">🔄 Restaurar Vista</button>
+</div>
+
+<div id="dash-container">
+  <div class="zoom-controls">
+    <button class="btn-zoom" onclick="zoomIn()" title="Aproximar">+</button>
+    <button class="btn-zoom" onclick="zoomOut()" title="Afastar">-</button>
+    <button class="btn-zoom" onclick="zoomReset()" title="Centralizar Mapa">⌂</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalPerfil" onclick="if(event.target===this) fecharModal()">
+  <div class="modal-box">
+    <div class="modal-topo">
+      <button class="modal-fechar" onclick="fecharModal()">✕</button>
+      <img id="mFoto" class="modal-foto" src="" alt="">
+      <div id="mNome" class="modal-nome"></div>
+      <div id="mCargo" class="modal-cargo"></div>
+    </div>
+    <div class="modal-body">
+      <div class="info-grid" id="mGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
+    authDomain: "simplifica-timbo.firebaseapp.com",
+    projectId: "simplifica-timbo"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Variáveis Globais de Controlo
+  let d3Root, d3Update, d3SvgGroup, d3Zoom, d3Svg;
+
+  function formatarHorario(p) {
+    if(!p.horaInicio) return 'Não def.';
+    if(p.horaAlmocoInicio && p.horaAlmocoFim) return `${p.horaInicio} às ${p.horaAlmocoInicio} / ${p.horaAlmocoFim} às ${p.horaFim}`;
+    return `${p.horaInicio} às ${p.horaFim}`;
+  }
+
+  function avatarUrl(nome, foto) {
+    if (foto) return foto;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=1565a8&color=fff&size=128&bold=true`;
+  }
+
+  async function carregarEConstruirMapa() {
+    try {
+      const snap = await getDoc(doc(db, "organograma", "dados"));
+      if (snap.exists()) {
+        const d = snap.data();
+        
+        // Atualiza Estatísticas Reais
+        document.getElementById('statPessoas').textContent = (d.pessoas || []).length;
+        document.getElementById('statSetores').textContent = (d.setores || []).length;
+
+        montarD3(d.diretor || { nome: "Diretoria", cargo: "Diretor" }, d.setores || [], d.pessoas || []);
+      }
+    } catch(e) { console.error(e); alert("Erro ao carregar banco."); }
+    document.getElementById('loading').style.display = 'none';
+  }
+
+  function montarD3(diretor, setores, pessoas) {
+    let i = 0;
+
+    const treeData = {
+      name: diretor.nome || "Diretor", cargo: diretor.cargo || "Diretoria", tipo: "raiz", id_str: 'root',
+      children: setores.map(s => {
+        const pessoasDoSetor = pessoas.filter(p => p.setor === s.id);
+        return {
+          name: s.nome, cargo: `${pessoasDoSetor.length} pessoa(s)`, tipo: "setor", id_str: s.id,
+          children: pessoasDoSetor.map((p, idxP) => ({ 
+            name: p.nome, cargo: p.cargo, tipo: "pessoa", id_str: p.nome+idxP,
+            foto: p.foto, turno: p.turno, telefone: p.telefone, 
+            horario: formatarHorario(p), obs: p.obs 
+          }))
+        };
+      })
+    };
+
+    const container = document.getElementById('dash-container');
+    const width = container.clientWidth;
+    
+    d3Zoom = d3.zoom().scaleExtent([0.1, 2.5]).on("zoom", (event) => d3SvgGroup.attr("transform", event.transform));
+    d3Svg = d3.select("#dash-container").append("svg").attr("width", "100%").attr("height", "100%").call(d3Zoom);
+    d3SvgGroup = d3Svg.append("g");
+    
+    // Configuração do layout VERTICAL TOP-DOWN puro
+    const treemap = d3.tree().nodeSize([240, 160]); 
+    let root = d3.hierarchy(treeData, d => d.children);
+    root.x0 = width / 2; root.y0 = 0;
+
+    d3Root = root;
+
+    if(root.children) root.children.forEach(collapse);
+    function collapse(d) { if (d.children) { d._children = d.children; d._children.forEach(collapse); d.children = null; } }
+
+    update(root);
+    zoomReset(); // Inicia centralizado corretamente
+
+    function update(source) {
+      // Gera as coordenadas matemáticas padrão da Árvore de Cima Para Baixo
+      const treeData = treemap(root);
+      const nodes = treeData.descendants();
+      const links = treeData.descendants().slice(1);
+
+      // Aplica a profundidade vertical
+      nodes.forEach(d => d.y = d.depth * 160);
+
+      const node = d3SvgGroup.selectAll('g.node').data(nodes, d => d.id || (d.id = ++i));
+
+      const nodeEnter = node.enter().append('g')
+        .attr('class', 'node')
+        .attr("transform", d => `translate(${source.x0},${source.y0})`)
+        .on('click', (event, d) => {
+          if(d.data.tipo === 'pessoa') { abrirModal(d.data); return; }
+          if (d.children) { d._children = d.children; d.children = null; } 
+          else { d.children = d._children; d._children = null; }
+          update(d);
+        })
+        // MODO FOCO: Destaca a cadeia de comando
+        .on('mouseover', function(event, d) {
+          const ancestors = d.ancestors().map(a => a.id);
+          d3SvgGroup.selectAll('.node').style('opacity', n => ancestors.includes(n.id) ? 1 : 0.15);
+          d3SvgGroup.selectAll('.link').style('opacity', n => ancestors.includes(n.id) ? 1 : 0.05).style('stroke-width', n => ancestors.includes(n.id) ? '4px' : '2px');
+        })
+        .on('mouseout', function() {
+          d3SvgGroup.selectAll('.node').style('opacity', 1);
+          d3SvgGroup.selectAll('.link').style('opacity', 0.5).style('stroke-width', '2px');
+        });
+
+      // Caixa Centralizada Perfeitamente
+      nodeEnter.append('rect')
+        .attr('width', 220).attr('height', 44)
+        .attr('x', -110).attr('y', -22)
+        .attr('fill', d => d.data.tipo === 'raiz' ? '#0d3d6e' : (d.data.tipo === 'setor' ? '#1565a8' : '#ffffff'));
+
+      // Bolinha Indicadora de Expansão (Abaixo da caixa no centro)
+      nodeEnter.append('circle')
+        .attr('class', 'indicador-filhos')
+        .attr('cx', 0).attr('cy', 22).attr('r', 5)
+        .style("opacity", d => d.data.tipo === 'pessoa' ? 0 : 1);
+
+      // Nome centralizado
+      nodeEnter.append('text')
+        .attr('class', 'nome')
+        .attr('font-family', 'Syne, sans-serif')
+        .attr('x', 0).attr('y', -3).attr('text-anchor', 'middle')
+        .attr('fill', d => d.data.tipo === 'pessoa' ? '#2d3a4a' : '#ffffff')
+        .text(d => d.data.name);
+
+      // Cargo centralizado
+      nodeEnter.append('text')
+        .attr('class', 'cargo')
+        .attr('font-family', 'DM Sans, sans-serif')
+        .attr('x', 0).attr('y', 13).attr('text-anchor', 'middle')
+        .attr('fill', d => d.data.tipo === 'pessoa' ? '#7a8fa6' : 'rgba(255,255,255,0.7)')
+        .text(d => d.data.cargo);
+
+      // Bolinha de Turno (Canto superior direito)
+      nodeEnter.append('circle')
+        .attr('class', 'indicador-turno')
+        .attr('cx', 95).attr('cy', -10).attr('r', 5)
+        .attr('fill', d => {
+          if(d.data.tipo !== 'pessoa') return 'none';
+          if(d.data.turno === 'mat') return '#f59e0b'; 
+          if(d.data.turno === 'ves') return '#8b5cf6'; 
+          if(d.data.turno === 'int') return '#10b981'; 
+          return '#cbd5e1'; 
+        })
+        .style("opacity", d => d.data.tipo === 'pessoa' ? 1 : 0);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(400).attr("transform", d => `translate(${d.x},${d.y})`);
+      
+      // Aplica destaques amarelos
+      nodeUpdate.select('rect')
+        .attr('stroke', d => (d.isHighlighted || d.turnHighlighted) ? '#ffeb3b' : (d.data.tipo === 'pessoa' ? '#1565a8' : 'none'))
+        .attr('stroke-width', d => (d.isHighlighted || d.turnHighlighted) ? 4 : (d.data.tipo === 'pessoa' ? 2 : 0));
+        
+      nodeUpdate.select('.indicador-filhos')
+        .attr('fill', d => d._children ? '#5ab4f0' : (d.children ? '#1e7ecf' : 'none'));
+
+      node.exit().transition().duration(400).attr("transform", d => `translate(${source.x},${source.y})`).remove();
+
+      // Desenho das Linhas Verticais fluidas
+      const link = d3SvgGroup.selectAll('path.link').data(links, d => d.id);
+      
+      function diagonal(s, d) {
+        return `M ${s.x} ${s.y}
+                C ${s.x} ${(s.y + d.y) / 2},
+                  ${d.x} ${(s.y + d.y) / 2},
+                  ${d.x} ${d.y}`;
+      }
+
+      const linkEnter = link.enter().insert('path', "g").attr("class", "link").attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
+      linkEnter.merge(link).transition().duration(400).attr('d', d => diagonal(d, d.parent));
+      link.exit().transition().duration(400).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+    
+    d3Update = update; 
+  }
+
+  // ==== FUNCIONALIDADES DO BI ====
+
+  window.expandirTudo = () => { if(!d3Root) return; d3Root.each(d => { if(d._children){ d.children = d._children; d._children = null; } }); d3Update(d3Root); };
+  
+  window.recolherTudo = () => { if(!d3Root) return; if(d3Root.children) { d3Root.children.forEach(d => { function col(n) { if(n.children){ n._children = n.children; n._children.forEach(col); n.children = null; } } col(d); }); } d3Update(d3Root); };
+
+  window.buscarNoMapa = (termo) => {
+    if(!d3Root) return;
+    const termLow = termo.toLowerCase().trim();
+    d3Root.each(d => d.isHighlighted = false);
+    if(termLow.length > 0) {
+      const alvos = d3Root.descendants().filter(d => d.data.tipo === 'pessoa' && d.data.name.toLowerCase().includes(termLow));
+      if(alvos.length > 0) {
+        alvos.forEach(alvo => { alvo.isHighlighted = true; let p = alvo.parent; while(p) { if(p._children) { p.children = p._children; p._children = null; } p = p.parent; } });
+      }
+    }
+    d3Update(d3Root);
+  };
+
+  window.filtrarTurno = (turno) => {
+    if(!d3Root) return;
+    d3Root.each(d => d.turnHighlighted = false);
+    if(turno) {
+      const alvos = d3Root.descendants().filter(d => d.data.tipo === 'pessoa' && d.data.turno === turno);
+      alvos.forEach(alvo => { alvo.turnHighlighted = true; let p = alvo.parent; while(p) { if(p._children) { p.children = p._children; p._children = null; } p = p.parent; } });
+    }
+    d3Update(d3Root);
+  };
+
+  // Controlos de Zoom e Ecrã
+  window.zoomIn = () => d3Svg.transition().duration(300).call(d3Zoom.scaleBy, 1.3);
+  window.zoomOut = () => d3Svg.transition().duration(300).call(d3Zoom.scaleBy, 0.7);
+  window.zoomReset = () => d3Svg.transition().duration(500).call(d3Zoom.transform, d3.zoomIdentity.translate(document.getElementById('dash-container').clientWidth / 2, 80).scale(0.8));
+  
+  window.toggleFullscreen = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else if (document.exitFullscreen) document.exitFullscreen();
+  };
+
+  // Exportação para Imagem PNG
+  window.exportarPNG = () => {
+    const svgNode = document.querySelector("#dash-container svg");
+    const svgData = new XMLSerializer().serializeToString(svgNode);
+    const canvas = document.createElement("canvas");
+    const bounding = svgNode.getBoundingClientRect();
+    canvas.width = bounding.width * 2; // Alta resolução
+    canvas.height = bounding.height * 2;
+    const ctx = canvas.getContext("2d");
+    
+    const img = new Image();
+    img.onload = function() {
+      ctx.fillStyle = "#f0f5fb"; // Fundo idêntico
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const a = document.createElement("a");
+      a.download = "Painel_Organograma_Timbo.png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+    };
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+  };
+
+  // Modal de Perfil
+  window.abrirModal = (dadosPessoa) => {
+    document.getElementById('mFoto').src = avatarUrl(dadosPessoa.name, dadosPessoa.foto);
+    document.getElementById('mNome').textContent = dadosPessoa.name;
+    document.getElementById('mCargo').textContent = dadosPessoa.cargo;
+
+    let tHtml = '<span style="color:#aaa">Não def.</span>';
+    if(dadosPessoa.turno === 'mat') tHtml = '<span class="badge-turno" style="background:#fff8e1; color:#b45309">☀️ Matutino</span>';
+    if(dadosPessoa.turno === 'ves') tHtml = '<span class="badge-turno" style="background:#ede9fe; color:#5b21b6">🌇 Vespertino</span>';
+    if(dadosPessoa.turno === 'int') tHtml = '<span class="badge-turno" style="background:#dcfce7; color:#166534">🕐 Integral</span>';
+
+    const infos = [ { label: "Turno", valor: tHtml }, { label: "Horário", valor: dadosPessoa.horario }, { label: "Telefone", valor: dadosPessoa.telefone || '—' }, { label: "Observações", valor: dadosPessoa.obs || 'Nenhuma.', full: true } ];
+    document.getElementById('mGrid').innerHTML = infos.map(i => `<div class="info-item ${i.full ? 'full' : ''}"><div class="info-label">${i.label}</div><div class="info-valor">${i.valor}</div></div>`).join('');
+    document.getElementById('modalPerfil').classList.add('aberto');
+  };
+
+  window.fecharModal = () => document.getElementById('modalPerfil').classList.remove('aberto');
+
+// ==== PREPARAÇÃO PERFEITA PARA IMPRESSÃO ====
+  let transformAntigo = null;
+  
+  window.addEventListener('beforeprint', () => {
+    if(!d3SvgGroup) return;
+    // Salva o zoom/posição atual que o usuário estava vendo
+    transformAntigo = d3.zoomTransform(d3Svg.node());
+    
+    // Calcula o tamanho exato da árvore inteira no momento
+    const box = d3SvgGroup.node().getBBox();
+    const margem = 60;
+    
+    // Força o SVG a ter o tamanho exato em pixels para não esmagar as linhas
+    d3Svg.attr("viewBox", `${box.x - margem} ${box.y - margem} ${box.width + (margem*2)} ${box.height + (margem*2)}`)
+         .style("width", (box.width + (margem*2)) + "px")
+         .style("height", (box.height + (margem*2)) + "px");
+         
+    // Remove o zoom temporariamente para a impressão sair nítida no tamanho real
+    d3SvgGroup.attr("transform", "");
+  });
+
+  window.addEventListener('afterprint', () => {
+    if(!d3SvgGroup) return;
+    // Devolve o mapa ao normal (cabe na tela e com o zoom antigo) após imprimir/cancelar
+    d3Svg.attr("viewBox", null)
+         .style("width", "100%")
+         .style("height", "100%");
+    if(transformAntigo) {
+      d3SvgGroup.attr("transform", transformAntigo);
+    }
+  });
+
+  carregarEConstruirMapa();
+</script>
+</body>
+</html>
