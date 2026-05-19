@@ -17,7 +17,8 @@
         
         #alerta-servidor { display: none; background: #ff5252; color: white; text-align: center; padding: 10px; font-weight: bold; }
 
-        #drop-zone { margin: 20px; border: 3px dashed #b0bec5; border-radius: 10px; padding: 30px; text-align: center; background: white; cursor: pointer; transition: 0.3s; }
+        /* Transformamos a área em um bloco (display: block) para o label funcionar */
+        #drop-zone { display: block; margin: 20px; border: 3px dashed #b0bec5; border-radius: 10px; padding: 30px; text-align: center; background: white; cursor: pointer; transition: 0.3s; }
         #drop-zone:hover, #drop-zone.dragover { background: #e3f2fd; border-color: var(--azul-sefaz); }
         #drop-zone p { color: #607d8b; margin: 5px 0; pointer-events: none; }
         
@@ -28,9 +29,8 @@
 </head>
 <body>
 
-    <!-- Aviso caso o usuário não use o Live Server -->
     <div id="alerta-servidor">
-        ⚠️ ATENÇÃO: Você abriu o arquivo dando dois cliques. Motores 3D requerem um servidor local. Abra este projeto pelo "Live Server" do VS Code!
+        ⚠️ ATENÇÃO: Plantas 3D (.ifc) não vão carregar rodando do seu PC. Hospede no GitHub para tudo funcionar! O PDF funcionará normalmente.
     </div>
 
     <header>
@@ -38,11 +38,12 @@
         <span id="status-badge">Aguardando arquivo...</span>
     </header>
 
-    <div id="drop-zone">
+    <!-- O pulo do gato: A tag <label> com o atributo 'for' liga o clique direto ao input via HTML puro -->
+    <label id="drop-zone" for="file-input">
         <h3>Arraste o arquivo do projeto aqui</h3>
         <p>Ou clique para selecionar no computador</p>
         <p><small>Formatos aceitos: <b>.PDF</b>, <b>.IFC</b>, <b>.DWG</b> (via conversão nuvem)</small></p>
-    </div>
+    </label>
 
     <input type="file" id="file-input" style="display: none;" accept=".pdf,.ifc,.dwg">
 
@@ -50,17 +51,15 @@
         <div id="loader">Processando arquivo, por favor aguarde...</div>
     </div>
 
-    <!-- Script de Validação de Ambiente -->
+    <!-- Validação de ambiente local -->
     <script>
         if (window.location.protocol === 'file:') {
             document.getElementById('alerta-servidor').style.display = 'block';
         }
     </script>
 
-    <!-- Script Principal -->
-    <script type="module">
-        import { IfcViewerAPI } from 'https://cdn.jsdelivr.net/npm/web-ifc-viewer@1.0.218/dist/web-ifc-viewer.js';
-
+    <!-- O Script agora não é mais "module", então roda sem travar no seu PC! -->
+    <script>
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-input');
         const viewerContainer = document.getElementById('viewer-container');
@@ -68,19 +67,15 @@
         const loader = document.getElementById('loader');
         let currentIfcViewer = null;
 
-        // --- BLOQUEIO ROBUSTO DO COMPORTAMENTO DO NAVEGADOR ---
-        // Impede que o navegador abra o PDF sozinho ao invés de rodar o nosso código
+        // --- PREVENÇÃO DO NAVEGADOR ---
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
             document.body.addEventListener(eventName, preventDefaults, false);
         });
 
-        function preventDefaults (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
 
-        // --- EVENTOS VISUAIS E DE DROP ---
+        // --- EFEITOS VISUAIS E DROP ---
         ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
         });
@@ -95,13 +90,11 @@
             if (files.length) processFile(files[0]);
         });
 
-        // Evento de Clique
-        dropZone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length) processFile(e.target.files[0]);
         });
 
-        // --- LÓGICA DE RENDERIZAÇÃO ---
+        // --- LÓGICA DE PROCESSAMENTO ---
         async function processFile(file) {
             const extension = file.name.split('.').pop().toLowerCase();
             statusBadge.innerText = `Processando: ${file.name}`;
@@ -132,6 +125,7 @@
             });
         }
 
+        // --- RENDERIZA O PDF LOCALMENTE ---
         async function renderPDF(file) {
             const fileURL = URL.createObjectURL(file);
             const loadingTask = pdfjsLib.getDocument(fileURL);
@@ -149,7 +143,12 @@
             statusBadge.innerText = "PDF carregado com sucesso";
         }
 
+        // --- IMPORTA O MOTOR BIM DINAMICAMENTE (Para não travar o JS local) ---
         async function renderIFC(file) {
+            // Se estiver abrindo do PC (file://), a importação abaixo vai falhar por segurança do navegador
+            const module = await import('https://cdn.jsdelivr.net/npm/web-ifc-viewer@1.0.218/dist/web-ifc-viewer.js');
+            const IfcViewerAPI = module.IfcViewerAPI;
+
             const fileURL = URL.createObjectURL(file);
             currentIfcViewer = new IfcViewerAPI({ container: viewerContainer, backgroundColor: new THREE.Color(0xffffff) });
             currentIfcViewer.addAxes();
@@ -161,7 +160,7 @@
 
         async function processDWG(file) {
             statusBadge.innerText = "Convertendo DWG...";
-            alert("Aviso: Para DWG funcionar, o Docker deve estar rodando a API na porta 8000 conforme configurado anteriormente.");
+            alert("Aviso: Para DWG funcionar, o Docker deve estar rodando a API em nuvem.");
         }
     </script>
 </body>
