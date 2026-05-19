@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEFAZ Timbó - Hub de Plantas</title>
+    
+    <!-- Importa a biblioteca PDF.js via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
+
+    <style>
+        :root { --azul-sefaz: #004a8f; --fundo: #f4f6f9; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--fundo); height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: var(--azul-sefaz); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; }
+        header h1 { margin: 0; font-size: 1.5rem; }
+        
+        #alerta-servidor { display: none; background: #ff5252; color: white; text-align: center; padding: 10px; font-weight: bold; }
+
+        #drop-zone { margin: 20px; border: 3px dashed #b0bec5; border-radius: 10px; padding: 30px; text-align: center; background: white; cursor: pointer; transition: 0.3s; }
+        #drop-zone:hover, #drop-zone.dragover { background: #e3f2fd; border-color: var(--azul-sefaz); }
+        #drop-zone p { color: #607d8b; margin: 5px 0; pointer-events: none; }
+        
+        #viewer-container { flex: 1; position: relative; margin: 0 20px 20px 20px; background: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: auto; display: flex; justify-content: center; align-items: center; }
+        canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+        #loader { display: none; font-weight: bold; color: var(--azul-sefaz); }
+    </style>
+</head>
+<body>
+
+    <!-- Aviso caso o usuário não use o Live Server -->
+    <div id="alerta-servidor">
+        ⚠️ ATENÇÃO: Você abriu o arquivo dando dois cliques. Motores 3D requerem um servidor local. Abra este projeto pelo "Live Server" do VS Code!
+    </div>
+
+    <header>
+        <h1>Simplifica Timbó - Visualizador de Projetos</h1>
+        <span id="status-badge">Aguardando arquivo...</span>
+    </header>
+
+    <div id="drop-zone">
+        <h3>Arraste o arquivo do projeto aqui</h3>
+        <p>Ou clique para selecionar no computador</p>
+        <p><small>Formatos aceitos: <b>.PDF</b>, <b>.IFC</b>, <b>.DWG</b> (via conversão nuvem)</small></p>
+    </div>
+
+    <input type="file" id="file-input" style="display: none;" accept=".pdf,.ifc,.dwg">
+
+    <div id="viewer-container">
+        <div id="loader">Processando arquivo, por favor aguarde...</div>
+    </div>
+
+    <!-- Script de Validação de Ambiente -->
+    <script>
+        if (window.location.protocol === 'file:') {
+            document.getElementById('alerta-servidor').style.display = 'block';
+        }
+    </script>
+
+    <!-- Script Principal -->
+    <script type="module">
+        import { IfcViewerAPI } from 'https://cdn.jsdelivr.net/npm/web-ifc-viewer@1.0.218/dist/web-ifc-viewer.js';
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const viewerContainer = document.getElementById('viewer-container');
+        const statusBadge = document.getElementById('status-badge');
+        const loader = document.getElementById('loader');
+        let currentIfcViewer = null;
+
+        // --- BLOQUEIO ROBUSTO DO COMPORTAMENTO DO NAVEGADOR ---
+        // Impede que o navegador abra o PDF sozinho ao invés de rodar o nosso código
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // --- EVENTOS VISUAIS E DE DROP ---
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            if (files.length) processFile(files[0]);
+        });
+
+        // Evento de Clique
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) processFile(e.target.files[0]);
+        });
+
+        // --- LÓGICA DE RENDERIZAÇÃO ---
+        async function processFile(file) {
+            const extension = file.name.split('.').pop().toLowerCase();
+            statusBadge.innerText = `Processando: ${file.name}`;
+            loader.style.display = 'block';
+            cleanViewer();
+
+            try {
+                if (extension === 'pdf') await renderPDF(file);
+                else if (extension === 'ifc') await renderIFC(file);
+                else if (extension === 'dwg') await processDWG(file);
+                else alert('Formato não suportado.');
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao abrir o arquivo: ' + error.message);
+                statusBadge.innerText = "Erro ao carregar";
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function cleanViewer() {
+            if (currentIfcViewer) {
+                currentIfcViewer.dispose();
+                currentIfcViewer = null;
+            }
+            Array.from(viewerContainer.children).forEach(child => {
+                if (child.id !== 'loader') viewerContainer.removeChild(child);
+            });
+        }
+
+        async function renderPDF(file) {
+            const fileURL = URL.createObjectURL(file);
+            const loadingTask = pdfjsLib.getDocument(fileURL);
+            const pdf = await loadingTask.promise;
+            const page = await pdf.getPage(1);
+            
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            viewerContainer.appendChild(canvas);
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+            statusBadge.innerText = "PDF carregado com sucesso";
+        }
+
+        async function renderIFC(file) {
+            const fileURL = URL.createObjectURL(file);
+            currentIfcViewer = new IfcViewerAPI({ container: viewerContainer, backgroundColor: new THREE.Color(0xffffff) });
+            currentIfcViewer.addAxes();
+            currentIfcViewer.addGrid();
+            currentIfcViewer.IFC.setWasmPath('https://cdn.jsdelivr.net/npm/web-ifc@0.0.36/');
+            await currentIfcViewer.IFC.loadIfcUrl(fileURL);
+            statusBadge.innerText = "Modelo BIM carregado";
+        }
+
+        async function processDWG(file) {
+            statusBadge.innerText = "Convertendo DWG...";
+            alert("Aviso: Para DWG funcionar, o Docker deve estar rodando a API na porta 8000 conforme configurado anteriormente.");
+        }
+    </script>
+</body>
+</html>
