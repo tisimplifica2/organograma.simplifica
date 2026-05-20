@@ -226,9 +226,31 @@
       if (data.pessoas && Array.isArray(data.pessoas)) {
         data.pessoas.forEach((p, index) => {
           let nomeSetor = p.setor;
+          let ignorarColaborador = false; // Flag de bloqueio
+
+          // 1ª Verificação: Checa se o ID do setor amarrado na pessoa já é 'procon'
+          if (p.setor && p.setor.toLowerCase() === 'procon') {
+            ignorarColaborador = true;
+          }
+
+          // 2ª Verificação: Checa na lista de setores (para ver a flag 'parceiro')
           if (data.setores) {
             const setorDoc = data.setores.find(s => s.id === p.setor);
-            if (setorDoc) nomeSetor = setorDoc.nome;
+            if (setorDoc) {
+              nomeSetor = setorDoc.nome; // Pega o nome amigável do setor
+              
+              // Se tiver a flag parceiro: true, ou se o ID/Nome do setor for Procon, bloqueia
+              if (setorDoc.parceiro === true || 
+                  setorDoc.id.toLowerCase() === 'procon' || 
+                  (setorDoc.nome && setorDoc.nome.toLowerCase() === 'procon')) {
+                ignorarColaborador = true;
+              }
+            }
+          }
+
+          // Se a flag de bloqueio foi ativada, o 'return' pula essa pessoa e não a adiciona na tela
+          if (ignorarColaborador) {
+            return; 
           }
 
           const idGerado = p.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
