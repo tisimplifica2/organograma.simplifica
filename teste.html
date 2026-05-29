@@ -1025,7 +1025,22 @@
 
   window.abrirLogin=()=>{ document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
   window.fecharLogin=()=>{ document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
-  window.verificarSenha=()=>{ if(document.getElementById('senhaInput').value===SENHA_ADMIN){fecharLogin();abrirPainel();}else{document.getElementById('erroSenha').style.display='block';document.getElementById('senhaInput').value='';document.getElementById('senhaInput').focus();} };
+  window.verificarSenha = async () => {
+    const senha = document.getElementById('senhaInput').value;
+    const emailAdmin = "admin@simplificatimbo.local"; // O e-mail que criaremos no Firebase
+
+    try {
+      // Tenta fazer o login seguro
+      await signInWithEmailAndPassword(auth, emailAdmin, senha);
+      fecharLogin();
+      abrirPainel();
+    } catch (error) {
+      // Se a senha estiver errada
+      document.getElementById('erroSenha').style.display = 'block';
+      document.getElementById('senhaInput').value = '';
+      document.getElementById('senhaInput').focus();
+    }
+  };
   window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); preencherFormDiretor(); };
   window.fecharPainelComConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.add('aberto');
   window.fecharConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.remove('aberto');
