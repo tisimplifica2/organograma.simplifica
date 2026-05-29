@@ -655,20 +655,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// Importa as funções que o HTML vai precisar usar do Firebase
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
-    authDomain: "simplifica-timbo.firebaseapp.com",
-    projectId: "simplifica-timbo",
-    storageBucket: "simplifica-timbo.firebasestorage.app",
-    messagingSenderId: "651621474575",
-    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  // Importa a sua conexão pronta do arquivo que você criou no Passo 1
+  import { db, auth } from './firebase-config.js';
   const SENHA_ADMIN = "simplifica2024";
   const BASE = "https://tisimplifica2.github.io/imagens/";
 
