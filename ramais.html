@@ -465,9 +465,6 @@
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { db, auth } from './firebase-config.js';
@@ -791,7 +788,7 @@ document.addEventListener('keydown', (e)=>{
 // ── LOGIN ──────────────────────────────────────────────
 window.verificarSenha = async ()=>{
   const senha = $('senhaInput').value;
-  const emailAdmin = "admin@simplificatimbo.local"; // O e-mail configurado no Firebase
+  const emailAdmin = "admin@simplificatimbo.local"; 
   
   try {
     await signInWithEmailAndPassword(auth, emailAdmin, senha);
