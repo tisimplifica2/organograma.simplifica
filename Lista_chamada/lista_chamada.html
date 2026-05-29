@@ -185,17 +185,9 @@
   import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   // Suas credenciais exatas
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
-    authDomain: "simplifica-timbo.firebaseapp.com",
-    projectId: "simplifica-timbo",
-    storageBucket: "simplifica-timbo.firebasestorage.app",
-    messagingSenderId: "651621474575",
-    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+<script type="module">
+  import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { db } from './firebase-config.js';
   
   // Caminho exato do seu banco de dados
   const docRef = doc(db, "organograma", "dados"); 
