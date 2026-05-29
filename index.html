@@ -655,21 +655,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// Importa as funções que o HTML vai precisar usar do Firebase
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
-    authDomain: "simplifica-timbo.firebaseapp.com",
-    projectId: "simplifica-timbo",
-    storageBucket: "simplifica-timbo.firebasestorage.app",
-    messagingSenderId: "651621474575",
-    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const SENHA_ADMIN = "simplifica2024";
+  // Importa a sua conexão pronta do arquivo que você criou no Passo 1
+  import { db, auth } from './firebase-config.js';
   const BASE = "https://tisimplifica2.github.io/imagens/";
 
   let setores=[], pessoas=[], fotoBase64='', fotoBase64SetorEdit='', fotoBase64Diretor='', pessoaAtualIdx=-1;
@@ -972,20 +963,7 @@
     document.getElementById('listaSetoresAdmin').innerHTML = setores.map((s, i) => {
       const imgOrEmoji = s.foto ? `<img src="${s.foto}" style="width:100%;height:100%;object-fit:contain;border-radius:4px">` : (s.icone || '📁');
       const boxStyle = s.foto ? `width:70px;height:36px;background:white;border:2px solid var(--azul-neon);padding:2px;border-radius:6px;` : `font-size:1.5rem;width:40px;height:40px;background:rgba(0,0,0,0.05);border-radius:10px;`;
-      
-      // Lógica para desativar botão de subir no primeiro item e descer no último
-      const btnCima = i > 0 ? `<button class="btn-edit" style="padding:5px 8px; margin-right:4px;" onclick="moverSetor(-1, ${i})">⬆️</button>` : `<button class="btn-edit" style="padding:5px 8px; margin-right:4px; opacity:0.3; cursor:default;">⬆️</button>`;
-      const btnBaixo = i < setores.length - 1 ? `<button class="btn-edit" style="padding:5px 8px; margin-right:6px;" onclick="moverSetor(1, ${i})">⬇️</button>` : `<button class="btn-edit" style="padding:5px 8px; margin-right:6px; opacity:0.3; cursor:default;">⬇️</button>`;
-
-      return `<div class="item-admin">
-        <div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div>
-        <div class="item-admin-info"><strong>${s.nome}</strong></div>
-        <div class="item-admin-acoes">
-          ${btnCima}${btnBaixo}
-          <button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button>
-          <button class="btn-del" onclick="removerSetor(${i})">Remover</button>
-        </div>
-      </div>`;
+      return `<div class="item-admin"><div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div><div class="item-admin-info"><strong>${s.nome}</strong></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button><button class="btn-del" onclick="removerSetor(${i})">Remover</button></div></div>`;
     }).join('');
   };
 
@@ -1045,28 +1023,24 @@
 
   ['modalPerfil','modalLogin','modalEditarPessoa','modalEditarSetor','modalConfirmarSaida'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditarPessoa') fecharEditarPessoa(); else if(id==='modalEditarSetor') fecharEditarSetor(); else if (id==='modalConfirmarSaida') fecharConfirmacao(); else fecharLogin(); } }); });
 
-// Função para mover os setores no array (direcao: -1 para cima, 1 para baixo)
-  window.moverSetor = function(direcao, idx) {
-    if (direcao === -1 && idx > 0) {
-      // Troca com o de cima
-      const temp = setores[idx];
-      setores[idx] = setores[idx - 1];
-      setores[idx - 1] = temp;
-    } else if (direcao === 1 && idx < setores.length - 1) {
-      // Troca com o de baixo
-      const temp = setores[idx];
-      setores[idx] = setores[idx + 1];
-      setores[idx + 1] = temp;
-    }
-    
-    // Atualiza a tela do admin e do organograma na mesma hora
-    renderListaSetoresAdmin();
-    renderOrganograma();
-  };
-
   window.abrirLogin=()=>{ document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
   window.fecharLogin=()=>{ document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
-  window.verificarSenha=()=>{ if(document.getElementById('senhaInput').value===SENHA_ADMIN){fecharLogin();abrirPainel();}else{document.getElementById('erroSenha').style.display='block';document.getElementById('senhaInput').value='';document.getElementById('senhaInput').focus();} };
+  window.verificarSenha = async () => {
+    const senha = document.getElementById('senhaInput').value;
+    const emailAdmin = "admin@simplificatimbo.local"; // O e-mail que criaremos no Firebase
+
+    try {
+      // Tenta fazer o login seguro
+      await signInWithEmailAndPassword(auth, emailAdmin, senha);
+      fecharLogin();
+      abrirPainel();
+    } catch (error) {
+      // Se a senha estiver errada
+      document.getElementById('erroSenha').style.display = 'block';
+      document.getElementById('senhaInput').value = '';
+      document.getElementById('senhaInput').focus();
+    }
+  };
   window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); preencherFormDiretor(); };
   window.fecharPainelComConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.add('aberto');
   window.fecharConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.remove('aberto');
