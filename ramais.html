@@ -786,6 +786,17 @@ document.addEventListener('keydown', (e)=>{
 });
 
 // ── LOGIN ──────────────────────────────────────────────
+window.abrirLogin = () => {
+  $('modalLogin').classList.add('aberto');
+  setTimeout(() => $('senhaInput').focus(), 80); // Foca no input de senha automaticamente
+};
+
+window.fecharLogin = () => {
+  $('modalLogin').classList.remove('aberto');
+  $('erroSenha').style.display = 'none'; // Limpa mensagens de erro
+  $('senhaInput').value = ''; // Limpa a senha digitada
+};
+
 window.verificarSenha = async ()=>{
   const senha = $('senhaInput').value;
   const emailAdmin = "admin@simplificatimbo.local"; 
