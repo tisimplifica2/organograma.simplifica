@@ -182,15 +182,13 @@
 
 <script type="module">
   import { doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { db, auth } from './firebase-config.js';
 
   // Expondo as funções para o script de baixo conseguir usar
   window.__db = db;
   window.__doc = doc;
   window.__setDoc = setDoc;
-  window.__auth = auth;
-  window.__signIn = signInWithEmailAndPassword;
 
   // Caminho exato do banco de dados para leitura da chamada
   const docRef = doc(db, "organograma", "dados"); 
@@ -200,53 +198,47 @@
   window.turnoAtual = 'mat';
   window.chamadas = carregarChamadas() || {};
 
+  // 👻 LOGIN FANTASMA EM BACKGROUND (Executa assim que a tela abre)
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      signInWithEmailAndPassword(auth, "operador@simplificatimbo.local", "123456")
+        .then(() => console.log("Operador conectado em background."))
+        .catch((error) => console.error("Erro no login fantasma:", error));
+    }
+  });
+
   // Listener do Firestore em tempo real
   onSnapshot(docRef, (docSnap) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
       window.servidoresFirebase = [];
 
-      // 1. Puxa o Diretor
       if (data.diretor) {
         window.servidoresFirebase.push({
-          id: 'diretor', 
-          nome: data.diretor.nome || 'Diretor',
-          cargo: data.diretor.cargo || 'Diretor',
-          setor: 'Diretoria',
-          turno: data.diretor.turno || 'int'
+          id: 'diretor', nome: data.diretor.nome || 'Diretor', cargo: data.diretor.cargo || 'Diretor', setor: 'Diretoria', turno: data.diretor.turno || 'int'
         });
       }
 
-      // 2. Puxa os colaboradores
       if (data.pessoas && Array.isArray(data.pessoas)) {
         data.pessoas.forEach((p, index) => {
           let nomeSetor = p.setor;
           let ignorarColaborador = false;
 
-          // Bloqueia APENAS se tiver a flag parceiro: true
           if (data.setores) {
             const setorDoc = data.setores.find(s => s.id === p.setor);
             if (setorDoc) {
               nomeSetor = setorDoc.nome;
-              if (setorDoc.parceiro === true) {
-                ignorarColaborador = true;
-              }
+              if (setorDoc.parceiro === true) ignorarColaborador = true;
             }
           }
 
-          if (ignorarColaborador) {
-            return; 
-          }
+          if (ignorarColaborador) return; 
 
           const nomeSeguro = p.nome || 'Sem Nome';
           const idGerado = nomeSeguro.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
 
           window.servidoresFirebase.push({
-            id: idGerado,
-            nome: p.nome || 'Sem Nome',
-            cargo: p.cargo || 'Sem Cargo',
-            setor: nomeSetor || 'Sem Setor',
-            turno: p.turno || 'mat'
+            id: idGerado, nome: p.nome || 'Sem Nome', cargo: p.cargo || 'Sem Cargo', setor: nomeSetor || 'Sem Setor', turno: p.turno || 'mat'
           });
         });
       }
@@ -507,7 +499,7 @@ function atualizarStats(lista) {
 }
 
 // ==========================================================
-// EXPORTAÇÃO XLSX AVANÇADA E SINCRONIZAÇÃO COM LOGIN FANTASMA
+// EXPORTAÇÃO XLSX AVANÇADA ULTRA-RÁPIDA (COM BACKGROUND SYNC)
 // ==========================================================
 window.exportarXLSX_Avancado = async function() {
   const data = getDataAtual();
@@ -523,54 +515,9 @@ window.exportarXLSX_Avancado = async function() {
   const btnExportar = document.querySelector('.btn-exportar');
   const textoOriginal = btnExportar.textContent;
   btnExportar.disabled = true;
-  btnExportar.textContent = "⏳ Sincronizando e Gerando...";
+  btnExportar.textContent = "⏳ Gerando planilha...";
 
-  // 👻 1. ROTINA DE LOGIN INVISÍVEL
-  if (!window.__auth.currentUser) {
-    try {
-      // Usa o e-mail e a senha que você configurou no Firebase
-      await window.__signIn(window.__auth, "operador@simplificatimbo.local", "123456");
-    } catch (error) {
-      console.error("Falha no login fantasma:", error);
-      window.toast("❌ Erro de conexão com a nuvem. O Excel será gerado apenas com dados locais.");
-    }
-  }
-
-  // ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE
-  if (window.__auth.currentUser) {
-    window.toast("Sincronizando com a nuvem...");
-    try {
-      const registrosFirebase = {};
-      
-      // Congela os dados nominais no momento da chamada
-      servidores.forEach(s => {
-        const c = getChamada(s.id);
-        registrosFirebase[s.id] = {
-          nome: s.nome,
-          cargo: s.cargo,
-          setor: s.setor, 
-          presente: c.presente,
-          obs: c.obs || ""
-        };
-      });
-
-      const docId = `${data}_${window.turnoAtual}`;
-      const chamadaRef = window.__doc(window.__db, "chamadas", docId);
-      
-      await window.__setDoc(chamadaRef, {
-        data: data,
-        turno: window.turnoAtual,
-        atualizadoEm: new Date().toISOString(),
-        registros: registrosFirebase
-      }, { merge: true });
-
-    } catch (error) {
-      console.error("Erro ao salvar no Firebase:", error);
-      window.toast("❌ Permissão negada ou erro na nuvem! Planilha local gerada.");
-    }
-  }
-
-  // 📊 3. ROTINA DE GERAÇÃO DO EXCEL
+  // 📊 1. GERAÇÃO DO EXCEL (INSTANTÂNEO)
   let qPresentes = 0, qAusentes = 0, qPendentes = 0;
   
   const resumoData = [
@@ -590,14 +537,22 @@ window.exportarXLSX_Avancado = async function() {
     return a.nome.localeCompare(b.nome);
   });
 
+  const registrosFirebase = {}; // Já vamos preparar o pacotão da nuvem aqui
+
   servidoresOrdenados.forEach(s => {
     const c = getChamada(s.id);
     const p = c.presente;
     const obsStr = c.obs || '-';
 
+    // Separa os dados para o Excel
     if (p === true) { qPresentes++; presentesData.push([s.nome, s.cargo, s.setor, obsStr]); } 
     else if (p === false) { qAusentes++; ausentesData.push([s.nome, s.cargo, s.setor, obsStr]); } 
     else { qPendentes++; pendentesData.push([s.nome, s.cargo, s.setor, obsStr]); }
+
+    // Prepara os dados para o Firebase
+    registrosFirebase[s.id] = {
+      nome: s.nome, cargo: s.cargo, setor: s.setor, presente: p, obs: c.obs || ""
+    };
   });
 
   const total = servidoresOrdenados.length;
@@ -621,11 +576,29 @@ window.exportarXLSX_Avancado = async function() {
   if(qPendentes > 0) addSheet(pendentesData, "Pendentes", [{wch: 35}, {wch: 25}, {wch: 20}, {wch: 30}]);
 
   const nomeArquivo = `Chamada_${window.turnoAtual}_${data.replace(/-/g,'')}.xlsx`;
-  XLSX.writeFile(wb, nomeArquivo);
+  XLSX.writeFile(wb, nomeArquivo); // Tira o Excel da frente para o usuário não esperar
+
+  // ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE (Roda em segundo plano após o download)
+  btnExportar.textContent = "Sincronizando nuvem...";
+  try {
+    const docId = `${data}_${window.turnoAtual}`;
+    const chamadaRef = window.__doc(window.__db, "chamadas", docId);
+    
+    await window.__setDoc(chamadaRef, {
+      data: data,
+      turno: window.turnoAtual,
+      atualizadoEm: new Date().toISOString(),
+      registros: registrosFirebase
+    }, { merge: true });
+
+    window.toast('✓ Excel baixado e salvo na nuvem!');
+  } catch (error) {
+    console.error("Erro ao salvar no Firebase:", error);
+    window.toast("⚠️ Excel baixado, mas ocorreu um erro na nuvem.");
+  }
   
   btnExportar.disabled = false;
   btnExportar.textContent = textoOriginal;
-  window.toast('✓ Operação concluída com sucesso!');
 }
   
 document.getElementById('input-data').value = dataHoje();
