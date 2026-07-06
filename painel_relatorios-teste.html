@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatórios de Presença</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  :root {
+    --verde: #1565a8; --verde-claro: #f0f5fb; --verde-medio: #5ab4f0;
+    --vermelho: #c94040; --vermelho-claro: #fdf0f0;
+    --cinza: #6b7280; --cinza-claro: #f3f4f6; --borda: #e5e7eb;
+    --texto: #111827; --texto-muted: #6b7280; --fundo: #f9fafb; --branco: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--texto); min-height: 100vh; padding-bottom: 40px; }
+  .header { background: var(--verde); padding: 20px; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+  .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); font-family: 'DM Mono', monospace; margin-top: 4px; }
+  .card { background: var(--branco); margin: 16px; border-radius: 12px; border: 1px solid var(--borda); padding: 16px; }
+  .campo { margin-bottom: 14px; }
+  .campo label { display: block; font-size: 13px; color: var(--cinza); font-weight: 500; margin-bottom: 6px; }
+  .campo input, .campo select { width: 100%; border: 1px solid var(--borda); border-radius: 8px; padding: 9px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
+  .linha-datas { display: flex; gap: 10px; }
+  .linha-datas .campo { flex: 1; }
+  .btn-gerar { width: 100%; background: var(--verde); color: #fff; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+  .btn-gerar:disabled { opacity: 0.6; cursor: wait; }
+  .status { text-align: center; padding: 14px; color: var(--cinza); font-size: 13px; }
+  .status.erro { color: var(--vermelho); }
+  .resumo-mini { display: flex; gap: 10px; margin-top: 14px; }
+  .mini { flex: 1; background: var(--cinza-claro); border-radius: 10px; padding: 10px; text-align: center; }
+  .mini b { display: block; font-size: 20px; font-family: 'DM Mono', monospace; }
+  .mini span { font-size: 11px; color: var(--texto-muted); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Relatórios de Presença</h1>
+  <div class="header-sub">Exportação por período · 3 abas (Resumo / Presentes / Ausentes)</div>
+</div>
+
+<div class="card">
+  <div class="linha-datas">
+    <div class="campo">
+      <label>Data inicial</label>
+      <input type="date" id="input-inicio">
+    </div>
+    <div class="campo">
+      <label>Data final</label>
+      <input type="date" id="input-fim">
+    </div>
+  </div>
+
+  <div class="campo">
+    <label>Turno</label>
+    <select id="input-turno">
+      <option value="ambos">Ambos os turnos</option>
+      <option value="mat">Somente Matutino</option>
+      <option value="ves">Somente Vespertino</option>
+    </select>
+  </div>
+
+  <button class="btn-gerar" id="btn-gerar" onclick="gerarRelatorio()">⬇ Gerar e Baixar Relatório (.xlsx)</button>
+
+  <div class="resumo-mini" id="resumo-mini" style="display:none;">
+    <div class="mini"><b id="mini-dias">0</b><span>Dias com chamada</span></div>
+    <div class="mini"><b id="mini-presentes">0</b><span>Presenças</span></div>
+    <div class="mini"><b id="mini-ausentes">0</b><span>Faltas</span></div>
+  </div>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script type="module">
+  import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { db } from './firebase-config.js';
+
+  // Defaults: mês corrente
+  const hoje = new Date();
+  const primeiroDia = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-01`;
+  document.getElementById('input-inicio').value = primeiroDia;
+  document.getElementById('input-fim').value = dataHoje();
+
+  function dataHoje() {
+    const y = hoje.getFullYear(), m = String(hoje.getMonth()+1).padStart(2,'0'), d = String(hoje.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function setStatus(msg, erro) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status' + (erro ? ' erro' : '');
+  }
+
+  window.gerarRelatorio = async function() {
+    const inicio = document.getElementById('input-inicio').value;
+    const fim = document.getElementById('input-fim').value;
+    const turnoFiltro = document.getElementById('input-turno').value;
+    const btn = document.getElementById('btn-gerar');
+
+    if (!inicio || !fim) { setStatus('Selecione as duas datas.', true); return; }
+    if (inicio > fim) { setStatus('Data inicial não pode ser depois da data final.', true); return; }
+
+    btn.disabled = true;
+    setStatus('Consultando o banco de dados...');
+
+    try {
+      const ref = collection(db, "chamadas");
+      // data é string "YYYY-MM-DD", então comparação lexicográfica = comparação cronológica
+      const q = query(ref, where("data", ">=", inicio), where("data", "<=", fim));
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        setStatus('Nenhuma chamada encontrada nesse período.', true);
+        btn.disabled = false;
+        return;
+      }
+
+      // Estruturas de agregação
+      const porSetor = {}; // setor -> {presentes, ausentes}
+      const linhasPresentes = [];
+      const linhasAusentes = [];
+      const diasComChamada = new Set();
+      let totalPresentes = 0, totalAusentes = 0;
+
+      snap.forEach(docSnap => {
+        const doc = docSnap.data();
+        if (turnoFiltro !== 'ambos' && doc.turno !== turnoFiltro) return;
+
+        diasComChamada.add(doc.data);
+        const turnoNome = doc.turno === 'mat' ? 'Matutino' : 'Vespertino';
+        const registros = doc.registros || {};
+
+        Object.values(registros).forEach(r => {
+          const setor = r.setor || 'Sem Setor';
+          if (!porSetor[setor]) porSetor[setor] = { presentes: 0, ausentes: 0 };
+
+          if (r.presente === true) {
+            porSetor[setor].presentes++;
+            totalPresentes++;
+            linhasPresentes.push([dataFormatada(doc.data), turnoNome, r.nome, r.cargo, setor, r.obs || '']);
+          } else if (r.presente === false) {
+            porSetor[setor].ausentes++;
+            totalAusentes++;
+            linhasAusentes.push([dataFormatada(doc.data), turnoNome, r.nome, r.cargo, setor, r.obs || '']);
+          }
+        });
+      });
+
+      // Ordena listas por data, depois setor, depois nome
+      const ordenar = (arr) => arr.sort((a,b) => (a[0]+a[4]+a[2]).localeCompare(b[0]+b[4]+b[2]));
+      ordenar(linhasPresentes);
+      ordenar(linhasAusentes);
+
+      montarESalvarXLSX({ inicio, fim, turnoFiltro, porSetor, linhasPresentes, linhasAusentes, totalPresentes, totalAusentes });
+
+      document.getElementById('mini-dias').textContent = diasComChamada.size;
+      document.getElementById('mini-presentes').textContent = totalPresentes;
+      document.getElementById('mini-ausentes').textContent = totalAusentes;
+      document.getElementById('resumo-mini').style.display = 'flex';
+      setStatus('✓ Relatório gerado e baixado com sucesso.');
+
+    } catch (e) {
+      console.error(e);
+      setStatus('Erro ao consultar o Firestore: ' + e.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  function dataFormatada(str) {
+    const [y,m,d] = str.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function montarESalvarXLSX({ inicio, fim, turnoFiltro, porSetor, linhasPresentes, linhasAusentes, totalPresentes, totalAusentes }) {
+    const turnoLabel = turnoFiltro === 'ambos' ? 'Ambos os turnos' : (turnoFiltro === 'mat' ? 'Matutino' : 'Vespertino');
+    const totalGeral = totalPresentes + totalAusentes;
+
+    // ---- ABA 1: RESUMO ----
+    const resumoData = [
+      ['RELATÓRIO GERENCIAL DE PRESENÇA POR PERÍODO', '', '', ''],
+      [`Período: ${dataFormatada(inicio)} a ${dataFormatada(fim)}`, '', `Turno: ${turnoLabel}`, ''],
+      ['', '', '', ''],
+      ['DADOS GERAIS', '', '', ''],
+      ['Métrica', 'Quantidade', '% do Total', ''],
+      ['Total de Marcações', totalGeral, '100%', ''],
+      ['Presenças', totalPresentes, totalGeral ? ((totalPresentes/totalGeral)*100).toFixed(1)+'%' : '0%', ''],
+      ['Faltas', totalAusentes, totalGeral ? ((totalAusentes/totalGeral)*100).toFixed(1)+'%' : '0%', ''],
+      ['', '', '', ''],
+      ['POR SETOR', '', '', ''],
+      ['Setor', 'Presentes', 'Ausentes', '% Presença no Setor']
+    ];
+
+    Object.keys(porSetor).sort().forEach(setor => {
+      const { presentes, ausentes } = porSetor[setor];
+      const totalSetor = presentes + ausentes;
+      const pct = totalSetor ? ((presentes/totalSetor)*100).toFixed(1)+'%' : '0%';
+      resumoData.push([setor, presentes, ausentes, pct]);
+    });
+
+    // ---- ABA 2: PRESENTES ----
+    const presentesData = [
+      ['SERVIDORES PRESENTES NO PERÍODO', '', '', '', '', ''],
+      ['Data', 'Turno', 'Nome', 'Cargo', 'Setor', 'Observação']
+    ];
+    linhasPresentes.forEach(l => presentesData.push(l));
+    if (linhasPresentes.length === 0) presentesData.push(['Nenhum registro no período', '', '', '', '', '']);
+
+    // ---- ABA 3: AUSENTES ----
+    const ausentesData = [
+      ['SERVIDORES AUSENTES / FALTAS NO PERÍODO', '', '', '', '', ''],
+      ['Data', 'Turno', 'Nome', 'Cargo', 'Setor', 'Justificativa / Observação']
+    ];
+    linhasAusentes.forEach(l => ausentesData.push(l));
+    if (linhasAusentes.length === 0) ausentesData.push(['Nenhum registro no período', '', '', '', '', '']);
+
+    const wb = XLSX.utils.book_new();
+
+    const addSheet = (dataArray, sheetName, colWidths, mergeCols) => {
+      const ws = XLSX.utils.aoa_to_sheet(dataArray);
+      ws['!cols'] = colWidths;
+      ws['!merges'] = [{ s: {r:0,c:0}, e: {r:0,c: mergeCols - 1} }];
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    };
+
+    addSheet(resumoData, "Resumo", [{wch:30},{wch:14},{wch:14},{wch:20}], 4);
+    addSheet(presentesData, "Presentes", [{wch:12},{wch:12},{wch:32},{wch:24},{wch:18},{wch:30}], 6);
+    addSheet(ausentesData, "Ausentes", [{wch:12},{wch:12},{wch:32},{wch:24},{wch:18},{wch:36}], 6);
+
+    const nomeArquivo = `Relatorio_Presenca_${inicio}_a_${fim}.xlsx`;
+    XLSX.writeFile(wb, nomeArquivo);
+  }
+</script>
+</body>
+</html>
