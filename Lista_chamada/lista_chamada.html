@@ -181,10 +181,16 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { db } from './firebase-config.js';
-  
-  // Caminho exato do seu banco de dados
+  import { doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { db, auth } from './firebase-config.js';
+
+  // Expondo as funções para o script de baixo conseguir usar
+  window.__db = db;
+  window.__doc = doc;
+  window.__setDoc = setDoc;
+
+  // Caminho exato do banco de dados para leitura da chamada
   const docRef = doc(db, "organograma", "dados"); 
 
   // ESTADO GLOBAL DA APLICAÇÃO
@@ -192,59 +198,47 @@
   window.turnoAtual = 'mat';
   window.chamadas = carregarChamadas() || {};
 
+  // 👻 LOGIN FANTASMA EM BACKGROUND (Executa assim que a tela abre)
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      signInWithEmailAndPassword(auth, "operador@simplificatimbo.local", "123456")
+        .then(() => console.log("Operador conectado em background."))
+        .catch((error) => console.error("Erro no login fantasma:", error));
+    }
+  });
+
   // Listener do Firestore em tempo real
   onSnapshot(docRef, (docSnap) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
       window.servidoresFirebase = [];
 
-      // 1. Puxa o Diretor
       if (data.diretor) {
         window.servidoresFirebase.push({
-          id: 'diretor', 
-          nome: data.diretor.nome || 'Diretor',
-          cargo: data.diretor.cargo || 'Diretor',
-          setor: 'Diretoria',
-          turno: data.diretor.turno || 'int' // se ele não tiver turno, assume int
+          id: 'diretor', nome: data.diretor.nome || 'Diretor', cargo: data.diretor.cargo || 'Diretor', setor: 'Diretoria', turno: data.diretor.turno || 'int'
         });
       }
 
-  // 2. Puxa os colaboradores
+      if (data.pessoas && Array.isArray(data.pessoas)) {
+        data.pessoas.forEach((p, index) => {
+          let nomeSetor = p.setor;
+          let ignorarColaborador = false;
 
-    // 2. Puxa os colaboradores 
-         if (data.pessoas && Array.isArray(data.pessoas)) { 
-           data.pessoas.forEach((p, index) => { 
-             let nomeSetor = p.setor; 
-             let ignorarColaborador = false; // Flag de bloqueio 
-
-             // 1ª Verificação: (REMOVIDA a trava do Procon aqui)
-
-             // 2ª Verificação: Checa na lista de setores (para ver a flag 'parceiro') 
-             if (data.setores) { 
-               const setorDoc = data.setores.find(s => s.id === p.setor); 
-               if (setorDoc) { 
-                 nomeSetor = setorDoc.nome; // Pega o nome amigável do setor 
-                 
-                 // Bloqueia APENAS se tiver a flag parceiro: true
-                 if (setorDoc.parceiro === true) { 
-                   ignorarColaborador = true; 
-                 } 
-               } 
-             }
-
-          // Se a flag de bloqueio foi ativada, o 'return' pula essa pessoa e não a adiciona na tela
-          if (ignorarColaborador) {
-            return; 
+          if (data.setores) {
+            const setorDoc = data.setores.find(s => s.id === p.setor);
+            if (setorDoc) {
+              nomeSetor = setorDoc.nome;
+              if (setorDoc.parceiro === true) ignorarColaborador = true;
+            }
           }
 
-          const idGerado = p.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
+          if (ignorarColaborador) return; 
+
+          const nomeSeguro = p.nome || 'Sem Nome';
+          const idGerado = nomeSeguro.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
 
           window.servidoresFirebase.push({
-            id: idGerado,
-            nome: p.nome || 'Sem Nome',
-            cargo: p.cargo || 'Sem Cargo',
-            setor: nomeSetor || 'Sem Setor',
-            turno: p.turno || 'mat'
+            id: idGerado, nome: p.nome || 'Sem Nome', cargo: p.cargo || 'Sem Cargo', setor: nomeSetor || 'Sem Setor', turno: p.turno || 'mat'
           });
         });
       }
@@ -318,12 +312,61 @@ window.setPresenca = function(id, val) {
   getChamada(id).presente = val;
   salvarChamadas();
   renderLista();
+  agendarSincronizacao();
 }
 
 window.setObs = function(id, val) {
   getChamada(id).obs = val;
   salvarChamadas();
+  agendarSincronizacao();
 }
+
+// ==========================================================
+// SINCRONIZAÇÃO COM FIRESTORE (coleção "chamadas")
+// ==========================================================
+let syncTimer = null;
+function agendarSincronizacao() {
+  // Debounce de 1.2s: evita gravar no banco a cada tecla/clique
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(sincronizarFirestore, 1200);
+}
+
+async function sincronizarFirestore() {
+  try {
+    const d = getDataAtual();
+    const t = window.turnoAtual;
+    const chamadaDoDia = (window.chamadas[d] && window.chamadas[d][t]) || {};
+
+    // Monta os registros já com nome/cargo/setor "congelados" na data da chamada
+    const registros = {};
+    (window.servidoresFirebase || []).forEach(s => {
+      const c = chamadaDoDia[s.id];
+      if (c && c.presente !== null) {
+        registros[s.id] = {
+          nome: s.nome,
+          cargo: s.cargo,
+          setor: s.setor,
+          presente: c.presente,
+          obs: c.obs || ''
+        };
+      }
+    });
+
+    const docId = `${d}_${t}`;
+    await window.__setDoc(
+      window.__doc(window.__db, "chamadas", docId),
+      { data: d, turno: t, registros, atualizadoEm: new Date().toISOString() },
+      { merge: false } // cada sync reescreve o documento inteiro do dia/turno (reflete o estado atual)
+    );
+  } catch (e) {
+    console.error("Erro ao sincronizar chamada com Firestore:", e);
+    window.toast("⚠️ Falha ao salvar na nuvem (dado ficou local)");
+  }
+}
+
+// Também sincroniza ao trocar de turno/data ou ao clicar em "Todos"/"Nenhum",
+// além de tentar uma sincronização final ao sair da página.
+window.addEventListener('beforeunload', sincronizarFirestore);
 
 // ==========================================================
 // LÓGICA DE FILTRO (A MÁGICA DOS TURNOS ACONTECE AQUI)
@@ -353,6 +396,7 @@ window.marcarVisiveis = function(val) {
   salvarChamadas();
   renderLista();
   window.toast(val ? '✓ Presentes marcados (Nesta tela)' : '✗ Ausentes marcados (Nesta tela)');
+  agendarSincronizacao();
 }
 
 function iniciais(nome) {
@@ -455,19 +499,25 @@ function atualizarStats(lista) {
 }
 
 // ==========================================================
-// EXPORTAÇÃO XLSX AVANÇADA (Múltiplas Abas)
+// EXPORTAÇÃO XLSX AVANÇADA ULTRA-RÁPIDA (COM BACKGROUND SYNC)
 // ==========================================================
-window.exportarXLSX_Avancado = function() {
+window.exportarXLSX_Avancado = async function() {
   const data = getDataAtual();
   const turnoNome = window.turnoAtual === 'mat' ? 'Matutino' : 'Vespertino';
   const dataFmt = dataFormatada(data);
-  const servidores = obterServidoresVisiveis(); // Exporta apenas o turno selecionado
+  const servidores = obterServidoresVisiveis();
 
   if(servidores.length === 0) {
     window.toast("Sem dados para exportar.");
     return;
   }
 
+  const btnExportar = document.querySelector('.btn-exportar');
+  const textoOriginal = btnExportar.textContent;
+  btnExportar.disabled = true;
+  btnExportar.textContent = "⏳ Gerando planilha...";
+
+  // 📊 1. GERAÇÃO DO EXCEL (INSTANTÂNEO)
   let qPresentes = 0, qAusentes = 0, qPendentes = 0;
   
   const resumoData = [
@@ -487,14 +537,22 @@ window.exportarXLSX_Avancado = function() {
     return a.nome.localeCompare(b.nome);
   });
 
+  const registrosFirebase = {}; // Já vamos preparar o pacotão da nuvem aqui
+
   servidoresOrdenados.forEach(s => {
     const c = getChamada(s.id);
     const p = c.presente;
     const obsStr = c.obs || '-';
 
+    // Separa os dados para o Excel
     if (p === true) { qPresentes++; presentesData.push([s.nome, s.cargo, s.setor, obsStr]); } 
     else if (p === false) { qAusentes++; ausentesData.push([s.nome, s.cargo, s.setor, obsStr]); } 
     else { qPendentes++; pendentesData.push([s.nome, s.cargo, s.setor, obsStr]); }
+
+    // Prepara os dados para o Firebase
+    registrosFirebase[s.id] = {
+      nome: s.nome, cargo: s.cargo, setor: s.setor, presente: p, obs: c.obs || ""
+    };
   });
 
   const total = servidoresOrdenados.length;
@@ -518,19 +576,37 @@ window.exportarXLSX_Avancado = function() {
   if(qPendentes > 0) addSheet(pendentesData, "Pendentes", [{wch: 35}, {wch: 25}, {wch: 20}, {wch: 30}]);
 
   const nomeArquivo = `Chamada_${window.turnoAtual}_${data.replace(/-/g,'')}.xlsx`;
-  XLSX.writeFile(wb, nomeArquivo);
-  window.toast('✓ Relatório Gerado!');
-}
+  XLSX.writeFile(wb, nomeArquivo); // Tira o Excel da frente para o usuário não esperar
 
-let toastTimer;
-window.toast = function(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('visivel');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('visivel'), 2500);
-}
+// ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE (Roda em segundo plano após o download)
+  btnExportar.textContent = "☁️ Sincronizando nuvem...";
+  
+  try {
+    const docId = `${data}_${window.turnoAtual}`;
+    const chamadaRef = window.__doc(window.__db, "chamadas", docId);
+    
+    await window.__setDoc(chamadaRef, {
+      data: data,
+      turno: window.turnoAtual,
+      atualizadoEm: new Date().toISOString(),
+      registros: registrosFirebase
+    }, { merge: true });
 
+    window.toast('✓ Excel baixado e salvo na nuvem!');
+    
+  } catch (error) {
+    console.error("Erro ao salvar no Firebase:", error);
+    window.toast("⚠️ Excel baixado, mas ocorreu um erro na nuvem.");
+    
+  } finally {
+    // O 'finally' GARANTE que o botão volte ao normal, mesmo se der erro antes
+    setTimeout(() => {
+      btnExportar.disabled = false;
+      btnExportar.textContent = "⬇ Baixar Relatório Detalhado";
+    }, 800); // Dá um fôlego de 0.8s para a pessoa ler o "Sincronizando..."
+  }
+} // Fim da função exportarXLSX_Avancado
+  
 document.getElementById('input-data').value = dataHoje();
 </script>
 </body>
