@@ -578,8 +578,9 @@ window.exportarXLSX_Avancado = async function() {
   const nomeArquivo = `Chamada_${window.turnoAtual}_${data.replace(/-/g,'')}.xlsx`;
   XLSX.writeFile(wb, nomeArquivo); // Tira o Excel da frente para o usuário não esperar
 
-  // ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE (Roda em segundo plano após o download)
-  btnExportar.textContent = "Sincronizando nuvem...";
+// ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE (Roda em segundo plano após o download)
+  btnExportar.textContent = "☁️ Sincronizando nuvem...";
+  
   try {
     const docId = `${data}_${window.turnoAtual}`;
     const chamadaRef = window.__doc(window.__db, "chamadas", docId);
@@ -592,14 +593,19 @@ window.exportarXLSX_Avancado = async function() {
     }, { merge: true });
 
     window.toast('✓ Excel baixado e salvo na nuvem!');
+    
   } catch (error) {
     console.error("Erro ao salvar no Firebase:", error);
     window.toast("⚠️ Excel baixado, mas ocorreu um erro na nuvem.");
+    
+  } finally {
+    // O 'finally' GARANTE que o botão volte ao normal, mesmo se der erro antes
+    setTimeout(() => {
+      btnExportar.disabled = false;
+      btnExportar.textContent = "⬇ Baixar Relatório Detalhado";
+    }, 800); // Dá um fôlego de 0.8s para a pessoa ler o "Sincronizando..."
   }
-  
-  btnExportar.disabled = false;
-  btnExportar.textContent = textoOriginal;
-}
+} // Fim da função exportarXLSX_Avancado
   
 document.getElementById('input-data').value = dataHoje();
 </script>
