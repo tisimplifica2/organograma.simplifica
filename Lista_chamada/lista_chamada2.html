@@ -181,29 +181,18 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"; // IMPORTAÇÃO DO LOGIN
-  import { db } from './firebase-config.js';
-  // Suas credenciais exatas
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
-    authDomain: "simplifica-timbo.firebaseapp.com",
-    projectId: "simplifica-timbo",
-    storageBucket: "simplifica-timbo.firebasestorage.app",
-    messagingSenderId: "651621474575",
-    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
-  };
+  import { doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { db, auth } from './firebase-config.js';
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app); // INICIALIZA O LOGIN
-
-  window.__db = db; // exposto para as funções de sincronização abaixo
+  // Expondo as funções para o script de baixo conseguir usar
+  window.__db = db;
   window.__doc = doc;
   window.__setDoc = setDoc;
+  window.__auth = auth;
+  window.__signIn = signInWithEmailAndPassword;
 
-  // Caminho exato do seu banco de dados
+  // Caminho exato do banco de dados para leitura da chamada
   const docRef = doc(db, "organograma", "dados"); 
 
   // ESTADO GLOBAL DA APLICAÇÃO
@@ -224,39 +213,33 @@
           nome: data.diretor.nome || 'Diretor',
           cargo: data.diretor.cargo || 'Diretor',
           setor: 'Diretoria',
-          turno: data.diretor.turno || 'int' // se ele não tiver turno, assume int
+          turno: data.diretor.turno || 'int'
         });
       }
 
-  // 2. Puxa os colaboradores
+      // 2. Puxa os colaboradores
+      if (data.pessoas && Array.isArray(data.pessoas)) {
+        data.pessoas.forEach((p, index) => {
+          let nomeSetor = p.setor;
+          let ignorarColaborador = false;
 
-    // 2. Puxa os colaboradores 
-         if (data.pessoas && Array.isArray(data.pessoas)) { 
-           data.pessoas.forEach((p, index) => { 
-             let nomeSetor = p.setor; 
-             let ignorarColaborador = false; // Flag de bloqueio 
+          // Bloqueia APENAS se tiver a flag parceiro: true
+          if (data.setores) {
+            const setorDoc = data.setores.find(s => s.id === p.setor);
+            if (setorDoc) {
+              nomeSetor = setorDoc.nome;
+              if (setorDoc.parceiro === true) {
+                ignorarColaborador = true;
+              }
+            }
+          }
 
-             // 1ª Verificação: (REMOVIDA a trava do Procon aqui)
-
-             // 2ª Verificação: Checa na lista de setores (para ver a flag 'parceiro') 
-             if (data.setores) { 
-               const setorDoc = data.setores.find(s => s.id === p.setor); 
-               if (setorDoc) { 
-                 nomeSetor = setorDoc.nome; // Pega o nome amigável do setor 
-                 
-                 // Bloqueia APENAS se tiver a flag parceiro: true
-                 if (setorDoc.parceiro === true) { 
-                   ignorarColaborador = true; 
-                 } 
-               } 
-             }
-
-          // Se a flag de bloqueio foi ativada, o 'return' pula essa pessoa e não a adiciona na tela
           if (ignorarColaborador) {
             return; 
           }
 
-          const idGerado = p.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
+          const nomeSeguro = p.nome || 'Sem Nome';
+          const idGerado = nomeSeguro.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
 
           window.servidoresFirebase.push({
             id: idGerado,
@@ -542,11 +525,11 @@ window.exportarXLSX_Avancado = async function() {
   btnExportar.disabled = true;
   btnExportar.textContent = "⏳ Sincronizando e Gerando...";
 
-  // 👻 1. ROTINA DE LOGIN INVISÍVEL (Para passar pela regra do Firebase)
-  if (!auth.currentUser) {
+  // 👻 1. ROTINA DE LOGIN INVISÍVEL
+  if (!window.__auth.currentUser) {
     try {
-      // Substitua pela senha que você criou lá no painel do Firebase
-      await signInWithEmailAndPassword(auth, "operador@simplificatimbo.local", "123456");
+      // Usa o e-mail e a senha que você configurou no Firebase
+      await window.__signIn(window.__auth, "operador@simplificatimbo.local", "123456");
     } catch (error) {
       console.error("Falha no login fantasma:", error);
       window.toast("❌ Erro de conexão com a nuvem. O Excel será gerado apenas com dados locais.");
@@ -554,7 +537,7 @@ window.exportarXLSX_Avancado = async function() {
   }
 
   // ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE
-  if (auth.currentUser) {
+  if (window.__auth.currentUser) {
     window.toast("Sincronizando com a nuvem...");
     try {
       const registrosFirebase = {};
@@ -572,9 +555,9 @@ window.exportarXLSX_Avancado = async function() {
       });
 
       const docId = `${data}_${window.turnoAtual}`;
-      const chamadaRef = doc(db, "chamadas", docId);
+      const chamadaRef = window.__doc(window.__db, "chamadas", docId);
       
-      await setDoc(chamadaRef, {
+      await window.__setDoc(chamadaRef, {
         data: data,
         turno: window.turnoAtual,
         atualizadoEm: new Date().toISOString(),
@@ -644,7 +627,7 @@ window.exportarXLSX_Avancado = async function() {
   btnExportar.textContent = textoOriginal;
   window.toast('✓ Operação concluída com sucesso!');
 }
-
+  
 document.getElementById('input-data').value = dataHoje();
 </script>
 </body>
