@@ -181,7 +181,7 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { db } from './firebase-config.js';
 
   window.__db = db; // exposto para as funções de sincronização abaixo
@@ -509,19 +509,57 @@ function atualizarStats(lista) {
 }
 
 // ==========================================================
-// EXPORTAÇÃO XLSX AVANÇADA (Múltiplas Abas)
+// EXPORTAÇÃO XLSX AVANÇADA E SINCRONIZAÇÃO EM NUVEM
 // ==========================================================
-window.exportarXLSX_Avancado = function() {
+window.exportarXLSX_Avancado = async function() {
   const data = getDataAtual();
   const turnoNome = window.turnoAtual === 'mat' ? 'Matutino' : 'Vespertino';
   const dataFmt = dataFormatada(data);
-  const servidores = obterServidoresVisiveis(); // Exporta apenas o turno selecionado
+  const servidores = obterServidoresVisiveis();
 
   if(servidores.length === 0) {
     window.toast("Sem dados para exportar.");
     return;
   }
 
+  const btnExportar = document.querySelector('.btn-exportar');
+  const textoOriginal = btnExportar.textContent;
+  btnExportar.disabled = true;
+  btnExportar.textContent = "⏳ Sincronizando e Gerando...";
+  window.toast("Sincronizando com a nuvem...");
+
+  // 1. ROTINA DE GRAVAÇÃO NO FIREBASE
+  try {
+    const registrosFirebase = {};
+    
+    // Congela os dados nominais (Nome, Cargo, Setor) no momento da chamada
+    servidores.forEach(s => {
+      const c = getChamada(s.id);
+      registrosFirebase[s.id] = {
+        nome: s.nome,
+        cargo: s.cargo,
+        setor: s.setor, 
+        presente: c.presente,
+        obs: c.obs || ""
+      };
+    });
+
+    const docId = `${data}_${window.turnoAtual}`;
+    const chamadaRef = doc(db, "chamadas", docId);
+    
+    await setDoc(chamadaRef, {
+      data: data,
+      turno: window.turnoAtual,
+      atualizadoEm: new Date().toISOString(),
+      registros: registrosFirebase
+    }, { merge: true });
+
+  } catch (error) {
+    console.error("Erro ao salvar no Firebase:", error);
+    window.toast("❌ Erro ao salvar na nuvem! Planilha gerada com dados locais.");
+  }
+
+  // 2. ROTINA DE GERAÇÃO DO EXCEL
   let qPresentes = 0, qAusentes = 0, qPendentes = 0;
   
   const resumoData = [
@@ -573,16 +611,10 @@ window.exportarXLSX_Avancado = function() {
 
   const nomeArquivo = `Chamada_${window.turnoAtual}_${data.replace(/-/g,'')}.xlsx`;
   XLSX.writeFile(wb, nomeArquivo);
-  window.toast('✓ Relatório Gerado!');
-}
-
-let toastTimer;
-window.toast = function(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('visivel');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('visivel'), 2500);
+  
+  btnExportar.disabled = false;
+  btnExportar.textContent = textoOriginal;
+  window.toast('✓ Salvo na nuvem e exportado!');
 }
 
 document.getElementById('input-data').value = dataHoje();
