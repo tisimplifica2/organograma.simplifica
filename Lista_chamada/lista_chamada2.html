@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lista de Chamada Inteligente</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1565a8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  
+  :root {
+    --verde: #1565a8;
+    --verde-claro: #f0f5fb;
+    --verde-medio: #5ab4f0;
+    --vermelho: #c94040;
+    --vermelho-claro: #fdf0f0;
+    --amarelo: #e8a320;
+    --cinza: #6b7280;
+    --cinza-claro: #f3f4f6;
+    --borda: #e5e7eb;
+    --texto: #111827;
+    --texto-muted: #6b7280;
+    --fundo: #f9fafb;
+    --branco: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--texto); min-height: 100vh; padding-bottom: 100px; }
+  
+  /* HEADER */
+  .header { background: var(--verde); padding: 20px 20px 24px; position: sticky; top: 0; z-index: 100; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+  .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); font-family: 'DM Mono', monospace; }
+
+  /* TURNO TOGGLE */
+  .turno-toggle { display: flex; background: rgba(255,255,255,0.15); border-radius: 10px; padding: 3px; gap: 3px; }
+  .turno-btn { flex: 1; padding: 7px 12px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s; background: transparent; color: rgba(255,255,255,0.7); }
+  .turno-btn.ativo { background: #fff; color: var(--verde); box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+
+  /* CONTROLES SUPERIORES */
+  .controles-superiores { background: var(--branco); border-bottom: 1px solid var(--borda); }
+  .data-row { padding: 12px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--borda); }
+  .data-row label { font-size: 13px; color: var(--cinza); font-weight: 500; }
+  .data-row input[type="date"] { flex: 1; border: 1px solid var(--borda); border-radius: 8px; padding: 7px 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; }
+  .busca-container { padding: 12px 20px; }
+  .busca-input { width: 100%; border: 1px solid var(--borda); border-radius: 10px; padding: 9px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
+
+  /* STATS */
+  .stats { display: flex; gap: 10px; padding: 14px 20px; background: var(--branco); border-bottom: 1px solid var(--borda); }
+  .stat-card { flex: 1; border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .stat-card.total { background: var(--cinza-claro); }
+  .stat-card.presentes { background: var(--verde-claro); }
+  .stat-card.ausentes { background: var(--vermelho-claro); }
+  .stat-num { font-size: 22px; font-weight: 600; font-family: 'DM Mono', monospace; display: block; line-height: 1; margin-bottom: 2px; }
+  .stat-card.total .stat-num { color: var(--cinza); }
+  .stat-card.presentes .stat-num { color: var(--verde); }
+  .stat-card.ausentes .stat-num { color: var(--vermelho); }
+  .stat-label { font-size: 11px; color: var(--texto-muted); font-weight: 500; }
+
+  /* AÇÕES RÁPIDAS */
+  .acoes-rapidas { display: flex; gap: 8px; padding: 10px 20px; background: var(--branco); border-bottom: 1px solid var(--borda); }
+  .btn-rapido { flex: 1; padding: 7px; border: 1px solid var(--borda); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; background: var(--fundo); color: var(--cinza); transition: all 0.15s; }
+  .btn-rapido.todos { border-color: var(--verde-medio); color: var(--verde); background: var(--verde-claro); }
+  .btn-rapido.nenhum { border-color: #e0a0a0; color: var(--vermelho); background: var(--vermelho-claro); }
+
+  /* LISTA E SETORES */
+  .lista-container { padding: 0 16px; margin-top: 10px; }
+  .setor-header { margin: 16px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--cinza-claro); display: flex; justify-content: space-between; align-items: flex-end; }
+  .setor-titulo { font-size: 13px; font-weight: 600; color: var(--cinza); text-transform: uppercase; letter-spacing: 0.5px; }
+  .setor-badge { background: var(--cinza-claro); color: var(--cinza); font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+
+  .servidor-card { background: var(--branco); border: 1px solid var(--borda); border-radius: 12px; margin-bottom: 8px; overflow: hidden; transition: border-color 0.15s; }
+  .servidor-card.presente { border-color: #5ab4f0; border-left: 3px solid var(--verde-medio); }
+  .servidor-card.ausente { border-color: #f0c0c0; border-left: 3px solid var(--vermelho); }
+
+  .servidor-main { display: flex; align-items: center; padding: 12px 14px; gap: 12px; cursor: pointer; user-select: none; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; background: var(--cinza-claro); color: var(--cinza); }
+  .servidor-card.presente .avatar { background: var(--verde-claro); color: var(--verde); }
+  .servidor-card.ausente .avatar { background: var(--vermelho-claro); color: var(--vermelho); }
+  
+  .servidor-info { flex: 1; min-width: 0; }
+  .servidor-nome { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--texto); }
+  .servidor-cargo { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--texto-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  
+  /* Badge de Turno na lista */
+  .tag-turno { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-turno.int { background: #dce8f5; color: #1565a8; }
+  .tag-turno.mat { background: #fff8e1; color: #b45309; }
+  .tag-turno.ves { background: #ede9fe; color: #5b21b6; }
+
+  /* STATUS TOGGLE */
+  .status-toggle { display: flex; border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+  .status-btn { padding: 6px 10px; border: none; background: transparent; font-size: 11px; font-weight: 600; cursor: pointer; color: var(--texto-muted); font-family: 'DM Sans', sans-serif; }
+  .status-btn:first-child { border-right: 1px solid var(--borda); }
+  .status-btn.p-ativo { background: var(--verde-claro); color: var(--verde); }
+  .status-btn.a-ativo { background: var(--vermelho-claro); color: var(--vermelho); }
+
+  /* OBS TOGGLE */
+  .obs-toggle { padding: 0 14px 0 66px; font-size: 12px; color: var(--verde); cursor: pointer; font-weight: 500; padding-bottom: 4px; display: inline-flex; align-items: center; gap: 4px; }
+  .obs-area { padding: 0 14px 12px 66px; display: none; }
+  .obs-area.aberta { display: block; }
+  .obs-textarea { width: 100%; border: 1px solid var(--borda); border-radius: 8px; padding: 8px 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--texto); background: var(--fundo); resize: none; outline: none; min-height: 50px; }
+
+  /* BOTÃO EXPORTAR */
+  .footer-exportar { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px 24px; background: var(--branco); border-top: 1px solid var(--borda); z-index: 200; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+  .btn-exportar { width: 100%; background: var(--verde); color: #fff; border: none; border-radius: 12px; padding: 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; letter-spacing: -0.2px; }
+
+  /* MENSAGENS E TOAST */
+  .loading-msg { text-align: center; padding: 40px; color: var(--cinza); font-size: 14px; }
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 1000; pointer-events: none; }
+  .toast.visivel { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>Controle de Presença</h1>
+      <div class="header-sub" id="header-sub">Carregando...</div>
+    </div>
+  </div>
+  <div class="turno-toggle">
+    <button class="turno-btn ativo" id="btn-mat" onclick="setTurno('mat')">☀️ Matutino</button>
+    <button class="turno-btn" id="btn-ves" onclick="setTurno('ves')">🌤 Vespertino</button>
+  </div>
+</div>
+
+<div class="controles-superiores">
+  <div class="data-row">
+    <label>📅 Data da Chamada</label>
+    <input type="date" id="input-data" onchange="atualizarInterface()">
+  </div>
+  <div class="busca-container">
+    <input class="busca-input" type="search" id="input-busca" placeholder="🔍 Buscar servidor por nome, cargo ou setor..." oninput="renderLista()">
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card total">
+    <span class="stat-num" id="stat-total">0</span>
+    <div class="stat-label">Total Exibido</div>
+  </div>
+  <div class="stat-card presentes">
+    <span class="stat-num" id="stat-presentes">0</span>
+    <div class="stat-label">Confirmados</div>
+  </div>
+  <div class="stat-card ausentes">
+    <span class="stat-num" id="stat-ausentes">0</span>
+    <div class="stat-label">Faltas</div>
+  </div>
+</div>
+
+<div class="acoes-rapidas">
+  <button class="btn-rapido todos" onclick="marcarVisiveis(true)">✓ Todos Presentes</button>
+  <button class="btn-rapido nenhum" onclick="marcarVisiveis(false)">✗ Todos Ausentes</button>
+</div>
+
+<div class="lista-container" id="lista-container">
+  <div class="loading-msg">Conectando ao banco de dados...</div>
+</div>
+
+<div class="footer-exportar">
+  <button class="btn-exportar" onclick="exportarXLSX_Avancado()">⬇ Baixar Relatório Detalhado</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { db } from './firebase-config.js';
+
+  window.__db = db; // exposto para as funções de sincronização abaixo
+  window.__doc = doc;
+  window.__setDoc = setDoc;
+
+  // Caminho exato do seu banco de dados
+  const docRef = doc(db, "organograma", "dados"); 
+
+  // ESTADO GLOBAL DA APLICAÇÃO
+  window.servidoresFirebase = [];
+  window.turnoAtual = 'mat';
+  window.chamadas = carregarChamadas() || {};
+
+  // Listener do Firestore em tempo real
+  onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      window.servidoresFirebase = [];
+
+      // 1. Puxa o Diretor
+      if (data.diretor) {
+        window.servidoresFirebase.push({
+          id: 'diretor', 
+          nome: data.diretor.nome || 'Diretor',
+          cargo: data.diretor.cargo || 'Diretor',
+          setor: 'Diretoria',
+          turno: data.diretor.turno || 'int' // se ele não tiver turno, assume int
+        });
+      }
+
+  // 2. Puxa os colaboradores
+
+    // 2. Puxa os colaboradores 
+         if (data.pessoas && Array.isArray(data.pessoas)) { 
+           data.pessoas.forEach((p, index) => { 
+             let nomeSetor = p.setor; 
+             let ignorarColaborador = false; // Flag de bloqueio 
+
+             // 1ª Verificação: (REMOVIDA a trava do Procon aqui)
+
+             // 2ª Verificação: Checa na lista de setores (para ver a flag 'parceiro') 
+             if (data.setores) { 
+               const setorDoc = data.setores.find(s => s.id === p.setor); 
+               if (setorDoc) { 
+                 nomeSetor = setorDoc.nome; // Pega o nome amigável do setor 
+                 
+                 // Bloqueia APENAS se tiver a flag parceiro: true
+                 if (setorDoc.parceiro === true) { 
+                   ignorarColaborador = true; 
+                 } 
+               } 
+             }
+
+          // Se a flag de bloqueio foi ativada, o 'return' pula essa pessoa e não a adiciona na tela
+          if (ignorarColaborador) {
+            return; 
+          }
+
+          const idGerado = p.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
+
+          window.servidoresFirebase.push({
+            id: idGerado,
+            nome: p.nome || 'Sem Nome',
+            cargo: p.cargo || 'Sem Cargo',
+            setor: nomeSetor || 'Sem Setor',
+            turno: p.turno || 'mat'
+          });
+        });
+      }
+
+      window.atualizarInterface();
+      window.toast("✅ Base de dados conectada!");
+
+    } else {
+      document.getElementById('lista-container').innerHTML = `<div class="loading-msg" style="color:var(--vermelho)">Documento do organograma não encontrado.</div>`;
+    }
+  }, (error) => {
+    console.error("Erro ao buscar dados do Firestore: ", error);
+    document.getElementById('lista-container').innerHTML = `<div class="loading-msg" style="color:var(--vermelho)">Erro ao conectar com o banco.</div>`;
+  });
+</script>
+
+<script>
+// ==========================================================
+// FUNÇÕES DA INTERFACE E LÓGICA LOCAL
+// ==========================================================
+
+function dataHoje() {
+  const hoje = new Date();
+  const y = hoje.getFullYear();
+  const m = String(hoje.getMonth()+1).padStart(2,'0');
+  const d = String(hoje.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+
+function dataFormatada(str) {
+  if (!str) return '';
+  const [y,m,d] = str.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function getDataAtual() {
+  return document.getElementById('input-data').value || dataHoje();
+}
+
+function atualizarInterface() {
+  const d = getDataAtual();
+  const turnoNome = window.turnoAtual === 'mat' ? 'Matutino' : 'Vespertino';
+  document.getElementById('header-sub').textContent = `${dataFormatada(d)} · ${turnoNome}`;
+  renderLista();
+}
+
+function setTurno(t) {
+  window.turnoAtual = t;
+  document.getElementById('btn-mat').classList.toggle('ativo', t === 'mat');
+  document.getElementById('btn-ves').classList.toggle('ativo', t === 'ves');
+  atualizarInterface(); // Atualiza a tela filtrando pelo novo turno
+}
+
+// Persistência local das presenças
+function carregarChamadas() {
+  try { const d = localStorage.getItem('lc_chamadas_firebase'); return d ? JSON.parse(d) : null; } catch(e) { return null; }
+}
+function salvarChamadas() {
+  try { localStorage.setItem('lc_chamadas_firebase', JSON.stringify(window.chamadas)); } catch(e) {}
+}
+
+function getChamada(id) {
+  const d = getDataAtual(); const t = window.turnoAtual;
+  if (!window.chamadas[d]) window.chamadas[d] = {};
+  if (!window.chamadas[d][t]) window.chamadas[d][t] = {};
+  if (!window.chamadas[d][t][id]) window.chamadas[d][t][id] = { presente: null, obs: '' };
+  return window.chamadas[d][t][id];
+}
+
+window.setPresenca = function(id, val) {
+  getChamada(id).presente = val;
+  salvarChamadas();
+  renderLista();
+  agendarSincronizacao();
+}
+
+window.setObs = function(id, val) {
+  getChamada(id).obs = val;
+  salvarChamadas();
+  agendarSincronizacao();
+}
+
+// ==========================================================
+// SINCRONIZAÇÃO COM FIRESTORE (coleção "chamadas")
+// ==========================================================
+let syncTimer = null;
+function agendarSincronizacao() {
+  // Debounce de 1.2s: evita gravar no banco a cada tecla/clique
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(sincronizarFirestore, 1200);
+}
+
+async function sincronizarFirestore() {
+  try {
+    const d = getDataAtual();
+    const t = window.turnoAtual;
+    const chamadaDoDia = (window.chamadas[d] && window.chamadas[d][t]) || {};
+
+    // Monta os registros já com nome/cargo/setor "congelados" na data da chamada
+    const registros = {};
+    (window.servidoresFirebase || []).forEach(s => {
+      const c = chamadaDoDia[s.id];
+      if (c && c.presente !== null) {
+        registros[s.id] = {
+          nome: s.nome,
+          cargo: s.cargo,
+          setor: s.setor,
+          presente: c.presente,
+          obs: c.obs || ''
+        };
+      }
+    });
+
+    const docId = `${d}_${t}`;
+    await window.__setDoc(
+      window.__doc(window.__db, "chamadas", docId),
+      { data: d, turno: t, registros, atualizadoEm: new Date().toISOString() },
+      { merge: false } // cada sync reescreve o documento inteiro do dia/turno (reflete o estado atual)
+    );
+  } catch (e) {
+    console.error("Erro ao sincronizar chamada com Firestore:", e);
+    window.toast("⚠️ Falha ao salvar na nuvem (dado ficou local)");
+  }
+}
+
+// Também sincroniza ao trocar de turno/data ou ao clicar em "Todos"/"Nenhum",
+// além de tentar uma sincronização final ao sair da página.
+window.addEventListener('beforeunload', sincronizarFirestore);
+
+// ==========================================================
+// LÓGICA DE FILTRO (A MÁGICA DOS TURNOS ACONTECE AQUI)
+// ===========================================================
+function obterServidoresVisiveis() {
+  const busca = document.getElementById('input-busca').value.toLowerCase();
+  
+  return window.servidoresFirebase.filter(s => {
+    const turnoPessoa = (s.turno || 'mat').toLowerCase();
+    
+    // Regra:
+    // Se a pessoa for 'int' (Integral), ela é válida em qualquer turno.
+    // Senão, o turno dela tem que ser igual ao botão clicado lá em cima ('mat' ou 'ves').
+    const turnoValido = (turnoPessoa === 'int') || (turnoPessoa === window.turnoAtual);
+
+    const termoMatch = s.nome.toLowerCase().includes(busca) || 
+                       s.cargo.toLowerCase().includes(busca) || 
+                       s.setor.toLowerCase().includes(busca);
+                       
+    return termoMatch && turnoValido;
+  });
+}
+
+window.marcarVisiveis = function(val) {
+  const visiveis = obterServidoresVisiveis();
+  visiveis.forEach(s => { getChamada(s.id).presente = val; });
+  salvarChamadas();
+  renderLista();
+  window.toast(val ? '✓ Presentes marcados (Nesta tela)' : '✗ Ausentes marcados (Nesta tela)');
+  agendarSincronizacao();
+}
+
+function iniciais(nome) {
+  const p = nome.trim().split(' ');
+  if (p.length === 1) return p[0][0].toUpperCase();
+  return (p[0][0] + p[p.length-1][0]).toUpperCase();
+}
+
+window.toggleObs = function(id) {
+  const area = document.getElementById(`obs-area-${id}`);
+  const aberta = area.classList.toggle('aberta');
+  if (aberta) document.getElementById(`obs-${id}`).focus();
+}
+
+function getTurnoBadge(turno) {
+    if(turno === 'int') return '<span class="tag-turno int">Integral</span>';
+    if(turno === 'mat') return '<span class="tag-turno mat">Manhã</span>';
+    if(turno === 'ves') return '<span class="tag-turno ves">Tarde</span>';
+    return '';
+}
+
+function renderLista() {
+  if (!window.servidoresFirebase || window.servidoresFirebase.length === 0) return;
+
+  const container = document.getElementById('lista-container');
+  const visiveis = obterServidoresVisiveis();
+
+  if (visiveis.length === 0) {
+    container.innerHTML = '<div class="loading-msg">Nenhum servidor encontrado neste turno ou busca.</div>';
+    atualizarStats(visiveis);
+    return;
+  }
+
+  // Agrupar por Setor
+  const agrupadoPorSetor = {};
+  visiveis.forEach(s => {
+    const nomeSetor = s.setor ? s.setor.toUpperCase() : 'SEM SETOR DEFINIDO';
+    if (!agrupadoPorSetor[nomeSetor]) agrupadoPorSetor[nomeSetor] = [];
+    agrupadoPorSetor[nomeSetor].push(s);
+  });
+
+  // Montar HTML com cabeçalhos de setor
+  let html = '';
+  const setoresOrdenados = Object.keys(agrupadoPorSetor).sort();
+
+  setoresOrdenados.forEach(setor => {
+    const servidoresDoSetor = agrupadoPorSetor[setor];
+    
+    html += `
+      <div class="setor-header">
+        <span class="setor-titulo">${setor}</span>
+        <span class="setor-badge">${servidoresDoSetor.length}</span>
+      </div>
+    `;
+
+    servidoresDoSetor.forEach(s => {
+      const c = getChamada(s.id);
+      const p = c.presente;
+      const cls = p === true ? 'presente' : p === false ? 'ausente' : '';
+      const temObs = c.obs && c.obs.trim().length > 0;
+      
+      html += `
+      <div class="servidor-card ${cls}" id="card-${s.id}">
+        <div class="servidor-main">
+          <div class="avatar">${iniciais(s.nome)}</div>
+          <div class="servidor-info">
+            <div class="servidor-nome">${s.nome}</div>
+            <div class="servidor-cargo">${s.cargo} ${getTurnoBadge(s.turno)}</div>
+          </div>
+          <div class="status-toggle" onclick="event.stopPropagation()">
+            <button class="status-btn ${p===true?'p-ativo':''}" onclick="window.setPresenca('${s.id}', ${p===true?'null':'true'})">P</button>
+            <button class="status-btn ${p===false?'a-ativo':''}" onclick="window.setPresenca('${s.id}', ${p===false?'null':'false'})">A</button>
+          </div>
+        </div>
+        <div class="obs-toggle" onclick="window.toggleObs('${s.id}')">
+          <span>${temObs ? '✏️ Observação anotada' : '+ Adicionar observação'}</span>
+        </div>
+        <div class="obs-area ${temObs?'aberta':''}" id="obs-area-${s.id}">
+          <textarea class="obs-textarea" id="obs-${s.id}" placeholder="Justificativa de falta, atestado..."
+            oninput="window.setObs('${s.id}', this.value)">${c.obs}</textarea>
+        </div>
+      </div>`;
+    });
+  });
+
+  container.innerHTML = html;
+  atualizarStats(visiveis);
+}
+
+function atualizarStats(lista) {
+  let presentes = 0, ausentes = 0;
+  lista.forEach(s => {
+    const p = getChamada(s.id).presente;
+    if (p === true) presentes++;
+    else if (p === false) ausentes++;
+  });
+  document.getElementById('stat-total').textContent = lista.length;
+  document.getElementById('stat-presentes').textContent = presentes;
+  document.getElementById('stat-ausentes').textContent = ausentes;
+}
+
+// ==========================================================
+// EXPORTAÇÃO XLSX AVANÇADA (Múltiplas Abas)
+// ==========================================================
+window.exportarXLSX_Avancado = function() {
+  const data = getDataAtual();
+  const turnoNome = window.turnoAtual === 'mat' ? 'Matutino' : 'Vespertino';
+  const dataFmt = dataFormatada(data);
+  const servidores = obterServidoresVisiveis(); // Exporta apenas o turno selecionado
+
+  if(servidores.length === 0) {
+    window.toast("Sem dados para exportar.");
+    return;
+  }
+
+  let qPresentes = 0, qAusentes = 0, qPendentes = 0;
+  
+  const resumoData = [
+    ['RELATÓRIO GERENCIAL DE PRESENÇA', '', ''],
+    [`Data: ${dataFmt}`, '', `Turno: ${turnoNome}`],
+    ['', '', ''],
+    ['Métrica', 'Quantidade', '% do Total']
+  ];
+
+  const presentesData = [['SERVIDORES PRESENTES', '', '', ''], ['Nome', 'Cargo', 'Setor', 'Observação']];
+  const ausentesData = [['SERVIDORES AUSENTES / FALTAS', '', '', ''], ['Nome', 'Cargo', 'Setor', 'Justificativa / Observação']];
+  const pendentesData = [['NÃO INFORMADOS', '', '', ''], ['Nome', 'Cargo', 'Setor', 'Observação']];
+
+  const servidoresOrdenados = [...servidores].sort((a, b) => {
+    if (a.setor < b.setor) return -1;
+    if (a.setor > b.setor) return 1;
+    return a.nome.localeCompare(b.nome);
+  });
+
+  servidoresOrdenados.forEach(s => {
+    const c = getChamada(s.id);
+    const p = c.presente;
+    const obsStr = c.obs || '-';
+
+    if (p === true) { qPresentes++; presentesData.push([s.nome, s.cargo, s.setor, obsStr]); } 
+    else if (p === false) { qAusentes++; ausentesData.push([s.nome, s.cargo, s.setor, obsStr]); } 
+    else { qPendentes++; pendentesData.push([s.nome, s.cargo, s.setor, obsStr]); }
+  });
+
+  const total = servidoresOrdenados.length;
+  resumoData.push(['Total de Servidores no Turno', total, '100%']);
+  resumoData.push(['Presentes', qPresentes, ((qPresentes/total)*100).toFixed(1)+'%']);
+  resumoData.push(['Ausentes', qAusentes, ((qAusentes/total)*100).toFixed(1)+'%']);
+  if(qPendentes > 0) resumoData.push(['Sem marcação', qPendentes, ((qPendentes/total)*100).toFixed(1)+'%']);
+
+  const wb = XLSX.utils.book_new();
+
+  const addSheet = (dataArray, sheetName, colWidths) => {
+    const ws = XLSX.utils.aoa_to_sheet(dataArray);
+    ws['!cols'] = colWidths;
+    ws['!merges'] = [{ s: {r:0,c:0}, e: {r:0,c: colWidths.length - 1} }];
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  };
+
+  addSheet(resumoData, "Resumo", [{wch: 25}, {wch: 15}, {wch: 15}]);
+  addSheet(presentesData, "Presentes", [{wch: 35}, {wch: 25}, {wch: 20}, {wch: 30}]);
+  addSheet(ausentesData, "Ausentes", [{wch: 35}, {wch: 25}, {wch: 20}, {wch: 40}]);
+  if(qPendentes > 0) addSheet(pendentesData, "Pendentes", [{wch: 35}, {wch: 25}, {wch: 20}, {wch: 30}]);
+
+  const nomeArquivo = `Chamada_${window.turnoAtual}_${data.replace(/-/g,'')}.xlsx`;
+  XLSX.writeFile(wb, nomeArquivo);
+  window.toast('✓ Relatório Gerado!');
+}
+
+let toastTimer;
+window.toast = function(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('visivel');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('visivel'), 2500);
+}
+
+document.getElementById('input-data').value = dataHoje();
+</script>
+</body>
+</html>
