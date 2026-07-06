@@ -181,8 +181,23 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"; // IMPORTAÇÃO DO LOGIN
   import { db } from './firebase-config.js';
+  // Suas credenciais exatas
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
+    authDomain: "simplifica-timbo.firebaseapp.com",
+    projectId: "simplifica-timbo",
+    storageBucket: "simplifica-timbo.firebasestorage.app",
+    messagingSenderId: "651621474575",
+    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app); // INICIALIZA O LOGIN
 
   window.__db = db; // exposto para as funções de sincronização abaixo
   window.__doc = doc;
@@ -509,7 +524,7 @@ function atualizarStats(lista) {
 }
 
 // ==========================================================
-// EXPORTAÇÃO XLSX AVANÇADA E SINCRONIZAÇÃO EM NUVEM
+// EXPORTAÇÃO XLSX AVANÇADA E SINCRONIZAÇÃO COM LOGIN FANTASMA
 // ==========================================================
 window.exportarXLSX_Avancado = async function() {
   const data = getDataAtual();
@@ -526,40 +541,53 @@ window.exportarXLSX_Avancado = async function() {
   const textoOriginal = btnExportar.textContent;
   btnExportar.disabled = true;
   btnExportar.textContent = "⏳ Sincronizando e Gerando...";
-  window.toast("Sincronizando com a nuvem...");
 
-  // 1. ROTINA DE GRAVAÇÃO NO FIREBASE
-  try {
-    const registrosFirebase = {};
-    
-    // Congela os dados nominais (Nome, Cargo, Setor) no momento da chamada
-    servidores.forEach(s => {
-      const c = getChamada(s.id);
-      registrosFirebase[s.id] = {
-        nome: s.nome,
-        cargo: s.cargo,
-        setor: s.setor, 
-        presente: c.presente,
-        obs: c.obs || ""
-      };
-    });
-
-    const docId = `${data}_${window.turnoAtual}`;
-    const chamadaRef = doc(db, "chamadas", docId);
-    
-    await setDoc(chamadaRef, {
-      data: data,
-      turno: window.turnoAtual,
-      atualizadoEm: new Date().toISOString(),
-      registros: registrosFirebase
-    }, { merge: true });
-
-  } catch (error) {
-    console.error("Erro ao salvar no Firebase:", error);
-    window.toast("❌ Erro ao salvar na nuvem! Planilha gerada com dados locais.");
+  // 👻 1. ROTINA DE LOGIN INVISÍVEL (Para passar pela regra do Firebase)
+  if (!auth.currentUser) {
+    try {
+      // Substitua pela senha que você criou lá no painel do Firebase
+      await signInWithEmailAndPassword(auth, "operador@simplificatimbo.local", "123456");
+    } catch (error) {
+      console.error("Falha no login fantasma:", error);
+      window.toast("❌ Erro de conexão com a nuvem. O Excel será gerado apenas com dados locais.");
+    }
   }
 
-  // 2. ROTINA DE GERAÇÃO DO EXCEL
+  // ☁️ 2. ROTINA DE GRAVAÇÃO NO FIREBASE
+  if (auth.currentUser) {
+    window.toast("Sincronizando com a nuvem...");
+    try {
+      const registrosFirebase = {};
+      
+      // Congela os dados nominais no momento da chamada
+      servidores.forEach(s => {
+        const c = getChamada(s.id);
+        registrosFirebase[s.id] = {
+          nome: s.nome,
+          cargo: s.cargo,
+          setor: s.setor, 
+          presente: c.presente,
+          obs: c.obs || ""
+        };
+      });
+
+      const docId = `${data}_${window.turnoAtual}`;
+      const chamadaRef = doc(db, "chamadas", docId);
+      
+      await setDoc(chamadaRef, {
+        data: data,
+        turno: window.turnoAtual,
+        atualizadoEm: new Date().toISOString(),
+        registros: registrosFirebase
+      }, { merge: true });
+
+    } catch (error) {
+      console.error("Erro ao salvar no Firebase:", error);
+      window.toast("❌ Permissão negada ou erro na nuvem! Planilha local gerada.");
+    }
+  }
+
+  // 📊 3. ROTINA DE GERAÇÃO DO EXCEL
   let qPresentes = 0, qAusentes = 0, qPendentes = 0;
   
   const resumoData = [
@@ -614,7 +642,7 @@ window.exportarXLSX_Avancado = async function() {
   
   btnExportar.disabled = false;
   btnExportar.textContent = textoOriginal;
-  window.toast('✓ Salvo na nuvem e exportado!');
+  window.toast('✓ Operação concluída com sucesso!');
 }
 
 document.getElementById('input-data').value = dataHoje();
