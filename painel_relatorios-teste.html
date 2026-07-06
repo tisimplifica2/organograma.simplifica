@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Relatórios — Simplifica Timbó</title>
+<title>Gerador Executivo — Simplifica Timbó</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -18,7 +18,7 @@
   body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--cinza); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
   
   .card-relatorio {
-    background: var(--branco); padding: 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(21,101,168,.12); width: 100%; max-width: 480px; text-align: center;
+    background: var(--branco); padding: 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(21,101,168,.12); width: 100%; max-width: 480px; text-align: center; border-top: 5px solid var(--azul);
   }
   .card-relatorio h1 { font-family: 'Syne', sans-serif; font-size: 1.4rem; color: var(--azul); margin-bottom: 8px; }
   .card-relatorio p { color: var(--cinza-2); font-size: 0.9rem; margin-bottom: 24px; }
@@ -31,18 +31,18 @@
   .btn-gerar {
     background: var(--azul); color: #fff; border: none; padding: 14px; width: 100%; border-radius: 8px; font-family: 'DM Sans'; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px;
   }
-  .btn-gerar:hover { background: var(--azul-claro); }
-  .btn-gerar:disabled { background: #94a3b8; cursor: not-allowed; }
+  .btn-gerar:hover { background: var(--azul-claro); transform: translateY(-1px); }
+  .btn-gerar:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
   
   #msgStatus { font-size: 0.85rem; margin-top: 16px; font-weight: 600; min-height: 20px; }
-  .sucesso { color: #16a34a; } .erro { color: #dc2626; }
+  .sucesso { color: #16a34a; } .erro { color: #dc2626; } .aviso { color: #ea580c; }
 </style>
 </head>
 <body>
 
 <div class="card-relatorio">
-  <h1>📊 Relatório de Presença</h1>
-  <p>Gere a planilha executiva de um período específico.</p>
+  <h1>📊 Dashboard Executivo</h1>
+  <p>Gere a Matriz de Frequência do Simplifica.</p>
   
   <div class="form-group">
     <label>Data de Início</label>
@@ -54,7 +54,7 @@
     <input type="date" id="dataFim" required>
   </div>
   
-  <button class="btn-gerar" id="btnGerar" onclick="gerarRelatorioPeriodo()">Baixar Relatório Excel</button>
+  <button class="btn-gerar" id="btnGerar" onclick="gerarMatrizFrequencia()">Exportar Planilha Gerencial</button>
   <div id="msgStatus"></div>
 </div>
 
@@ -62,7 +62,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // Suas credenciais exatas
   const firebaseConfig = {
     apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
     authDomain: "simplifica-timbo.firebaseapp.com",
@@ -77,7 +76,7 @@
 
   function formatarDataBR(dataISO) {
     const [a, m, d] = dataISO.split('-');
-    return `${d}/${m}/${a}`;
+    return `${d}/${m}`;
   }
 
   function mostrarMensagem(texto, classe) {
@@ -86,204 +85,222 @@
     msg.className = classe;
   }
 
-  window.gerarRelatorioPeriodo = async function() {
+  window.gerarMatrizFrequencia = async function() {
     const dataInicio = document.getElementById('dataInicio').value;
     const dataFim = document.getElementById('dataFim').value;
     const btn = document.getElementById('btnGerar');
 
-    if (!dataInicio || !dataFim) {
-      mostrarMensagem("Por favor, preencha ambas as datas.", "erro");
-      return;
-    }
-    if (dataInicio > dataFim) {
-      mostrarMensagem("A data de início não pode ser maior que a final.", "erro");
-      return;
-    }
+    if (!dataInicio || !dataFim) { mostrarMensagem("Preencha as duas datas.", "erro"); return; }
+    if (dataInicio > dataFim) { mostrarMensagem("A data inicial não pode ser maior.", "erro"); return; }
 
     btn.disabled = true;
-    btn.textContent = "⏳ Buscando dados na nuvem...";
+    btn.textContent = "⏳ Cruzando dados no Firebase...";
     mostrarMensagem("", "");
 
     try {
-      // 1. Busca os documentos no Firestore no intervalo selecionado
+      // 1. Busca os documentos de chamada
       const chamadasRef = collection(db, "chamadas");
       const q = query(chamadasRef, where("data", ">=", dataInicio), where("data", "<=", dataFim));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        mostrarMensagem("Nenhum registro encontrado neste período.", "erro");
+        mostrarMensagem("Nenhum registro de chamada encontrado.", "aviso");
         btn.disabled = false;
-        btn.textContent = "Baixar Relatório Excel";
+        btn.textContent = "Exportar Planilha Gerencial";
         return;
       }
 
-      // 2. Processa os dados
-      let listaPresentes = [];
-      let listaAusentes = [];
-      let setoresMapa = {}; // Para agrupar o Resumo
+      // 2. Estruturação dos dados para a Matriz (Pivotamento)
+      const diasColunas = []; // Armazena as colunas de datas/turnos
+      const servidoresMap = {}; // Armazena os servidores e seus registros diários
+      const setoresStats = {}; // Estatísticas para o Dashboard
+      let globalPres = 0, globalAus = 0;
 
-      querySnapshot.forEach((doc) => {
-        const dados = doc.data();
-        const dataFmt = formatarDataBR(dados.data);
-        const turnoFmt = dados.turno === 'mat' ? 'Matutino' : 'Vespertino';
+      // Extrai e ordena os documentos (Data -> Turno Mat -> Turno Vesp)
+      const docsOrdenados = [];
+      querySnapshot.forEach(doc => docsOrdenados.push(doc.data()));
+      docsOrdenados.sort((a, b) => {
+        if (a.data !== b.data) return a.data.localeCompare(b.data);
+        return a.turno.localeCompare(b.turno); // 'mat' vem antes de 'vesp'
+      });
+
+      // Processa os documentos ordenados
+      docsOrdenados.forEach((dados) => {
+        const labelColuna = `${formatarDataBR(dados.data)} ${dados.turno === 'mat' ? 'Mat' : 'Vesp'}`;
+        const idColuna = `${dados.data}_${dados.turno}`;
+        diasColunas.push({ id: idColuna, label: labelColuna });
 
         if (dados.registros) {
-          Object.values(dados.registros).forEach(reg => {
-            // Conta totais por setor para a aba Resumo
-            if (!setoresMapa[reg.setor]) {
-              setoresMapa[reg.setor] = { total: 0, pres: 0, aus: 0 };
+          Object.entries(dados.registros).forEach(([servidorId, reg]) => {
+            // Inicializa o servidor se não existir
+            if (!servidoresMap[servidorId]) {
+              servidoresMap[servidorId] = {
+                nome: reg.nome, setor: reg.setor, presencas: 0, faltas: 0, 
+                dias: {} // Guarda { "2026-05-16_mat": "P" }
+              };
             }
-            setoresMapa[reg.setor].total++;
             
+            // Inicializa o setor no Dashboard se não existir
+            if (!setoresStats[reg.setor]) { setoresStats[reg.setor] = { pres: 0, aus: 0 }; }
+
+            // Marca a presença/falta na matriz
             if (reg.presente === true) {
-              setoresMapa[reg.setor].pres++;
-              listaPresentes.push([dataFmt, turnoFmt, reg.nome, reg.cargo, reg.setor, reg.obs || '-']);
+              servidoresMap[servidorId].dias[idColuna] = { status: 'P', obs: reg.obs };
+              servidoresMap[servidorId].presencas++;
+              setoresStats[reg.setor].pres++;
+              globalPres++;
             } else if (reg.presente === false) {
-              setoresMapa[reg.setor].aus++;
-              listaAusentes.push([dataFmt, turnoFmt, reg.nome, reg.cargo, reg.setor, reg.obs || '-']);
+              servidoresMap[servidorId].dias[idColuna] = { status: 'A', obs: reg.obs };
+              servidoresMap[servidorId].faltas++;
+              setoresStats[reg.setor].aus++;
+              globalAus++;
             }
           });
         }
       });
 
-      // 3. Monta os dados para o Resumo
-      let linhasResumo = [];
-      let totGeral = 0, presGeral = 0, ausGeral = 0;
-
-      Object.keys(setoresMapa).sort().forEach(setor => {
-        const s = setoresMapa[setor];
-        totGeral += s.total; presGeral += s.pres; ausGeral += s.aus;
-        const perc = s.total > 0 ? ((s.pres / s.total) * 100).toFixed(1) + '%' : '0%';
-        linhasResumo.push([setor, s.total, s.pres, s.aus, perc]);
-      });
-      const percGeral = totGeral > 0 ? ((presGeral / totGeral) * 100).toFixed(1) + '%' : '0%';
-
-      btn.textContent = "🎨 Desenhando a planilha...";
+      btn.textContent = "🎨 Renderizando Matriz ExcelJS...";
 
       // ==========================================
-      // 4. GERAÇÃO DO EXCEL COLORIDO (ExcelJS)
+      // 3. GERAÇÃO DO EXCEL (Dashboard + Matriz)
       // ==========================================
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'Simplifica Timbó';
 
-      // Estilos base
-      const fonteTitulo = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
-      const fonteCabecalho = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
       const alinhamentoCentro = { vertical: 'middle', horizontal: 'center' };
-      const bordaFina = {
-        top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
-      };
+      const bordaFina = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
 
-      // --- ABA 1: RESUMO ---
-      const wsResumo = workbook.addWorksheet('Resumo');
-      wsResumo.columns = [
-        { width: 30 }, { width: 20 }, { width: 15 }, { width: 15 }, { width: 15 }
-      ];
+      // ----------------------------------------------------
+      // ABA 1: DASHBOARD GESTOR
+      // ----------------------------------------------------
+      const wsDash = workbook.addWorksheet('Dashboard Gestor');
+      wsDash.columns = [{ width: 35 }, { width: 18 }, { width: 18 }];
       
-      // Título principal
-      wsResumo.mergeCells('A1:E1');
-      const celTituloResumo = wsResumo.getCell('A1');
-      celTituloResumo.value = `RELATÓRIO DE PRESENÇA (${formatarDataBR(dataInicio)} a ${formatarDataBR(dataFim)})`;
-      celTituloResumo.font = fonteTitulo;
-      celTituloResumo.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF1565A8' } }; // Azul
-      celTituloResumo.alignment = alinhamentoCentro;
+      // Título
+      wsDash.mergeCells('A1:C1');
+      const tituloDash = wsDash.getCell('A1');
+      tituloDash.value = 'MÉTRICAS EXECUTIVAS DE ASSIDUIDADE';
+      tituloDash.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+      tituloDash.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF1565A8' } };
+      tituloDash.alignment = alinhamentoCentro;
 
-      // Subtítulo
-      wsResumo.mergeCells('A2:E2');
-      wsResumo.getCell('A2').value = 'Resumo por Setor';
-      wsResumo.getCell('A2').font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF1565A8' } };
-      wsResumo.getCell('A2').alignment = alinhamentoCentro;
+      // Resumo Global
+      const totalGlobal = globalPres + globalAus;
+      const assidGlobal = totalGlobal > 0 ? (globalPres / totalGlobal) : 0;
+      
+      wsDash.addRow([]);
+      wsDash.addRow(['MÉTRICAS GLOBAIS', 'VALOR', '']).font = { bold: true };
+      wsDash.addRow(['Total de Registros Computados', totalGlobal, '']);
+      wsDash.addRow(['Total de Presenças', globalPres, '']);
+      wsDash.addRow(['Total de Ausências/Faltas', globalAus, '']);
+      const rowAssidG = wsDash.addRow(['Assiduidade Global', assidGlobal, '']);
+      rowAssidG.getCell(2).numFmt = '0.00%';
+      rowAssidG.getCell(2).font = { bold: true, color: { argb: assidGlobal >= 0.8 ? 'FF00B050' : 'FFFF0000' } };
 
-      // Cabeçalho da Tabela
-      const rowCabecalhoRes = wsResumo.addRow(['Setor', 'Total de Registros', 'Presentes', 'Ausentes', '% Presença']);
-      rowCabecalhoRes.eachCell(c => {
-        c.font = fonteCabecalho;
-        c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF475569' } }; // Cinza escuro
+      // Ranking de Setores
+      wsDash.addRow([]);
+      const rowRankH = wsDash.addRow(['RANKING POR SETOR', 'ASSIDUIDADE', 'FALTAS']);
+      rowRankH.eachCell(c => { c.font = { bold: true, color: { argb: 'FFFFFFFF'} }; c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF475569' } }; c.alignment = alinhamentoCentro; });
+
+      const listaSetores = Object.entries(setoresStats).map(([nome, stats]) => {
+        const total = stats.pres + stats.aus;
+        return { nome, assiduidade: total > 0 ? (stats.pres / total) : 0, faltas: stats.aus };
+      }).sort((a, b) => b.assiduidade - a.assiduidade); // Ordena do melhor pro pior
+
+      listaSetores.forEach(setor => {
+        const row = wsDash.addRow([setor.nome, setor.assiduidade, setor.faltas]);
+        row.getCell(2).numFmt = '0.00%';
+        row.getCell(2).alignment = alinhamentoCentro;
+        row.getCell(3).alignment = alinhamentoCentro;
+        row.eachCell(c => c.border = bordaFina);
+      });
+
+      // ----------------------------------------------------
+      // ABA 2: MATRIZ DE FREQUÊNCIA
+      // ----------------------------------------------------
+      const wsMatriz = workbook.addWorksheet('Matriz de Frequência');
+      
+      // Configura as colunas fixas + colunas de dias
+      const colunasMatriz = [
+        { header: 'Setor', key: 'setor', width: 22 },
+        { header: 'Servidor', key: 'nome', width: 35 },
+        { header: 'Assiduidade', key: 'assiduidade', width: 14 },
+        { header: 'Faltas', key: 'faltas', width: 10 }
+      ];
+      diasColunas.forEach(dia => colunasMatriz.push({ header: dia.label, key: dia.id, width: 12 }));
+      wsMatriz.columns = colunasMatriz;
+
+      // Estilo do Cabeçalho da Matriz
+      wsMatriz.getRow(1).eachCell(c => {
+        c.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+        c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF1565A8' } };
         c.alignment = alinhamentoCentro;
         c.border = bordaFina;
       });
 
-      // Dados do Resumo
-      linhasResumo.forEach(r => {
-        const row = wsResumo.addRow(r);
-        row.eachCell(c => { c.border = bordaFina; c.alignment = alinhamentoCentro; });
-        row.getCell(1).alignment = { vertical: 'middle', horizontal: 'left' }; // Setor à esquerda
+      // Ordena servidores por Setor -> Nome
+      const servidoresLista = Object.values(servidoresMap).sort((a, b) => {
+        if (a.setor !== b.setor) return a.setor.localeCompare(b.setor);
+        return a.nome.localeCompare(b.nome);
       });
 
-      // Linha de Total
-      const rowTotal = wsResumo.addRow(['Totais Gerais', totGeral, presGeral, ausGeral, percGeral]);
-      rowTotal.eachCell(c => {
-        c.font = { bold: true };
-        c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FFF8FAFC' } };
-        c.border = bordaFina;
-        c.alignment = alinhamentoCentro;
-      });
-      rowTotal.getCell(1).alignment = { vertical: 'middle', horizontal: 'left' };
+      // Preenche a Matriz
+      servidoresLista.forEach(srv => {
+        const rowData = {
+          setor: srv.setor,
+          nome: srv.nome,
+          faltas: srv.faltas,
+          assiduidade: (srv.presencas + srv.faltas) > 0 ? (srv.presencas / (srv.presencas + srv.faltas)) : 0
+        };
 
-      // --- FUNÇÃO PARA MONTAR AS ABAS PRESENTES E AUSENTES ---
-      function montarAbaNominal(nomeAba, dados, corHex) {
-        const ws = workbook.addWorksheet(nomeAba);
-        ws.columns = [
-          { width: 14 }, { width: 12 }, { width: 35 }, { width: 25 }, { width: 20 }, { width: 45 }
-        ];
+        // Puxa o P ou A para cada coluna de dia
+        diasColunas.forEach(dia => {
+          const reg = srv.dias[dia.id];
+          rowData[dia.id] = reg ? reg.status : '-';
+        });
 
-        ws.mergeCells('A1:F1');
-        ws.getCell('A1').value = `SERVIDORES ${nomeAba.toUpperCase()}`;
-        ws.getCell('A1').font = fonteTitulo;
-        ws.getCell('A1').fill = { type: 'pattern', pattern:'solid', fgColor:{ argb: corHex } };
-        ws.getCell('A1').alignment = alinhamentoCentro;
-
-        ws.mergeCells('A2:F2');
-        ws.getCell('A2').value = `Período: ${formatarDataBR(dataInicio)} a ${formatarDataBR(dataFim)}`;
-        ws.getCell('A2').font = { bold: true };
-        ws.getCell('A2').alignment = alinhamentoCentro;
-
-        const cabecalhoTexto = nomeAba === 'Presentes' ? 'Observação' : 'Justificativa / Observação';
-        const rowCabecalho = ws.addRow(['Data', 'Turno', 'Nome', 'Cargo', 'Setor', cabecalhoTexto]);
+        const row = wsMatriz.addRow(rowData);
         
-        rowCabecalho.eachCell(c => {
-          c.font = fonteCabecalho;
-          c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF475569' } };
-          c.alignment = alinhamentoCentro;
+        // Formata as células da linha
+        row.eachCell({ includeEmpty: true }, (c, colNum) => {
           c.border = bordaFina;
+          c.alignment = alinhamentoCentro;
+          if (colNum === 1 || colNum === 2) c.alignment = { vertical: 'middle', horizontal: 'left' };
+          
+          // Formata % de Assiduidade
+          if (colNum === 3) {
+            c.numFmt = '0.00%';
+            c.font = { bold: true, color: { argb: c.value >= 0.8 ? 'FF00B050' : 'FFFF0000' } };
+          }
+          
+          // Cores P (Verde) e A (Vermelho)
+          if (colNum > 4) {
+            if (c.value === 'P') {
+              c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FFE2EFDA' } }; // Fundo Verde Claro
+              c.font = { color: { argb:'FF375623' }, bold: true }; // Texto Verde Escuro
+            } else if (c.value === 'A') {
+              c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FFFCE4D6' } }; // Fundo Vermelho Claro
+              c.font = { color: { argb:'FFC00000' }, bold: true }; // Texto Vermelho Escuro
+            }
+          }
         });
+      });
 
-        // Habilita Filtro Automático
-        ws.autoFilter = 'A3:F3';
+      wsMatriz.autoFilter = `A1:D1`; // Filtro nas 4 primeiras colunas
 
-        // Ordena por Data -> Setor -> Nome
-        dados.sort((a,b) => {
-          if (a[0] !== b[0]) return a[0].localeCompare(b[0]);
-          if (a[4] !== b[4]) return a[4].localeCompare(b[4]);
-          return a[2].localeCompare(b[2]);
-        });
-
-        dados.forEach(r => {
-          const row = ws.addRow(r);
-          row.eachCell((c, colNum) => {
-            c.border = bordaFina;
-            c.alignment = (colNum <= 2) ? alinhamentoCentro : { vertical: 'middle', horizontal: 'left' };
-          });
-        });
-      }
-
-      // Adiciona as abas coloridas
-      montarAbaNominal('Presentes', listaPresentes, 'FF16A34A'); // Verde corporativo
-      montarAbaNominal('Ausentes', listaAusentes, 'FFDC2626');  // Vermelho corporativo
-
-      // 5. SALVAR ARQUIVO
+      // 4. SALVAR ARQUIVO
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, `Relatorio_Presenca_${dataInicio}_a_${dataFim}.xlsx`);
+      saveAs(blob, `Relatorio_Matriz_${dataInicio}_a_${dataFim}.xlsx`);
 
-      mostrarMensagem("✓ Relatório gerado com sucesso!", "sucesso");
+      mostrarMensagem("✓ Matriz Gerencial exportada!", "sucesso");
 
     } catch (error) {
       console.error("Erro geral:", error);
-      mostrarMensagem("❌ Erro ao gerar planilha. Verifique o console.", "erro");
+      mostrarMensagem("❌ Erro ao gerar planilha. Verifique a conexão.", "erro");
     } finally {
       btn.disabled = false;
-      btn.textContent = "Baixar Relatório Excel";
+      btn.textContent = "Exportar Planilha Gerencial";
     }
   };
 </script>
