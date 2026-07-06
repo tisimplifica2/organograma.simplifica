@@ -3,236 +3,289 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatórios de Presença</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<title>Gerador de Relatórios — Simplifica Timbó</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
   :root {
-    --verde: #1565a8; --verde-claro: #f0f5fb; --verde-medio: #5ab4f0;
-    --vermelho: #c94040; --vermelho-claro: #fdf0f0;
-    --cinza: #6b7280; --cinza-claro: #f3f4f6; --borda: #e5e7eb;
-    --texto: #111827; --texto-muted: #6b7280; --fundo: #f9fafb; --branco: #ffffff;
+    --azul: #1565a8; --azul-claro: #1e7ecf;
+    --fundo: #f0f5fb; --linha: #e3edf7;
+    --cinza: #1f2a3a; --cinza-2: #475569; --branco: #fff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--texto); min-height: 100vh; padding-bottom: 40px; }
-  .header { background: var(--verde); padding: 20px; }
-  .header h1 { font-size: 18px; font-weight: 600; color: #fff; }
-  .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); font-family: 'DM Mono', monospace; margin-top: 4px; }
-  .card { background: var(--branco); margin: 16px; border-radius: 12px; border: 1px solid var(--borda); padding: 16px; }
-  .campo { margin-bottom: 14px; }
-  .campo label { display: block; font-size: 13px; color: var(--cinza); font-weight: 500; margin-bottom: 6px; }
-  .campo input, .campo select { width: 100%; border: 1px solid var(--borda); border-radius: 8px; padding: 9px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
-  .linha-datas { display: flex; gap: 10px; }
-  .linha-datas .campo { flex: 1; }
-  .btn-gerar { width: 100%; background: var(--verde); color: #fff; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; }
-  .btn-gerar:disabled { opacity: 0.6; cursor: wait; }
-  .status { text-align: center; padding: 14px; color: var(--cinza); font-size: 13px; }
-  .status.erro { color: var(--vermelho); }
-  .resumo-mini { display: flex; gap: 10px; margin-top: 14px; }
-  .mini { flex: 1; background: var(--cinza-claro); border-radius: 10px; padding: 10px; text-align: center; }
-  .mini b { display: block; font-size: 20px; font-family: 'DM Mono', monospace; }
-  .mini span { font-size: 11px; color: var(--texto-muted); }
+  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--cinza); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  
+  .card-relatorio {
+    background: var(--branco); padding: 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(21,101,168,.12); width: 100%; max-width: 480px; text-align: center;
+  }
+  .card-relatorio h1 { font-family: 'Syne', sans-serif; font-size: 1.4rem; color: var(--azul); margin-bottom: 8px; }
+  .card-relatorio p { color: var(--cinza-2); font-size: 0.9rem; margin-bottom: 24px; }
+  
+  .form-group { text-align: left; margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--cinza-2); margin-bottom: 6px; text-transform: uppercase; }
+  .form-group input { width: 100%; padding: 12px; border: 1.5px solid var(--linha); border-radius: 8px; font-family: 'DM Sans'; font-size: 0.95rem; background: #f8fafc; }
+  .form-group input:focus { outline: none; border-color: var(--azul-claro); background: #fff; }
+  
+  .btn-gerar {
+    background: var(--azul); color: #fff; border: none; padding: 14px; width: 100%; border-radius: 8px; font-family: 'DM Sans'; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px;
+  }
+  .btn-gerar:hover { background: var(--azul-claro); }
+  .btn-gerar:disabled { background: #94a3b8; cursor: not-allowed; }
+  
+  #msgStatus { font-size: 0.85rem; margin-top: 16px; font-weight: 600; min-height: 20px; }
+  .sucesso { color: #16a34a; } .erro { color: #dc2626; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>📊 Relatórios de Presença</h1>
-  <div class="header-sub">Exportação por período · 3 abas (Resumo / Presentes / Ausentes)</div>
-</div>
-
-<div class="card">
-  <div class="linha-datas">
-    <div class="campo">
-      <label>Data inicial</label>
-      <input type="date" id="input-inicio">
-    </div>
-    <div class="campo">
-      <label>Data final</label>
-      <input type="date" id="input-fim">
-    </div>
+<div class="card-relatorio">
+  <h1>📊 Relatório de Presença</h1>
+  <p>Gere a planilha executiva de um período específico.</p>
+  
+  <div class="form-group">
+    <label>Data de Início</label>
+    <input type="date" id="dataInicio" required>
   </div>
-
-  <div class="campo">
-    <label>Turno</label>
-    <select id="input-turno">
-      <option value="ambos">Ambos os turnos</option>
-      <option value="mat">Somente Matutino</option>
-      <option value="ves">Somente Vespertino</option>
-    </select>
+  
+  <div class="form-group">
+    <label>Data Final</label>
+    <input type="date" id="dataFim" required>
   </div>
-
-  <button class="btn-gerar" id="btn-gerar" onclick="gerarRelatorio()">⬇ Gerar e Baixar Relatório (.xlsx)</button>
-
-  <div class="resumo-mini" id="resumo-mini" style="display:none;">
-    <div class="mini"><b id="mini-dias">0</b><span>Dias com chamada</span></div>
-    <div class="mini"><b id="mini-presentes">0</b><span>Presenças</span></div>
-    <div class="mini"><b id="mini-ausentes">0</b><span>Faltas</span></div>
-  </div>
-
-  <div class="status" id="status"></div>
+  
+  <button class="btn-gerar" id="btnGerar" onclick="gerarRelatorioPeriodo()">Baixar Relatório Excel</button>
+  <div id="msgStatus"></div>
 </div>
 
 <script type="module">
-  import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { db } from './firebase-config.js';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // Defaults: mês corrente
-  const hoje = new Date();
-  const primeiroDia = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-01`;
-  document.getElementById('input-inicio').value = primeiroDia;
-  document.getElementById('input-fim').value = dataHoje();
+  // Suas credenciais exatas
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
+    authDomain: "simplifica-timbo.firebaseapp.com",
+    projectId: "simplifica-timbo",
+    storageBucket: "simplifica-timbo.firebasestorage.app",
+    messagingSenderId: "651621474575",
+    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
+  };
 
-  function dataHoje() {
-    const y = hoje.getFullYear(), m = String(hoje.getMonth()+1).padStart(2,'0'), d = String(hoje.getDate()).padStart(2,'0');
-    return `${y}-${m}-${d}`;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function formatarDataBR(dataISO) {
+    const [a, m, d] = dataISO.split('-');
+    return `${d}/${m}/${a}`;
   }
 
-  function setStatus(msg, erro) {
-    const el = document.getElementById('status');
-    el.textContent = msg;
-    el.className = 'status' + (erro ? ' erro' : '');
+  function mostrarMensagem(texto, classe) {
+    const msg = document.getElementById('msgStatus');
+    msg.textContent = texto;
+    msg.className = classe;
   }
 
-  window.gerarRelatorio = async function() {
-    const inicio = document.getElementById('input-inicio').value;
-    const fim = document.getElementById('input-fim').value;
-    const turnoFiltro = document.getElementById('input-turno').value;
-    const btn = document.getElementById('btn-gerar');
+  window.gerarRelatorioPeriodo = async function() {
+    const dataInicio = document.getElementById('dataInicio').value;
+    const dataFim = document.getElementById('dataFim').value;
+    const btn = document.getElementById('btnGerar');
 
-    if (!inicio || !fim) { setStatus('Selecione as duas datas.', true); return; }
-    if (inicio > fim) { setStatus('Data inicial não pode ser depois da data final.', true); return; }
+    if (!dataInicio || !dataFim) {
+      mostrarMensagem("Por favor, preencha ambas as datas.", "erro");
+      return;
+    }
+    if (dataInicio > dataFim) {
+      mostrarMensagem("A data de início não pode ser maior que a final.", "erro");
+      return;
+    }
 
     btn.disabled = true;
-    setStatus('Consultando o banco de dados...');
+    btn.textContent = "⏳ Buscando dados na nuvem...";
+    mostrarMensagem("", "");
 
     try {
-      const ref = collection(db, "chamadas");
-      // data é string "YYYY-MM-DD", então comparação lexicográfica = comparação cronológica
-      const q = query(ref, where("data", ">=", inicio), where("data", "<=", fim));
-      const snap = await getDocs(q);
+      // 1. Busca os documentos no Firestore no intervalo selecionado
+      const chamadasRef = collection(db, "chamadas");
+      const q = query(chamadasRef, where("data", ">=", dataInicio), where("data", "<=", dataFim));
+      const querySnapshot = await getDocs(q);
 
-      if (snap.empty) {
-        setStatus('Nenhuma chamada encontrada nesse período.', true);
+      if (querySnapshot.empty) {
+        mostrarMensagem("Nenhum registro encontrado neste período.", "erro");
         btn.disabled = false;
+        btn.textContent = "Baixar Relatório Excel";
         return;
       }
 
-      // Estruturas de agregação
-      const porSetor = {}; // setor -> {presentes, ausentes}
-      const linhasPresentes = [];
-      const linhasAusentes = [];
-      const diasComChamada = new Set();
-      let totalPresentes = 0, totalAusentes = 0;
+      // 2. Processa os dados
+      let listaPresentes = [];
+      let listaAusentes = [];
+      let setoresMapa = {}; // Para agrupar o Resumo
 
-      snap.forEach(docSnap => {
-        const doc = docSnap.data();
-        if (turnoFiltro !== 'ambos' && doc.turno !== turnoFiltro) return;
+      querySnapshot.forEach((doc) => {
+        const dados = doc.data();
+        const dataFmt = formatarDataBR(dados.data);
+        const turnoFmt = dados.turno === 'mat' ? 'Matutino' : 'Vespertino';
 
-        diasComChamada.add(doc.data);
-        const turnoNome = doc.turno === 'mat' ? 'Matutino' : 'Vespertino';
-        const registros = doc.registros || {};
-
-        Object.values(registros).forEach(r => {
-          const setor = r.setor || 'Sem Setor';
-          if (!porSetor[setor]) porSetor[setor] = { presentes: 0, ausentes: 0 };
-
-          if (r.presente === true) {
-            porSetor[setor].presentes++;
-            totalPresentes++;
-            linhasPresentes.push([dataFormatada(doc.data), turnoNome, r.nome, r.cargo, setor, r.obs || '']);
-          } else if (r.presente === false) {
-            porSetor[setor].ausentes++;
-            totalAusentes++;
-            linhasAusentes.push([dataFormatada(doc.data), turnoNome, r.nome, r.cargo, setor, r.obs || '']);
-          }
-        });
+        if (dados.registros) {
+          Object.values(dados.registros).forEach(reg => {
+            // Conta totais por setor para a aba Resumo
+            if (!setoresMapa[reg.setor]) {
+              setoresMapa[reg.setor] = { total: 0, pres: 0, aus: 0 };
+            }
+            setoresMapa[reg.setor].total++;
+            
+            if (reg.presente === true) {
+              setoresMapa[reg.setor].pres++;
+              listaPresentes.push([dataFmt, turnoFmt, reg.nome, reg.cargo, reg.setor, reg.obs || '-']);
+            } else if (reg.presente === false) {
+              setoresMapa[reg.setor].aus++;
+              listaAusentes.push([dataFmt, turnoFmt, reg.nome, reg.cargo, reg.setor, reg.obs || '-']);
+            }
+          });
+        }
       });
 
-      // Ordena listas por data, depois setor, depois nome
-      const ordenar = (arr) => arr.sort((a,b) => (a[0]+a[4]+a[2]).localeCompare(b[0]+b[4]+b[2]));
-      ordenar(linhasPresentes);
-      ordenar(linhasAusentes);
+      // 3. Monta os dados para o Resumo
+      let linhasResumo = [];
+      let totGeral = 0, presGeral = 0, ausGeral = 0;
 
-      montarESalvarXLSX({ inicio, fim, turnoFiltro, porSetor, linhasPresentes, linhasAusentes, totalPresentes, totalAusentes });
+      Object.keys(setoresMapa).sort().forEach(setor => {
+        const s = setoresMapa[setor];
+        totGeral += s.total; presGeral += s.pres; ausGeral += s.aus;
+        const perc = s.total > 0 ? ((s.pres / s.total) * 100).toFixed(1) + '%' : '0%';
+        linhasResumo.push([setor, s.total, s.pres, s.aus, perc]);
+      });
+      const percGeral = totGeral > 0 ? ((presGeral / totGeral) * 100).toFixed(1) + '%' : '0%';
 
-      document.getElementById('mini-dias').textContent = diasComChamada.size;
-      document.getElementById('mini-presentes').textContent = totalPresentes;
-      document.getElementById('mini-ausentes').textContent = totalAusentes;
-      document.getElementById('resumo-mini').style.display = 'flex';
-      setStatus('✓ Relatório gerado e baixado com sucesso.');
+      btn.textContent = "🎨 Desenhando a planilha...";
 
-    } catch (e) {
-      console.error(e);
-      setStatus('Erro ao consultar o Firestore: ' + e.message, true);
+      // ==========================================
+      // 4. GERAÇÃO DO EXCEL COLORIDO (ExcelJS)
+      // ==========================================
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Simplifica Timbó';
+
+      // Estilos base
+      const fonteTitulo = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+      const fonteCabecalho = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+      const alinhamentoCentro = { vertical: 'middle', horizontal: 'center' };
+      const bordaFina = {
+        top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
+      };
+
+      // --- ABA 1: RESUMO ---
+      const wsResumo = workbook.addWorksheet('Resumo');
+      wsResumo.columns = [
+        { width: 30 }, { width: 20 }, { width: 15 }, { width: 15 }, { width: 15 }
+      ];
+      
+      // Título principal
+      wsResumo.mergeCells('A1:E1');
+      const celTituloResumo = wsResumo.getCell('A1');
+      celTituloResumo.value = `RELATÓRIO DE PRESENÇA (${formatarDataBR(dataInicio)} a ${formatarDataBR(dataFim)})`;
+      celTituloResumo.font = fonteTitulo;
+      celTituloResumo.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF1565A8' } }; // Azul
+      celTituloResumo.alignment = alinhamentoCentro;
+
+      // Subtítulo
+      wsResumo.mergeCells('A2:E2');
+      wsResumo.getCell('A2').value = 'Resumo por Setor';
+      wsResumo.getCell('A2').font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF1565A8' } };
+      wsResumo.getCell('A2').alignment = alinhamentoCentro;
+
+      // Cabeçalho da Tabela
+      const rowCabecalhoRes = wsResumo.addRow(['Setor', 'Total de Registros', 'Presentes', 'Ausentes', '% Presença']);
+      rowCabecalhoRes.eachCell(c => {
+        c.font = fonteCabecalho;
+        c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF475569' } }; // Cinza escuro
+        c.alignment = alinhamentoCentro;
+        c.border = bordaFina;
+      });
+
+      // Dados do Resumo
+      linhasResumo.forEach(r => {
+        const row = wsResumo.addRow(r);
+        row.eachCell(c => { c.border = bordaFina; c.alignment = alinhamentoCentro; });
+        row.getCell(1).alignment = { vertical: 'middle', horizontal: 'left' }; // Setor à esquerda
+      });
+
+      // Linha de Total
+      const rowTotal = wsResumo.addRow(['Totais Gerais', totGeral, presGeral, ausGeral, percGeral]);
+      rowTotal.eachCell(c => {
+        c.font = { bold: true };
+        c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FFF8FAFC' } };
+        c.border = bordaFina;
+        c.alignment = alinhamentoCentro;
+      });
+      rowTotal.getCell(1).alignment = { vertical: 'middle', horizontal: 'left' };
+
+      // --- FUNÇÃO PARA MONTAR AS ABAS PRESENTES E AUSENTES ---
+      function montarAbaNominal(nomeAba, dados, corHex) {
+        const ws = workbook.addWorksheet(nomeAba);
+        ws.columns = [
+          { width: 14 }, { width: 12 }, { width: 35 }, { width: 25 }, { width: 20 }, { width: 45 }
+        ];
+
+        ws.mergeCells('A1:F1');
+        ws.getCell('A1').value = `SERVIDORES ${nomeAba.toUpperCase()}`;
+        ws.getCell('A1').font = fonteTitulo;
+        ws.getCell('A1').fill = { type: 'pattern', pattern:'solid', fgColor:{ argb: corHex } };
+        ws.getCell('A1').alignment = alinhamentoCentro;
+
+        ws.mergeCells('A2:F2');
+        ws.getCell('A2').value = `Período: ${formatarDataBR(dataInicio)} a ${formatarDataBR(dataFim)}`;
+        ws.getCell('A2').font = { bold: true };
+        ws.getCell('A2').alignment = alinhamentoCentro;
+
+        const cabecalhoTexto = nomeAba === 'Presentes' ? 'Observação' : 'Justificativa / Observação';
+        const rowCabecalho = ws.addRow(['Data', 'Turno', 'Nome', 'Cargo', 'Setor', cabecalhoTexto]);
+        
+        rowCabecalho.eachCell(c => {
+          c.font = fonteCabecalho;
+          c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF475569' } };
+          c.alignment = alinhamentoCentro;
+          c.border = bordaFina;
+        });
+
+        // Habilita Filtro Automático
+        ws.autoFilter = 'A3:F3';
+
+        // Ordena por Data -> Setor -> Nome
+        dados.sort((a,b) => {
+          if (a[0] !== b[0]) return a[0].localeCompare(b[0]);
+          if (a[4] !== b[4]) return a[4].localeCompare(b[4]);
+          return a[2].localeCompare(b[2]);
+        });
+
+        dados.forEach(r => {
+          const row = ws.addRow(r);
+          row.eachCell((c, colNum) => {
+            c.border = bordaFina;
+            c.alignment = (colNum <= 2) ? alinhamentoCentro : { vertical: 'middle', horizontal: 'left' };
+          });
+        });
+      }
+
+      // Adiciona as abas coloridas
+      montarAbaNominal('Presentes', listaPresentes, 'FF16A34A'); // Verde corporativo
+      montarAbaNominal('Ausentes', listaAusentes, 'FFDC2626');  // Vermelho corporativo
+
+      // 5. SALVAR ARQUIVO
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, `Relatorio_Presenca_${dataInicio}_a_${dataFim}.xlsx`);
+
+      mostrarMensagem("✓ Relatório gerado com sucesso!", "sucesso");
+
+    } catch (error) {
+      console.error("Erro geral:", error);
+      mostrarMensagem("❌ Erro ao gerar planilha. Verifique o console.", "erro");
     } finally {
       btn.disabled = false;
+      btn.textContent = "Baixar Relatório Excel";
     }
   };
-
-  function dataFormatada(str) {
-    const [y,m,d] = str.split('-');
-    return `${d}/${m}/${y}`;
-  }
-
-  function montarESalvarXLSX({ inicio, fim, turnoFiltro, porSetor, linhasPresentes, linhasAusentes, totalPresentes, totalAusentes }) {
-    const turnoLabel = turnoFiltro === 'ambos' ? 'Ambos os turnos' : (turnoFiltro === 'mat' ? 'Matutino' : 'Vespertino');
-    const totalGeral = totalPresentes + totalAusentes;
-
-    // ---- ABA 1: RESUMO ----
-    const resumoData = [
-      ['RELATÓRIO GERENCIAL DE PRESENÇA POR PERÍODO', '', '', ''],
-      [`Período: ${dataFormatada(inicio)} a ${dataFormatada(fim)}`, '', `Turno: ${turnoLabel}`, ''],
-      ['', '', '', ''],
-      ['DADOS GERAIS', '', '', ''],
-      ['Métrica', 'Quantidade', '% do Total', ''],
-      ['Total de Marcações', totalGeral, '100%', ''],
-      ['Presenças', totalPresentes, totalGeral ? ((totalPresentes/totalGeral)*100).toFixed(1)+'%' : '0%', ''],
-      ['Faltas', totalAusentes, totalGeral ? ((totalAusentes/totalGeral)*100).toFixed(1)+'%' : '0%', ''],
-      ['', '', '', ''],
-      ['POR SETOR', '', '', ''],
-      ['Setor', 'Presentes', 'Ausentes', '% Presença no Setor']
-    ];
-
-    Object.keys(porSetor).sort().forEach(setor => {
-      const { presentes, ausentes } = porSetor[setor];
-      const totalSetor = presentes + ausentes;
-      const pct = totalSetor ? ((presentes/totalSetor)*100).toFixed(1)+'%' : '0%';
-      resumoData.push([setor, presentes, ausentes, pct]);
-    });
-
-    // ---- ABA 2: PRESENTES ----
-    const presentesData = [
-      ['SERVIDORES PRESENTES NO PERÍODO', '', '', '', '', ''],
-      ['Data', 'Turno', 'Nome', 'Cargo', 'Setor', 'Observação']
-    ];
-    linhasPresentes.forEach(l => presentesData.push(l));
-    if (linhasPresentes.length === 0) presentesData.push(['Nenhum registro no período', '', '', '', '', '']);
-
-    // ---- ABA 3: AUSENTES ----
-    const ausentesData = [
-      ['SERVIDORES AUSENTES / FALTAS NO PERÍODO', '', '', '', '', ''],
-      ['Data', 'Turno', 'Nome', 'Cargo', 'Setor', 'Justificativa / Observação']
-    ];
-    linhasAusentes.forEach(l => ausentesData.push(l));
-    if (linhasAusentes.length === 0) ausentesData.push(['Nenhum registro no período', '', '', '', '', '']);
-
-    const wb = XLSX.utils.book_new();
-
-    const addSheet = (dataArray, sheetName, colWidths, mergeCols) => {
-      const ws = XLSX.utils.aoa_to_sheet(dataArray);
-      ws['!cols'] = colWidths;
-      ws['!merges'] = [{ s: {r:0,c:0}, e: {r:0,c: mergeCols - 1} }];
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    };
-
-    addSheet(resumoData, "Resumo", [{wch:30},{wch:14},{wch:14},{wch:20}], 4);
-    addSheet(presentesData, "Presentes", [{wch:12},{wch:12},{wch:32},{wch:24},{wch:18},{wch:30}], 6);
-    addSheet(ausentesData, "Ausentes", [{wch:12},{wch:12},{wch:32},{wch:24},{wch:18},{wch:36}], 6);
-
-    const nomeArquivo = `Relatorio_Presenca_${inicio}_a_${fim}.xlsx`;
-    XLSX.writeFile(wb, nomeArquivo);
-  }
 </script>
 </body>
 </html>
