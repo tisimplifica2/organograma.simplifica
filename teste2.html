@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organograma — Simplifica Timbó</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #1565a8;
+    --azul-claro: #1e7ecf;
+    --azul-neon: #5ab4f0;
+    --fundo: #f0f5fb;
+    --fundo-escuro: #dce8f5;
+    --cinza: #2d3a4a;
+    --cinza-claro: #7a8fa6;
+    --branco: #ffffff;
+    --sombra: 0 4px 24px rgba(21,101,168,0.10);
+    --sombra-hover: 0 8px 32px rgba(21,101,168,0.18);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--fundo); color: var(--cinza); min-height: 100vh; }
+
+  header { background: var(--azul); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 70px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.15); }
+  .header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--branco); letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+  .header-logo span { background: var(--azul-neon); color: var(--azul); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .btn-header { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+  .btn-header:hover { background: rgba(255,255,255,0.25); }
+  .btn-admin { background: var(--azul-neon); color: var(--azul); border: none; padding: 7px 18px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-admin:hover { background: white; }
+
+  .hero { background: linear-gradient(135deg, var(--azul) 0%, #0f4a7a 100%); padding: 48px 40px 40px; color: white; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 300px; height: 300px; border-radius: 50%; background: rgba(90,180,240,0.1); }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; position: relative; }
+  .hero p { color: rgba(255,255,255,0.7); font-size: 0.95rem; position: relative; }
+  .hero-stats { display: flex; gap: 32px; margin-top: 24px; position: relative; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--azul-neon); line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+  .filtros-bar { background: white; border-bottom: 1px solid var(--fundo-escuro); padding: 12px 40px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .filtros-bar label { font-size: 0.8rem; color: var(--cinza-claro); margin-right: 4px; font-weight: 500; white-space: nowrap; }
+  .chip { padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--fundo-escuro); background: white; font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; color: var(--cinza); }
+  .chip:hover { border-color: var(--azul-claro); color: var(--azul); }
+  .chip.ativo { background: var(--azul); color: white; border-color: var(--azul); font-weight: 500; }
+
+  .busca-wrap { margin-left: auto; position: relative; }
+  .busca-input { padding: 6px 14px 6px 34px; border: 1.5px solid var(--fundo-escuro); border-radius: 20px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--cinza); background: var(--fundo); width: 200px; transition: all 0.2s; }
+  .busca-input:focus { outline: none; border-color: var(--azul-claro); background: white; width: 240px; }
+  .busca-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; pointer-events: none; }
+
+  .main { padding: 36px 40px; }
+
+  .avatar-img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; border-radius: inherit; }
+
+  .diretoria-card { background: white; border-radius: var(--radius); box-shadow: var(--sombra-hover); overflow: hidden; margin-bottom: 20px; border: 2px solid var(--azul-neon); }
+  .diretoria-header { background: linear-gradient(135deg, #0d3561 0%, var(--azul) 100%); padding: 16px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; transition: filter 0.2s; }
+  .diretoria-header:hover { filter: brightness(1.12); }
+  
+  .diretoria-avatar-wrap { width: 100px; height: 44px; border-radius: 8px; overflow: hidden; border: 2px solid var(--azul-neon); flex-shrink: 0; background: var(--branco); padding: 4px; display: flex; align-items: center; justify-content: center; }
+  .diretoria-avatar-wrap .avatar-img { object-fit: contain; }
+
+  .diretoria-titulo { font-family: 'Syne', sans-serif; font-size: 0.97rem; font-weight: 800; color: white; flex: 1; line-height: 1.2; }
+  .diretoria-subtitulo { font-size: 0.72rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+  .diretoria-toggle { color: rgba(255,255,255,0.8); font-size: 0.85rem; transition: transform 0.3s; }
+  .diretoria-card.aberto .diretoria-toggle { transform: rotate(180deg); }
+  .diretoria-body { display: none; }
+  .diretoria-card.aberto .diretoria-body { display: block; }
+
+  .setores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; align-items: start; }
+  .setor-card { background: white; border-radius: var(--radius); box-shadow: var(--sombra); overflow: hidden; }
+  .setor-card.sem-resultado { display: none; }
+  .setor-header { background: linear-gradient(135deg, var(--azul) 0%, #1257a0 100%); padding: 16px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; transition: filter 0.2s; }
+  .setor-header:hover { filter: brightness(1.1); }
+  
+  .setor-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+  .setor-icon-emoji { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); font-size: 1.3rem; }
+  .setor-icon-img { width: 90px; height: 40px; border-radius: 8px; background: var(--branco); border: 2px solid var(--azul-neon); padding: 3px; }
+  .setor-icon-img img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+  
+  .setor-titulo { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: white; line-height: 1.2; flex: 1; }
+  .setor-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .setor-count { font-size: 0.75rem; background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .setor-tag { font-size: 0.68rem; background: rgba(90,180,240,0.3); color: var(--azul-neon); padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .setor-toggle { color: rgba(255,255,255,0.8); font-size: 0.85rem; transition: transform 0.3s; }
+  .setor-card.aberto .setor-toggle { transform: rotate(180deg); }
+
+  .pessoas-lista { display: none; }
+  .setor-card.aberto .pessoas-lista { display: block; }
+
+  .pessoa-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; transition: background 0.15s; }
+  .pessoa-item:hover { background: var(--fundo); }
+  .pessoa-item + .pessoa-item { border-top: 1px solid var(--fundo-escuro); }
+  .pessoa-item.oculto-busca { display: none !important; }
+
+  .pessoa-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2.5px solid var(--fundo-escuro); flex-shrink: 0; background: var(--fundo-escuro); }
+  
+  .pessoa-info { flex: 1; min-width: 0; }
+  .pessoa-nome { font-weight: 600; font-size: 0.92rem; color: var(--cinza); }
+  .pessoa-cargo { font-size: 0.73rem; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
+  .pessoa-horario { font-size: 0.72rem; color: var(--azul-claro); margin-top: 3px; }
+  .pessoa-obs { font-size: 0.71rem; color: #92400e; margin-top: 3px; font-style: italic; background: #fef3c7; padding: 2px 6px; border-radius: 4px; display: inline-block; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .turno-badge { font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+  .turno-mat { background: #fff8e1; color: #b45309; }
+  .turno-ves { background: #ede9fe; color: #5b21b6; }
+  .turno-int { background: #dcfce7; color: #166534; }
+
+  body.filtro-mat .turno-ves-item, body.filtro-mat .turno-int-item { display: none; }
+  body.filtro-ves .turno-mat-item, body.filtro-ves .turno-int-item { display: none; }
+  body.filtro-int .turno-mat-item, body.filtro-int .turno-ves-item { display: none; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+  .modal-overlay.aberto { display: flex; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  .modal-perfil { background: white; border-radius: 24px; width: 90%; max-width: 480px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; overflow: hidden; max-height: 90vh; overflow-y: auto; }
+  .perfil-topo { background: linear-gradient(135deg, var(--azul) 0%, #0f4a7a 100%); padding: 32px 24px 24px; text-align: center; position: relative; }
+  .perfil-fechar { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+  .perfil-foto { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid white; margin: 0 auto 12px; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  .perfil-nome { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
+  .perfil-cargo { font-size: 0.8rem; color: var(--azul-neon); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .perfil-setor { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .perfil-body { padding: 20px 24px 24px; }
+  .perfil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .perfil-item.full { grid-column: 1 / -1; }
+  .perfil-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--cinza-claro); margin-bottom: 3px; font-weight: 600; }
+  .perfil-valor { font-size: 0.88rem; color: var(--cinza); font-weight: 500; background: var(--fundo); padding: 8px 12px; border-radius: 8px; word-break: break-word; }
+  .perfil-valor.vazio { color: var(--cinza-claro); font-style: italic; font-weight: 400; }
+  .perfil-acoes { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cracha { flex: 1; background: var(--azul); color: white; border: none; padding: 11px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .btn-cracha:hover { background: var(--azul-claro); }
+
+  .modal-login { background: white; border-radius: 20px; padding: 36px; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: slideUp 0.25s ease; }
+  .modal-login h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--azul); margin-bottom: 6px; }
+  .modal-login p { font-size: 0.88rem; color: var(--cinza-claro); margin-bottom: 24px; }
+  .modal-login input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--cinza); background: var(--fundo); margin-bottom: 12px; transition: border-color 0.2s; }
+  .modal-login input:focus { outline: none; border-color: var(--azul-claro); background: white; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-primary { flex: 1; background: var(--azul); color: white; border: none; padding: 12px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+  .btn-primary:hover { background: var(--azul-claro); }
+  .btn-secondary { background: var(--fundo); color: var(--cinza); border: none; padding: 12px 20px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; }
+  .erro-msg { color: #dc2626; font-size: 0.82rem; margin-top: -4px; margin-bottom: 8px; display: none; }
+
+  .painel { display: none; position: fixed; inset: 0; background: var(--fundo); z-index: 200; overflow-y: auto; }
+  .painel.aberto { display: block; }
+  .painel-header { background: var(--azul); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .painel-header h2 { font-family: 'Syne', sans-serif; font-weight: 800; color: white; font-size: 1.2rem; }
+  .btn-fechar { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; }
+  .btn-fechar:hover { background: rgba(255,255,255,0.3); }
+  .painel-body { padding: 32px 40px; max-width: 860px; }
+  .painel-body h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--azul); margin-bottom: 16px; margin-top: 36px; padding-bottom: 8px; border-bottom: 2px solid var(--fundo-escuro); }
+  .painel-body h3:first-child { margin-top: 0; }
+
+  .form-section { background: white; border-radius: var(--radius); padding: 24px; box-shadow: var(--sombra); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-full { grid-column: 1 / -1; }
+  .field-label { font-size: 0.72rem; font-weight: 600; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+
+  .form-section input, .form-section select, .form-section textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; background: var(--fundo); color: var(--cinza); transition: border-color 0.2s; }
+  .form-section textarea { resize: vertical; min-height: 72px; }
+  .form-section input:focus, .form-section select:focus, .form-section textarea:focus { outline: none; border-color: var(--azul-claro); background: white; }
+
+  .horario-bloco { background: var(--fundo); border-radius: 10px; padding: 14px 16px; border: 1.5px solid var(--fundo-escuro); }
+  .horario-bloco-titulo { font-size: 0.72rem; font-weight: 600; color: var(--cinza-claro); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .horario-linha { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .horario-linha:last-child { margin-bottom: 0; }
+  .horario-sep { font-size: 0.75rem; color: var(--cinza-claro); text-align: center; }
+  .horario-linha input[type=time] { background: white; padding: 8px 10px; }
+
+  .foto-upload-area { border: 2px dashed var(--fundo-escuro); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--fundo); position: relative; overflow: hidden; }
+  .foto-upload-area:hover { border-color: var(--azul-claro); background: #e8f2fb; }
+  .foto-upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .foto-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px; display: none; border: 3px solid var(--azul-neon); }
+  .foto-preview.visivel { display: block; }
+  .foto-upload-txt { font-size: 0.82rem; color: var(--cinza-claro); pointer-events: none; }
+  .foto-upload-txt strong { color: var(--azul); }
+
+  .btn-add { background: var(--azul); color: white; border: none; padding: 11px 24px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: background 0.2s; }
+  .btn-add:hover { background: var(--azul-claro); }
+
+  .lista-admin { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .item-admin { background: white; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .item-admin img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--fundo-escuro); flex-shrink: 0; background: white; }
+  .item-admin-info { flex: 1; min-width: 0; }
+  .item-admin-info strong { font-size: 0.88rem; font-weight: 600; color: var(--cinza); display: block; }
+  .item-admin-info span { font-size: 0.75rem; color: var(--cinza-claro); }
+  .btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
+  .btn-del:hover { background: #fecaca; }
+  .btn-edit { background: #e0f0ff; color: var(--azul); border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; flex-shrink: 0; margin-right: 6px; }
+  .btn-edit:hover { background: #c7e2fa; }
+  .item-admin-acoes { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
+
+  .filtro-admin-wrap select { padding: 8px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; background: white; color: var(--cinza); max-width: 300px; width: 100%; margin-bottom: 4px; }
+  .btn-salvar-tudo { background: var(--azul-neon); color: var(--azul); border: none; padding: 14px 32px; border-radius: 12px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 32px; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .btn-salvar-tudo:hover { background: white; box-shadow: var(--sombra-hover); }
+  .btn-salvar-tudo:disabled { opacity: 0.6; cursor: not-allowed; }
+  .aviso-salvar { padding: 12px 16px; border-radius: 10px; font-size: 0.85rem; margin-top: 16px; display: none; }
+  .aviso-salvar.sucesso { background: var(--fundo-escuro); color: var(--azul); }
+  .aviso-salvar.erro { background: #fee2e2; color: #dc2626; }
+
+  .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(240,245,251,0.9); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+  .loading-overlay.ativo { display: flex; }
+  .spinner { width: 48px; height: 48px; border: 4px solid var(--fundo-escuro); border-top-color: var(--azul); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--azul); font-size: 0.9rem; }
+
+  #crachaContainer { position: fixed; left: -9999px; top: 0; }
+  .cracha { width: 340px; background: white; border-radius: 20px; overflow: hidden; font-family: 'DM Sans', sans-serif; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .cracha-topo { background: linear-gradient(135deg, #1565a8 0%, #0f4a7a 100%); padding: 30px 20px 24px; text-align: center; }
+  .cracha-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.85rem; color: white; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .cracha-logo-badge { background: #5ab4f0; color: #1565a8; padding: 2px 7px; border-radius: 5px; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; }
+  .cracha-foto-wrap { width: 112px; height: 112px; margin: 0 auto 16px; border-radius: 50%; background: #eaf1fa; border: 4px solid white; box-shadow: 0 4px 16px rgba(0,0,0,0.2); overflow: hidden; }
+  .cracha-foto { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+  .cracha-nome { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; color: white; line-height: 1.15; }
+  .cracha-cargo { display: inline-block; margin-top: 10px; background: #5ab4f0; color: #0f4a7a; font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.1px; padding: 6px 18px; border-radius: 20px; }
+  .cracha-corpo { padding: 20px 20px 22px; }
+  .cracha-setor-box { background: #f0f5fb; border-radius: 10px; padding: 12px 16px; text-align: center; }
+  .cracha-setor-label { font-size: 0.63rem; font-weight: 700; color: #7a8fa6; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+  .cracha-setor-valor { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 800; color: #1565a8; }
+  .cracha-info { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .cracha-info:empty { margin-top: 0; }
+  .cracha-campo { background: #f0f5fb; border-radius: 8px; padding: 8px 12px; }
+  .cracha-campo-label { font-size: 0.63rem; font-weight: 700; color: #7a8fa6; text-transform: uppercase; letter-spacing: 0.6px; }
+  .cracha-campo-valor { font-size: 0.82rem; font-weight: 600; color: #2d3a4a; margin-top: 2px; }
+  .cracha-rodape { background: #f0f5fb; padding: 10px 20px; text-align: center; font-size: 0.68rem; color: #7a8fa6; border-top: 1px solid #dce8f5; }
+
+  footer { background: var(--azul); color: rgba(255,255,255,0.6); text-align: center; padding: 24px; font-size: 0.8rem; margin-top: 48px; }
+  footer strong { color: white; }
+  .footer-dev { font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 8px; }
+  .footer-dev a { color: var(--azul-neon); text-decoration: none; font-weight: bold; transition: color 0.2s; }
+  .footer-dev a:hover { color: white; text-decoration: underline; }
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-shadow: none !important; text-shadow: none !important; }
+    header, .hero, .filtros-bar, footer, .modal-overlay, .painel, #crachaContainer, .setor-toggle { display: none !important; }
+    body { background: white !important; color: black !important; }
+    .main { padding: 0; display: block; }
+    .setores-grid { display: block !important; } 
+    .setor-card { margin-bottom: 20px; border: 1px solid #ddd !important; page-break-inside: avoid; break-inside: avoid; display: block !important; }
+    .setor-header { background: #f0f5fb !important; color: #1565a8 !important; border-bottom: 1px solid #ccc !important; }
+    .setor-titulo, .setor-count { color: #1565a8 !important; }
+    .pessoas-lista { display: block !important; }
+    .pessoa-item { page-break-inside: avoid; break-inside: avoid; border-top: 1px solid #eee !important; }
+    .pessoa-avatar { border: 1px solid #ccc !important; }
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 0 16px; }
+    .hero { padding: 28px 16px 24px; }
+    .hero h1 { font-size: 1.6rem; }
+    .filtros-bar { padding: 10px 16px; }
+    .busca-wrap { margin-left: 0; width: 100%; }
+    .busca-input { width: 100% !important; }
+    .main { padding: 20px 12px; }
+    .setores-grid { grid-template-columns: 1fr; }
+    .painel-body { padding: 20px 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-full { grid-column: 1; }
+    .perfil-grid { grid-template-columns: 1fr; }
+    .perfil-item.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loadingTxt">Carregando organograma...</div>
+</div>
+
+<div id="crachaContainer">
+  <div class="cracha" id="crachaEl">
+    <div class="cracha-topo">
+      <div class="cracha-logo">Simplifica Timbó <span class="cracha-logo-badge">CRACHÁ</span></div>
+      <div class="cracha-foto-wrap"><img class="cracha-foto" id="crachaFoto" src="" alt="" crossorigin="anonymous"></div>
+      <div class="cracha-nome" id="cachaNome"></div>
+      <div class="cracha-cargo" id="cachaCargo"></div>
+    </div>
+    <div class="cracha-corpo">
+      <div class="cracha-setor-box">
+        <div class="cracha-setor-label">Setor</div>
+        <div class="cracha-setor-valor" id="cachaSetor"></div>
+      </div>
+      <div class="cracha-info" id="cachaInfo"></div>
+    </div>
+    <div class="cracha-rodape">Rua Japão, 408 · Bairro das Nações · (47) 3380-7900</div>
+  </div>
+</div>
+
+<header>
+  <div class="header-logo">Simplifica Timbó <span>Organograma</span></div>
+  <div class="header-actions">
+    <button class="btn-header" onclick="window.open('ramais.html','_blank')">📞 Ramais</button>
+    <button class="btn-header" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn-admin" onclick="abrirLogin()">⚙️ Admin</button>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Equipe Simplifica Timbó</h1>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num" id="totalPessoas">—</div><div class="stat-label">Colaboradores</div></div>
+    <div class="stat"><div class="stat-num" id="totalSetores">—</div><div class="stat-label">Setores</div></div>
+  </div>
+</div>
+
+<div class="filtros-bar">
+  <button class="chip ativo" onclick="filtrar('todos',this)">Todos</button>
+  <div class="busca-wrap">
+    <span class="busca-icon">🔍</span>
+    <input class="busca-input" id="buscaInput" type="text" placeholder="Buscar por nome..." oninput="buscarPessoa(this.value)">
+  </div>
+</div>
+
+<div class="main">
+  <div class="diretoria-card" id="diretoriaCard">
+    <div class="diretoria-header" onclick="toggleDiretoria()">
+      <div class="diretoria-avatar-wrap">
+        <img id="fotoDiretor" class="avatar-img" src="" alt="Capa" onerror="this.src='https://ui-avatars.com/api/?name=D&background=1565a8&color=fff'">
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="diretoria-titulo">Simplifica — Diretoria</div>
+        <div class="diretoria-subtitulo" id="diretorCargoCard">Diretor</div>
+      </div>
+      <span class="setor-count">1 pessoa</span>
+      <span class="diretoria-toggle">▼</span>
+    </div>
+    <div class="diretoria-body">
+      <div class="pessoa-item" onclick="abrirPerfilDiretor()">
+        <img id="fotoDiretorInner" class="pessoa-avatar avatar-img" src="" alt="Perfil" onerror="this.src='https://ui-avatars.com/api/?name=D&background=1565a8&color=fff'" loading="lazy">
+        <div class="pessoa-info">
+          <div class="pessoa-nome" id="diretorNomeCard">—</div>
+          <div class="pessoa-cargo" id="diretorCargoInner">Diretor</div>
+        </div>
+        <span class="turno-badge turno-int" id="diretorTurnoBadge">🕐 Int.</span>
+      </div>
+    </div>
+  </div>
+  <div class="setores-grid" id="setoresGrid"></div>
+</div>
+
+<div class="modal-overlay" id="modalPerfil">
+  <div class="modal-perfil">
+    <div class="perfil-topo">
+      <button class="perfil-fechar" onclick="fecharPerfil()">✕</button>
+      <img class="perfil-foto avatar-img" id="perfilFoto" src="" alt="" style="display:block; width:130px; height:130px; margin:0 auto 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+      <div class="perfil-nome" id="perfilNome"></div>
+      <div class="perfil-cargo" id="perfilCargo"></div>
+      <div class="perfil-setor" id="perfilSetor"></div>
+    </div>
+    <div class="perfil-body">
+      <div class="perfil-grid" id="perfilGrid"></div>
+      <div class="perfil-acoes">
+        <button class="btn-cracha" id="btnDownloadCracha" onclick="downloadCracha()">🪪 Baixar Crachá</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalEditarSetor">
+  <div class="modal-perfil" style="max-width:500px">
+    <div class="perfil-topo">
+      <button class="perfil-fechar" onclick="fecharEditarSetor()">✕</button>
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-top:8px">✏️ Editar Setor</div>
+    </div>
+    <div class="perfil-body">
+      <div class="field-label">Foto do Setor</div>
+      <div class="foto-upload-area" style="margin-bottom:12px">
+        <input type="file" id="editSetorFotoArq" accept="image/*" onchange="previewFotoSetorEdit(this)">
+        <img class="foto-preview" id="editSetorFotoPrev" src="" alt="Preview">
+        <div class="foto-upload-txt" id="editSetorFotoTxt"><strong>Clique para trocar</strong></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-full">
+          <div class="field-label">Nome do Setor</div>
+          <input type="text" id="editSetorNome">
+        </div>
+        <div>
+          <div class="field-label">Ícone (Emoji)</div>
+          <input type="text" id="editSetorIcone">
+        </div>
+        <div>
+          <div class="field-label">Tipo</div>
+          <select id="editSetorParceiro">
+            <option value="false">Próprio</option>
+            <option value="true">Parceiro</option>
+          </select>
+        </div>
+      </div>
+      <div class="perfil-acoes" style="margin-top:20px">
+        <button class="btn-cracha" onclick="salvarEdicaoSetor()" style="background:var(--azul)">💾 Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalEditarPessoa">
+  <div class="modal-perfil" style="max-width:520px">
+    <div class="perfil-topo">
+      <button class="perfil-fechar" onclick="fecharEditarPessoa()">✕</button>
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-top:8px">✏️ Editar Pessoa</div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:4px" id="editarPessoaSubtitle"></div>
+    </div>
+    <div class="perfil-body">
+      <div class="field-label" style="margin-bottom:8px">Foto</div>
+      <div class="foto-upload-area" style="margin-bottom:12px">
+        <input type="file" id="editarFotoArquivo" accept="image/*" onchange="previewFotoEditar(this)">
+        <img class="foto-preview" id="editarFotoPreview" src="" alt="Preview">
+        <div class="foto-upload-txt" id="editarFotoUploadTxt"><strong>Clique para trocar a foto</strong><br>JPG, PNG ou WEBP</div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div class="field-label">Ou URL da foto</div>
+        <input type="text" id="editarFotoUrl" placeholder="https://..." style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+      </div>
+      <div class="perfil-grid" style="gap:12px">
+        <div><div class="field-label">Nome</div><input type="text" id="editarNome" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">Cargo</div><input type="text" id="editarCargo" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div>
+          <div class="field-label">Setor</div>
+          <select id="editarSetor" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"><option value="">Selecione</option></select>
+        </div>
+        <div>
+          <div class="field-label">Turno</div>
+          <select id="editarTurno" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)">
+            <option value="">Sem turno fixo</option>
+            <option value="mat">☀️ Matutino</option>
+            <option value="ves">🌇 Vespertino</option>
+            <option value="int">🕐 Integral</option>
+          </select>
+        </div>
+        <div class="perfil-item full" style="grid-column:1/-1">
+          <div class="field-label" style="margin-bottom:8px">Horário</div>
+          <div class="horario-bloco">
+            <div class="horario-bloco-titulo">⏰ Manhã</div>
+            <div class="horario-linha"><input type="time" id="editarHoraInicio"><span class="horario-sep">até</span><input type="time" id="editarHoraAlmocoInicio"></div>
+            <div class="horario-bloco-titulo" style="margin-top:8px">🍽️ Tarde</div>
+            <div class="horario-linha"><input type="time" id="editarHoraAlmocoFim"><span class="horario-sep">até</span><input type="time" id="editarHoraFim"></div>
+          </div>
+        </div>
+        <div><div class="field-label">Matrícula</div><input type="text" id="editarMatricula" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">Telefone</div><input type="text" id="editarTelefone" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">CPF</div><input type="text" id="editarCpf" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div><div class="field-label">Nascimento</div><input type="date" id="editarNascimento" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza)"></div>
+        <div class="perfil-item full" style="grid-column:1/-1">
+          <div class="field-label">Observação</div>
+          <textarea id="editarObs" style="width:100%;padding:10px 14px;border:1.5px solid var(--fundo-escuro);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--fundo);color:var(--cinza);resize:vertical;min-height:60px"></textarea>
+        </div>
+      </div>
+      <div class="perfil-acoes" style="margin-top:20px">
+        <button class="btn-cracha" onclick="salvarEdicaoPessoa()" style="background:var(--azul)">💾 Salvar Alterações</button>
+        <button class="btn-cracha" onclick="fecharEditarPessoa()" style="background:var(--cinza-claro);flex:0;padding:11px 20px; color: var(--cinza)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal-login">
+    <h2>🔐 Área Administrativa</h2>
+    <input type="password" id="senhaInput" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha()">
+    <div class="erro-msg" id="erroSenha">Senha incorreta.</div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="verificarSenha()">Entrar</button>
+      <button class="btn-secondary" onclick="fecharLogin()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalConfirmarSaida">
+  <div class="modal-login" style="text-align: center; max-width: 350px;">
+    <h2>Salvar alterações?</h2>
+    <p>Deseja salvar no Firebase antes de sair?</p>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top:20px">
+      <button class="btn-primary" onclick="salvarTudo().then(() => { fecharPainelDireto(); fecharConfirmacao(); })">Sim, salvar e sair</button>
+      <button class="btn-secondary" style="background: #fee2e2; color: #dc2626;" onclick="fecharPainelDireto(); fecharConfirmacao();">Sair sem salvar</button>
+      <button class="btn-secondary" onclick="fecharConfirmacao()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="painel" id="painelAdmin">
+  <div class="painel-header">
+    <h2>⚙️ Painel Administrativo</h2>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-admin" id="btnSalvarTopo" onclick="salvarTudo()" style="background:var(--azul-neon); color:var(--azul)">💾 Salvar</button>
+      <button class="btn-fechar" onclick="fecharPainelComConfirmacao()">✕ Fechar</button>
+    </div>
+  </div>
+  <div class="painel-body">
+    <h3>👤 Editar Diretor</h3>
+    <div class="form-section">
+      <div style="background: var(--fundo-escuro); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+        <div class="field-label">Foto de Capa (Logotipo do Card)</div>
+        <input type="text" id="diretorFotoCapaUrl" placeholder="URL da Logo" style="width: 100%; padding: 10px 14px; border: 1.5px solid white; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; margin-top: 5px;">
+      </div>
+      <div class="field-label">Foto de Perfil Pessoal</div>
+      <div class="foto-upload-area">
+        <input type="file" onchange="previewFotoDiretor(this)">
+        <img class="foto-preview" id="diretorFotoPreview" src="">
+        <div class="foto-upload-txt">Clique para escolher a foto</div>
+      </div>
+      <div style="margin-top:10px;margin-bottom:20px">
+        <div class="field-label">Ou cole a URL da foto</div>
+        <input type="text" id="diretorFotoUrl" placeholder="https://..." style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--fundo-escuro); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; background: var(--fundo); color: var(--cinza);">
+      </div>
+      <div class="form-grid">
+        <div><div class="field-label">Nome *</div><input type="text" id="diretorNome" placeholder="Nome do diretor"></div>
+        <div><div class="field-label">Cargo</div><input type="text" id="diretorCargo" placeholder="Ex: Diretor"></div>
+        <div>
+          <div class="field-label">Turno</div>
+          <select id="diretorTurno">
+            <option value="">Sem turno fixo</option>
+            <option value="mat">☀️ Matutino</option>
+            <option value="ves">🌇 Vespertino</option>
+            <option value="int">🕐 Integral</option>
+          </select>
+        </div>
+        <div><div class="field-label">Matrícula</div><input type="text" id="diretorMatricula" placeholder="Número de matrícula"></div>
+        <div><div class="field-label">Telefone</div><input type="text" id="diretorTelefone" placeholder="(47) 9 9999-9999"></div>
+        <div><div class="field-label">CPF</div><input type="text" id="diretorCpf" placeholder="000.000.000-00"></div>
+        <div><div class="field-label">Data de nascimento</div><input type="date" id="diretorNascimento"></div>
+        <div class="form-full">
+          <div class="field-label" style="margin-bottom:8px">Horário de trabalho</div>
+          <div class="horario-bloco">
+            <div class="horario-bloco-titulo">⏰ Período manhã</div>
+            <div class="horario-linha">
+              <input type="time" id="diretorHoraInicio">
+              <span class="horario-sep">até</span>
+              <input type="time" id="diretorHoraAlmocoInicio">
+            </div>
+            <div class="horario-bloco-titulo" style="margin-top:10px">🍽️ Retorno do almoço até saída</div>
+            <div class="horario-linha">
+              <input type="time" id="diretorHoraAlmocoFim">
+              <span class="horario-sep">até</span>
+              <input type="time" id="diretorHoraFim">
+            </div>
+          </div>
+        </div>
+        <div class="form-full">
+          <div class="field-label">Observação</div>
+          <textarea id="diretorObs" placeholder="Observações sobre o diretor..."></textarea>
+        </div>
+        <div class="form-full"><button class="btn-add" onclick="salvarDiretor()" style="width:100%">💾 Atualizar Pré-visualização</button></div>
+      </div>
+    </div>
+
+    <h3>🏢 Setores cadastrados</h3>
+    <div class="lista-admin" id="listaSetoresAdmin"></div>
+    <div class="form-section" style="margin-top:15px">
+      <div class="field-label">Adicionar Novo Setor</div>
+      <div class="form-grid">
+        <input type="text" id="novoSetorNome" placeholder="Nome">
+        <input type="text" id="novoSetorIcone" placeholder="Icone (Emoji)">
+        <div class="form-full">
+          <div class="field-label" style="margin-bottom:6px">Foto do setor (substitui o emoji)</div>
+          <div class="foto-upload-area">
+            <input type="file" id="setorFotoArquivo" accept="image/*" onchange="previewFotoSetor(this)">
+            <img class="foto-preview" id="setorFotoPreview" src="" alt="Preview">
+            <div class="foto-upload-txt" id="setorFotoUploadTxt"><strong>Clique para escolher uma foto</strong><br>JPG, PNG ou WEBP</div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="field-label">Ou cole URL da imagem do setor</div>
+            <input type="text" id="novoSetorFotoUrl" placeholder="https://...">
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Tipo</div>
+          <select id="novoSetorParceiro">
+            <option value="">Setor próprio</option>
+            <option value="parceiro">Parceiro</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn-add" onclick="adicionarSetor()" style="width:100%">+ Adicionar Setor</button>
+        </div>
+      </div>
+    </div>
+
+    <h3>➕ Adicionar Pessoa</h3>
+    <div class="form-section">
+      <div class="field-label" style="margin-bottom:8px">Foto da pessoa</div>
+      <div class="foto-upload-area">
+        <input type="file" id="fotoArquivo" accept="image/*" onchange="previewFoto(this)">
+        <img class="foto-preview" id="fotoPreview" src="" alt="Preview">
+        <div class="foto-upload-txt" id="fotoUploadTxt"><strong>Clique para escolher uma foto</strong><br>JPG, PNG ou WEBP</div>
+      </div>
+      <div style="margin-top:10px;margin-bottom:20px">
+        <div class="field-label">Ou cole a URL de uma foto</div>
+        <input type="text" id="novaFotoUrl" placeholder="https://...">
+      </div>
+
+      <div class="form-grid">
+        <div><div class="field-label">Nome *</div><input type="text" id="novaNome" placeholder="Nome completo"></div>
+        <div><div class="field-label">Cargo *</div><input type="text" id="novaCargo" placeholder="Ex: ESTAGIÁRIA"></div>
+        <div>
+          <div class="field-label">Setor *</div>
+          <select id="novoSetor"><option value="">Selecione o setor</option></select>
+        </div>
+        <div>
+          <div class="field-label">Turno</div>
+          <select id="novoTurno">
+            <option value="">Sem turno fixo</option>
+            <option value="mat">☀️ Matutino</option>
+            <option value="ves">🌇 Vespertino</option>
+            <option value="int">🕐 Integral</option>
+          </select>
+        </div>
+
+        <div class="form-full">
+          <div class="field-label" style="margin-bottom:8px">Horário de trabalho</div>
+          <div class="horario-bloco">
+            <div class="horario-bloco-titulo">⏰ Período manhã</div>
+            <div class="horario-linha">
+              <input type="time" id="novoHoraInicio">
+              <span class="horario-sep">até</span>
+              <input type="time" id="novoHoraAlmocoInicio">
+            </div>
+            <div class="horario-bloco-titulo" style="margin-top:10px">🍽️ Retorno do almoço até saída</div>
+            <div class="horario-linha">
+              <input type="time" id="novoHoraAlmocoFim">
+              <span class="horario-sep">até</span>
+              <input type="time" id="novoHoraFim">
+            </div>
+          </div>
+        </div>
+
+        <div><div class="field-label">Matrícula</div><input type="text" id="novaMatricula" placeholder="Número de matrícula"></div>
+        <div><div class="field-label">Telefone</div><input type="text" id="novoTelefone" placeholder="(47) 9 9999-9999"></div>
+        <div><div class="field-label">CPF</div><input type="text" id="novaCpf" placeholder="000.000.000-00"></div>
+        <div><div class="field-label">Data de nascimento</div><input type="date" id="novaNascimento"></div>
+
+        <div class="form-full">
+          <div class="field-label">Observação</div>
+          <textarea id="novaObs" placeholder="Ex: Responsável pela recepção..."></textarea>
+        </div>
+
+        <div class="form-full" style="margin-top:4px">
+          <button class="btn-add" onclick="adicionarPessoa()" style="width:100%">+ Adicionar Pessoa</button>
+        </div>
+      </div>
+    </div>
+
+    <h3>👥 Pessoas cadastradas</h3>
+    <div class="filtro-admin-wrap">
+      <select id="filtroSetorAdmin" onchange="renderListaAdmin()"><option value="">Todos os setores</option></select>
+    </div>
+    <div class="lista-admin" id="listaAdmin"></div>
+    
+    <button class="btn-salvar-tudo" onclick="salvarTudo()" id="btnSalvar">💾 Salvar no Firebase</button>
+    <div class="aviso-salvar" id="avisoSalvar"></div>
+  </div>
+</div>
+
+<footer>
+  <strong>Simplifica Timbó</strong> — Rua Japão, 408 - Bairro das Nações · (47) 3380-7900
+  <div class="footer-dev">Desenvolvido com 💻 por <a href="https://github.com/Kirby6567" target="_blank">Cristhian Lucinger (@Kirby6567)</a></div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script type="module">
+// Importa as funções que o HTML vai precisar usar do Firebase
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  // Importa a sua conexão pronta do arquivo que você criou no Passo 1
+  import { db, auth } from './firebase-config.js';
+  const BASE = "https://tisimplifica2.github.io/imagens/";
+
+  let setores=[], pessoas=[], fotoBase64='', fotoBase64SetorEdit='', fotoBase64Diretor='', pessoaAtualIdx=-1;
+
+  let diretor = {
+    nome: 'Murilo', cargo: 'Diretor',
+    foto: 'https://tisimplifica2.github.io/imagens/murilo.jpg', fotoCapa: '',
+    turno:'int', horaInicio:'08:00', horaAlmocoInicio:'12:00', horaAlmocoFim:'13:00', horaFim:'17:00',
+    matricula:'', cpf:'', nascimento:'', telefone:'', obs:''
+  };
+
+  function avatarUrl(nome, foto) {
+    if (foto) return foto;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=eaf1fa&color=1565a8&size=128&bold=true`;
+  }
+
+  function fmtHorario(mb) {
+    if (!mb.horaInicio) return null;
+    const h = t => t ? t.replace(':','h') : '';
+    if (mb.horaAlmocoInicio && mb.horaAlmocoFim) {
+      return `${h(mb.horaInicio)}–${h(mb.horaAlmocoInicio)} / ${h(mb.horaAlmocoFim)}–${h(mb.horaFim)}`;
+    }
+    return `${h(mb.horaInicio)}–${h(mb.horaFim)}`;
+  }
+
+  function fmtData(d) { if (!d) return null; const [a,m,dia]=d.split('-'); return `${dia}/${m}/${a}`; }
+  
+  function loading(show, txt) {
+    document.getElementById('loadingTxt').textContent=txt||'Carregando...';
+    document.getElementById('loadingOverlay').classList.toggle('ativo',show);
+  }
+
+  async function carregarDados() {
+    loading(true, 'Sincronizando banco...');
+    try {
+      const snap = await getDoc(doc(db, "organograma", "dados"));
+      if (snap.exists()) {
+        const d = snap.data();
+        setores = d.setores || [];
+        pessoas = d.pessoas || [];
+        diretor = d.diretor || diretor;
+      }
+    } catch(e) { console.error("Erro ao carregar do Firebase:", e); }
+    loading(false); renderOrganograma();
+  }
+
+  window.salvarTudo = async function() {
+    const btn = document.getElementById('btnSalvar'), btnTopo = document.getElementById('btnSalvarTopo'), aviso = document.getElementById('avisoSalvar');
+    if(btn) { btn.disabled = true; btn.textContent = 'Gravando...'; }
+    if(btnTopo) { btnTopo.disabled = true; btnTopo.textContent = 'Gravando...'; }
+    if(aviso) aviso.style.display = 'none';
+    
+    try {
+      await setDoc(doc(db, "organograma", "dados"), { setores, pessoas, diretor });
+      if(aviso) { aviso.textContent='✅ Salvo! Todos os visitantes já verão as mudanças.'; aviso.className='aviso-salvar sucesso'; aviso.style.display='block'; }
+    } catch (e) {
+      if(aviso) { aviso.textContent='❌ Erro ao salvar. Verifique a conexão.'; aviso.className='aviso-salvar erro'; aviso.style.display='block'; }
+    }
+    
+    if(btn) { btn.disabled = false; btn.textContent = '💾 Salvar no Firebase'; }
+    if(btnTopo) { btnTopo.disabled = false; btnTopo.textContent = '💾 Salvar'; }
+    if(aviso) setTimeout(()=>aviso.style.display='none',5000);
+  };
+
+  function renderOrganograma() {
+    const grid = document.getElementById('setoresGrid');
+    grid.innerHTML = '';
+    document.getElementById('totalPessoas').textContent = pessoas.length;
+    document.getElementById('totalSetores').textContent = setores.length;
+
+    const fotoSrcCapa = diretor.fotoCapa || diretor.foto || avatarUrl(diretor.nome, '');
+    const fotoSrcInner = diretor.foto || avatarUrl(diretor.nome, '');
+    const fdHeader = document.getElementById('fotoDiretor');
+    const fdBody   = document.getElementById('fotoDiretorInner');
+    fdHeader.src = fotoSrcCapa; fdHeader.onerror = () => { fdHeader.src = avatarUrl(diretor.nome, ''); };
+    fdBody.src = fotoSrcInner; fdBody.onerror = () => { fdBody.src = avatarUrl(diretor.nome, ''); };
+    document.getElementById('diretorNomeCard').textContent = diretor.nome || 'Diretor';
+    document.getElementById('diretorCargoCard').textContent = diretor.cargo || 'Diretor';
+    document.getElementById('diretorCargoInner').textContent = diretor.cargo || 'Diretor';
+    const tb = document.getElementById('diretorTurnoBadge');
+    if (diretor.turno === 'mat') { tb.className = 'turno-badge turno-mat'; tb.textContent = '☀️ Mat.'; }
+    else if (diretor.turno === 'ves') { tb.className = 'turno-badge turno-ves'; tb.textContent = '🌇 Ves.'; }
+    else if (diretor.turno === 'int') { tb.className = 'turno-badge turno-int'; tb.textContent = '🕐 Int.'; }
+    else { tb.className = ''; tb.textContent = ''; }
+
+    setores.forEach((s, idx) => {
+      const membros = pessoas.filter(p => p.setor === s.id);
+      if (!membros.length) return;
+      const card = document.createElement('div'); card.className = 'setor-card'; card.dataset.setorId = s.id;
+      const tagHTML = s.parceiro ? `<span class="setor-tag">Parceiro</span>` : '';
+      
+      const isImg = !!s.foto;
+      const iconeClass = isImg ? 'setor-icon setor-icon-img' : 'setor-icon setor-icon-emoji';
+      const iconeHTML = isImg ? `<img src="${s.foto}" alt="${s.nome}">` : (s.icone || '📁');
+
+      const pessoasHTML = membros.map(mb => {
+        const turnoClass = mb.turno==='mat'?'turno-mat-item':mb.turno==='ves'?'turno-ves-item':mb.turno==='int'?'turno-int-item':'';
+        const turnoLabel = mb.turno==='mat'?'<span class="turno-badge turno-mat">☀️ Mat.</span>':mb.turno==='ves'?'<span class="turno-badge turno-ves">🌇 Ves.</span>':mb.turno==='int'?'<span class="turno-badge turno-int">🕐 Int.</span>':'';
+        const hor=fmtHorario(mb); const horHTML=hor?`<div class="pessoa-horario">🕐 ${hor}</div>`:'';
+        const obsHTML=mb.obs?`<div class="pessoa-obs">📌 ${mb.obs}</div>`:'';
+        const pIdx = pessoas.indexOf(mb);
+        return `<div class="pessoa-item ${turnoClass}" data-nome="${(mb.nome||'').toLowerCase()}" onclick="abrirPerfil(${pIdx})">
+          <img class="pessoa-avatar avatar-img" src="${avatarUrl(mb.nome,mb.foto)}" alt="${mb.nome}" onerror="this.src='${avatarUrl(mb.nome,'')}'" loading="lazy">
+          <div class="pessoa-info"><div class="pessoa-nome">${mb.nome}</div><div class="pessoa-cargo">${mb.cargo}</div>${horHTML}${obsHTML}</div>
+          ${turnoLabel}
+        </div>`;
+      }).join('');
+
+      card.innerHTML = `<div class="setor-header" onclick="toggleSetor(this)"><div class="${iconeClass}">${iconeHTML}</div><div class="setor-titulo">${s.nome}</div><div class="setor-meta"><span class="setor-count">${membros.length} pessoa${membros.length>1?'s':''}</span>${tagHTML}<span class="setor-toggle">▼</span></div></div><div class="pessoas-lista">${pessoasHTML}</div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  window.toggleDiretoria = () => document.getElementById('diretoriaCard').classList.toggle('aberto');
+  window.toggleSetor = (header) => header.closest('.setor-card').classList.toggle('aberto');
+
+  window.buscarPessoa = function(termo) {
+    const t=termo.toLowerCase().trim();
+    const diretorCard = document.getElementById('diretoriaCard');
+    const diretorNome = (document.getElementById('diretorNomeCard').textContent||'').toLowerCase();
+    if (t) { const bate = diretorNome.includes(t); diretorCard.classList.toggle('aberto', bate); diretorCard.style.display = bate ? '' : 'none'; }
+    else { diretorCard.style.display = ''; }
+    document.querySelectorAll('.setor-card').forEach(card=>{
+      let temVisivel=false;
+      card.querySelectorAll('.pessoa-item').forEach(item=>{
+        const bate=!t||item.dataset.nome.includes(t);
+        item.classList.toggle('oculto-busca',!bate);
+        if(bate) temVisivel=true;
+      });
+      if(t){ card.classList.toggle('aberto',temVisivel); card.classList.toggle('sem-resultado',!temVisivel); }
+      else { card.classList.remove('sem-resultado'); }
+    });
+  };
+
+  window.filtrar = function(turno,btn) {
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('ativo'));
+    btn.classList.add('ativo'); document.body.classList.remove('filtro-mat','filtro-ves','filtro-int');
+    if(turno==='mat') document.body.classList.add('filtro-mat');
+    if(turno==='ves') document.body.classList.add('filtro-ves');
+    if(turno==='int') document.body.classList.add('filtro-int');
+  };
+
+  window.abrirPerfil = function(idx) {
+    pessoaAtualIdx=idx;
+    const mb=pessoas[idx], nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor;
+    const foto=document.getElementById('perfilFoto'); foto.src=avatarUrl(mb.nome,mb.foto); foto.onerror=()=>foto.src=avatarUrl(mb.nome,'');
+    document.getElementById('perfilNome').textContent=mb.nome; document.getElementById('perfilCargo').textContent=mb.cargo; document.getElementById('perfilSetor').textContent=nomeSetor;
+    const turnoLabel=mb.turno==='mat'?'☀️ Matutino':mb.turno==='ves'?'🌇 Vespertino':mb.turno==='int'?'🕐 Integral':null;
+    const campos=[ {label:'Turno',valor:turnoLabel},{label:'Horário',valor:fmtHorario(mb)},{label:'Matrícula',valor:mb.matricula||null},{label:'Telefone',valor:mb.telefone||null},{label:'Nascimento',valor:fmtData(mb.nascimento)},{label:'CPF',valor:mb.cpf||null},mb.obs?{label:'Observação',valor:mb.obs,full:true}:null ].filter(Boolean);
+    document.getElementById('perfilGrid').innerHTML=campos.map(c=>`<div class="perfil-item${c.full?' full':''}"><div class="perfil-label">${c.label}</div><div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div></div>`).join('');
+    document.getElementById('modalPerfil').classList.add('aberto');
+  };
+
+  window.abrirPerfilDiretor = function() {
+    pessoaAtualIdx=-1;
+    const foto=document.getElementById('perfilFoto'); foto.src = diretor.foto || avatarUrl(diretor.nome,''); foto.onerror = () => foto.src = avatarUrl(diretor.nome,'');
+    document.getElementById('perfilNome').textContent = diretor.nome || 'Diretor'; document.getElementById('perfilCargo').textContent = (diretor.cargo||'DIRETOR').toUpperCase(); document.getElementById('perfilSetor').textContent = 'Simplifica Timbó';
+    const turnoLabel=diretor.turno==='mat'?'☀️ Matutino':diretor.turno==='ves'?'🌇 Vespertino':diretor.turno==='int'?'🕐 Integral':null;
+    const campos=[ {label:'Turno', valor:turnoLabel},{label:'Horário', valor:fmtHorario(diretor)},{label:'Matrícula', valor:diretor.matricula||null},{label:'Telefone', valor:diretor.telefone||null},{label:'Nascimento', valor:fmtData(diretor.nascimento)},{label:'CPF', valor:diretor.cpf||null},diretor.obs?{label:'Observação',valor:diretor.obs,full:true}:null ].filter(Boolean);
+    document.getElementById('perfilGrid').innerHTML=campos.map(c=>`<div class="perfil-item${c.full?' full':''}"><div class="perfil-label">${c.label}</div><div class="perfil-valor${!c.valor?' vazio':''}">${c.valor||'Não informado'}</div></div>`).join('');
+    document.getElementById('modalPerfil').classList.add('aberto');
+  };
+
+  window.fecharPerfil=()=>document.getElementById('modalPerfil').classList.remove('aberto');
+
+  function toBase64(url) {
+    return new Promise((resolve, reject) => {
+      if (!url || url.startsWith('data:')) return resolve(url);
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0); resolve(c.toDataURL('image/png')); } catch(e) { reject(e); }
+      }; img.onerror = () => resolve(null); img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    });
+  }
+
+  function waitImageReady(img) {
+    return new Promise(resolve => {
+      if (!img) return resolve();
+      if (img.complete && img.naturalWidth > 0) return resolve();
+      const done = () => resolve(); img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true });
+    });
+  }
+
+  window.downloadCracha = async function() {
+    const btn=document.getElementById('btnDownloadCracha'); const html2canvasLib=window.html2canvas;
+    btn.textContent='⏳ Gerando...'; btn.disabled=true;
+    if (typeof html2canvasLib !== 'function') { alert('A biblioteca do crachá não carregou. Recarregue a página e tente novamente.'); btn.textContent='🪪 Baixar Crachá'; btn.disabled=false; return; }
+    try {
+      let mb, nomeSetor, fotoSrc, nomeP, cargoP;
+      if(pessoaAtualIdx>=0){
+        mb=pessoas[pessoaAtualIdx]; nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor; fotoSrc=avatarUrl(mb.nome,mb.foto); nomeP=mb.nome; cargoP=mb.cargo;
+      } else {
+        mb={turno:'int',horaInicio:'',horaFim:'',horaAlmocoInicio:'',horaAlmocoFim:'',matricula:'',obs:''}; nomeSetor='Simplifica Timbó'; fotoSrc=document.getElementById('fotoDiretorInner').src; nomeP=diretor.nome||'Diretor'; cargoP=diretor.cargo||'DIRETOR';
+      }
+      document.getElementById('cachaNome').textContent=nomeP; document.getElementById('cachaCargo').textContent=cargoP; document.getElementById('cachaSetor').textContent=nomeSetor;
+      const cf=document.getElementById('crachaFoto'); cf.src=fotoSrc; await waitImageReady(cf);
+      const infos=[ mb.matricula?{label:'Matrícula',valor:mb.matricula,full:false}:null, mb.obs?{label:'Observação',valor:mb.obs,full:true}:null ].filter(Boolean);
+      document.getElementById('cachaInfo').innerHTML=infos.map(i=> `<div class="cracha-campo"> <div class="cracha-campo-label">${i.label}</div> <div class="cracha-campo-valor">${i.valor}</div> </div>`).join('');
+      try { const imgB64 = await toBase64(fotoSrc); if (imgB64 && imgB64 !== cf.src) { cf.src = imgB64; await waitImageReady(cf); } } catch(e) { console.warn('Não foi possível converter foto para base64:', e); }
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const canvas=await html2canvasLib(document.getElementById('crachaEl'),{scale:3,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
+      const fileName=`cracha-${nomeP.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-')}.png`;
+      await new Promise((resolve, reject) => { canvas.toBlob(blob => { if (!blob) return reject(new Error('Falha ao gerar o PNG.')); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.download = fileName; link.href = url; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); resolve(); }, 'image/png'); });
+    } catch(e) { alert('Erro ao gerar crachá. Verifique se a foto carregou corretamente.'); console.error(e); }
+    btn.textContent='🪪 Baixar Crachá'; btn.disabled=false;
+  };
+
+  // --- COMPRESSOR DE IMAGENS AUTOMÁTICO (Evita estouro de 1MB do Firebase) ---
+  function processarUpload(input, isLogo, callbackResult) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX = isLogo ? 400 : 150; // Logos podem ser um pouco maiores (400px), pessoas ficam com 150px
+        let w = img.width, h = img.height;
+        
+        if (w > h) { 
+          if (w > MAX) { h *= MAX / w; w = MAX; } 
+        } else { 
+          if (h > MAX) { w *= MAX / h; h = MAX; } 
+        }
+        
+        canvas.width = w; 
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        
+        // Exporta no formato WebP (muito mais leve e aceita fundo transparente)
+        callbackResult(canvas.toDataURL('image/webp', 0.8));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  window.previewFoto = function(input) {
+    processarUpload(input, false, base64 => {
+      fotoBase64 = base64;
+      const prev = document.getElementById('fotoPreview'); prev.src = base64; prev.classList.add('visivel');
+      document.getElementById('fotoUploadTxt').style.display = 'none';
+    });
+  };
+
+  window.previewFotoDiretor = function(input) {
+    processarUpload(input, false, base64 => {
+      fotoBase64Diretor = base64;
+      const prev = document.getElementById('diretorFotoPreview'); prev.src = base64; prev.classList.add('visivel');
+      document.getElementById('diretorFotoUploadTxt').style.display = 'none';
+    });
+  };
+
+  window.previewFotoSetor = function(input) {
+    processarUpload(input, true, base64 => {
+      fotoBase64SetorEdit = base64; // Reutilizando a variável para criação
+      const prev = document.getElementById('setorFotoPreview'); prev.src = base64; prev.classList.add('visivel');
+      document.getElementById('setorFotoUploadTxt').style.display = 'none';
+    });
+  };
+
+  window.previewFotoSetorEdit = function(input) {
+    processarUpload(input, true, base64 => {
+      fotoBase64SetorEdit = base64;
+      const prev = document.getElementById('editSetorFotoPrev'); prev.src = base64; prev.classList.add('visivel');
+    });
+  };
+
+  window.previewFotoEditar = function(input) {
+    processarUpload(input, false, base64 => {
+      fotoBase64Editar = base64;
+      const prev = document.getElementById('editarFotoPreview'); prev.src = base64; prev.classList.add('visivel');
+      document.getElementById('editarFotoUploadTxt').style.display = 'none';
+    });
+  };
+
+  // --- LÓGICA DE EDIÇÃO SETORES E PESSOAS (Mantida idêntica, apenas consome o Base64 comprimido) ---
+  let editSetorIdx = -1;
+  window.abrirEditarSetor = function(idx) {
+    editSetorIdx = idx; const s = setores[idx];
+    document.getElementById('editSetorNome').value = s.nome; document.getElementById('editSetorIcone').value = s.icone || ''; document.getElementById('editSetorParceiro').value = String(s.parceiro || false);
+    const prev = document.getElementById('editSetorFotoPrev');
+    if (s.foto) { prev.src = s.foto; prev.classList.add('visivel'); } else { prev.classList.remove('visivel'); }
+    document.getElementById('modalEditarSetor').classList.add('aberto');
+  };
+  
+  window.fecharEditarSetor = () => document.getElementById('modalEditarSetor').classList.remove('aberto');
+  
+  window.salvarEdicaoSetor = function() {
+    if (editSetorIdx < 0) return;
+    setores[editSetorIdx].nome = document.getElementById('editSetorNome').value; setores[editSetorIdx].icone = document.getElementById('editSetorIcone').value; setores[editSetorIdx].parceiro = document.getElementById('editSetorParceiro').value === 'true';
+    if (fotoBase64SetorEdit) setores[editSetorIdx].foto = fotoBase64SetorEdit;
+    fecharEditarSetor(); renderListaSetoresAdmin(); renderOrganograma(); fotoBase64SetorEdit = '';
+  };
+  
+  window.renderListaSetoresAdmin = function() {
+    document.getElementById('listaSetoresAdmin').innerHTML = setores.map((s, i) => {
+      const imgOrEmoji = s.foto ? `<img src="${s.foto}" style="width:100%;height:100%;object-fit:contain;border-radius:4px">` : (s.icone || '📁');
+      const boxStyle = s.foto ? `width:70px;height:36px;background:white;border:2px solid var(--azul-neon);padding:2px;border-radius:6px;` : `font-size:1.5rem;width:40px;height:40px;background:rgba(0,0,0,0.05);border-radius:10px;`;
+      return `<div class="item-admin"><div style="${boxStyle}display:flex;align-items:center;justify-content:center;flex-shrink:0">${imgOrEmoji}</div><div class="item-admin-info"><strong>${s.nome}</strong></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEditarSetor(${i})">✏️ Editar</button><button class="btn-del" onclick="removerSetor(${i})">Remover</button></div></div>`;
+    }).join('');
+  };
+
+  window.salvarDiretor=function(){
+    const nome=document.getElementById('diretorNome').value.trim(); if(!nome) return alert('Digite o nome do diretor.');
+    diretor = { nome, cargo: document.getElementById('diretorCargo').value.trim()||'Diretor', foto: fotoBase64Diretor || document.getElementById('diretorFotoUrl').value.trim() || diretor.foto, fotoCapa: document.getElementById('diretorFotoCapaUrl').value.trim() || diretor.fotoCapa, turno: document.getElementById('diretorTurno').value, horaInicio: document.getElementById('diretorHoraInicio').value, horaAlmocoInicio: document.getElementById('diretorHoraAlmocoInicio').value, horaAlmocoFim: document.getElementById('diretorHoraAlmocoFim').value, horaFim: document.getElementById('diretorHoraFim').value, matricula: document.getElementById('diretorMatricula').value.trim(), cpf: document.getElementById('diretorCpf').value.trim(), nascimento: document.getElementById('diretorNascimento').value, telefone: document.getElementById('diretorTelefone').value.trim(), obs: document.getElementById('diretorObs').value.trim(), };
+    fotoBase64Diretor=''; renderOrganograma(); alert('✅ Pré-visualização atualizada! Não esqueça de Salvar no Firebase.');
+  };
+
+  function preencherFormDiretor(){
+    document.getElementById('diretorNome').value = diretor.nome||''; document.getElementById('diretorCargo').value = diretor.cargo||''; document.getElementById('diretorFotoUrl').value = (diretor.foto&&!diretor.foto.startsWith('data:'))?diretor.foto:''; document.getElementById('diretorFotoCapaUrl').value = diretor.fotoCapa||''; document.getElementById('diretorTurno').value = diretor.turno||''; document.getElementById('diretorHoraInicio').value = diretor.horaInicio||''; document.getElementById('diretorHoraAlmocoInicio').value = diretor.horaAlmocoInicio||''; document.getElementById('diretorHoraAlmocoFim').value = diretor.horaAlmocoFim||''; document.getElementById('diretorHoraFim').value = diretor.horaFim||''; document.getElementById('diretorMatricula').value = diretor.matricula||''; document.getElementById('diretorCpf').value = diretor.cpf||''; document.getElementById('diretorNascimento').value = diretor.nascimento||''; document.getElementById('diretorTelefone').value = diretor.telefone||''; document.getElementById('diretorObs').value = diretor.obs||'';
+    if(diretor.foto){ const prev=document.getElementById('diretorFotoPreview'); prev.src=diretor.foto; prev.classList.add('visivel'); document.getElementById('diretorFotoUploadTxt').style.display='none'; }
+  }
+
+  window.adicionarSetor=function(){
+    const nome=document.getElementById('novoSetorNome').value.trim(); const icone=document.getElementById('novoSetorIcone').value.trim()||'📁'; const foto=fotoBase64SetorEdit||document.getElementById('novoSetorFotoUrl').value.trim()||''; const parceiro=document.getElementById('novoSetorParceiro').value==='parceiro';
+    if(!nome) return alert('Digite o nome do setor.'); const id=nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    setores.push({id,nome,icone,foto,parceiro}); document.getElementById('novoSetorNome').value=''; document.getElementById('novoSetorIcone').value=''; document.getElementById('novoSetorFotoUrl').value=''; document.getElementById('setorFotoArquivo').value=''; document.getElementById('setorFotoPreview').classList.remove('visivel'); document.getElementById('setorFotoUploadTxt').style.display=''; fotoBase64SetorEdit='';
+    popularSelects(); renderListaSetoresAdmin(); renderOrganograma();
+  };
+
+  window.adicionarPessoa=function(){
+    const nome=document.getElementById('novaNome').value.trim(); const cargo=document.getElementById('novaCargo').value.trim(); const setor=document.getElementById('novoSetor').value;
+    if(!nome||!cargo||!setor) return alert('Preencha nome, cargo e setor.');
+    pessoas.push({ nome,cargo,setor,foto:fotoBase64||document.getElementById('novaFotoUrl').value.trim()||'', turno:document.getElementById('novoTurno').value, horaInicio:document.getElementById('novoHoraInicio').value, horaAlmocoInicio:document.getElementById('novoHoraAlmocoInicio').value, horaAlmocoFim:document.getElementById('novoHoraAlmocoFim').value, horaFim:document.getElementById('novoHoraFim').value, matricula:document.getElementById('novaMatricula').value.trim(), cpf:document.getElementById('novaCpf').value.trim(), nascimento:document.getElementById('novaNascimento').value, telefone:document.getElementById('novoTelefone').value.trim(), obs:document.getElementById('novaObs').value.trim() });
+    ['novaNome','novaCargo','novaFotoUrl','novaMatricula','novaCpf','novoTelefone','novoHoraInicio','novoHoraAlmocoInicio','novoHoraAlmocoFim','novoHoraFim','novaNascimento','novaObs'].forEach(id=>document.getElementById(id).value=''); document.getElementById('novoTurno').value=''; document.getElementById('novoSetor').value=''; document.getElementById('fotoArquivo').value=''; document.getElementById('fotoPreview').classList.remove('visivel'); document.getElementById('fotoUploadTxt').style.display=''; fotoBase64='';
+    renderListaAdmin(); renderOrganograma();
+  };
+
+  window.renderListaAdmin=function(){
+    const filtro=document.getElementById('filtroSetorAdmin').value; const filtrados=filtro?pessoas.filter(p=>p.setor===filtro):pessoas;
+    document.getElementById('listaAdmin').innerHTML=filtrados.map(mb=>{
+      const idx=pessoas.indexOf(mb); const nomeSetor=setores.find(s=>s.id===mb.setor)?.nome||mb.setor; const tl=mb.turno==='mat'?' · ☀️ Mat':mb.turno==='ves'?' · 🌇 Ves':mb.turno==='int'?' · 🕐 Int':'';
+      return `<div class="item-admin"><img src="${avatarUrl(mb.nome,mb.foto)}" onerror="this.src='${avatarUrl(mb.nome,'')}'" alt="${mb.nome}"><div class="item-admin-info"><strong>${mb.nome}</strong><span>${mb.cargo} · ${nomeSetor}${tl}</span></div><div class="item-admin-acoes"><button class="btn-edit" onclick="abrirEditarPessoa(${idx})">✏️ Editar</button><button class="btn-del" onclick="removerPessoa(${idx})">Remover</button></div></div>`;
+    }).join('')||'<div style="color:#aaa;font-size:.85rem;padding:8px">Nenhuma pessoa cadastrada.</div>';
+  };
+
+  window.removerPessoa=function(idx){ if(!confirm(`Remover "${pessoas[idx].nome}"?`)) return; pessoas.splice(idx,1); renderListaAdmin(); renderOrganograma(); };
+  window.removerSetor=function(idx){ if(confirm("Excluir setor?")) { setores.splice(idx, 1); renderListaSetoresAdmin(); renderOrganograma(); } };
+  
+  let editandoIdx = -1; let fotoBase64Editar = '';
+  window.abrirEditarPessoa = function(idx) {
+    editandoIdx = idx; fotoBase64Editar = ''; const mb = pessoas[idx];
+    document.getElementById('editarPessoaSubtitle').textContent = mb.nome; document.getElementById('editarNome').value = mb.nome||''; document.getElementById('editarCargo').value = mb.cargo||''; document.getElementById('editarTurno').value = mb.turno||''; document.getElementById('editarHoraInicio').value = mb.horaInicio||''; document.getElementById('editarHoraAlmocoInicio').value = mb.horaAlmocoInicio||''; document.getElementById('editarHoraAlmocoFim').value = mb.horaAlmocoFim||''; document.getElementById('editarHoraFim').value = mb.horaFim||''; document.getElementById('editarMatricula').value = mb.matricula||''; document.getElementById('editarTelefone').value = mb.telefone||''; document.getElementById('editarCpf').value = mb.cpf||''; document.getElementById('editarNascimento').value = mb.nascimento||''; document.getElementById('editarObs').value = mb.obs||''; document.getElementById('editarFotoUrl').value = (mb.foto&&!mb.foto.startsWith('data:'))?mb.foto:'';
+    const prev = document.getElementById('editarFotoPreview'); if(mb.foto){ prev.src=mb.foto; prev.classList.add('visivel'); document.getElementById('editarFotoUploadTxt').style.display='none'; } else { prev.classList.remove('visivel'); document.getElementById('editarFotoUploadTxt').style.display=''; }
+    const opts = setores.map(s=>`<option value="${s.id}"${s.id===mb.setor?' selected':''}>${s.nome}</option>`).join(''); document.getElementById('editarSetor').innerHTML = '<option value="">Selecione</option>'+opts; document.getElementById('modalEditarPessoa').classList.add('aberto');
+  };
+
+  window.fecharEditarPessoa = function() { document.getElementById('modalEditarPessoa').classList.remove('aberto'); document.getElementById('editarFotoArquivo').value=''; fotoBase64Editar=''; };
+  
+  window.salvarEdicaoPessoa = function() {
+    if(editandoIdx<0) return; const nome = document.getElementById('editarNome').value.trim(); const cargo = document.getElementById('editarCargo').value.trim(); const setor = document.getElementById('editarSetor').value;
+    if(!nome||!cargo||!setor) return alert('Preencha nome, cargo e setor.');
+    pessoas[editandoIdx] = { nome, cargo, setor, foto: fotoBase64Editar || document.getElementById('editarFotoUrl').value.trim() || pessoas[editandoIdx].foto, turno: document.getElementById('editarTurno').value, horaInicio: document.getElementById('editarHoraInicio').value, horaAlmocoInicio: document.getElementById('editarHoraAlmocoInicio').value, horaAlmocoFim: document.getElementById('editarHoraAlmocoFim').value, horaFim: document.getElementById('editarHoraFim').value, matricula: document.getElementById('editarMatricula').value.trim(), telefone: document.getElementById('editarTelefone').value.trim(), cpf: document.getElementById('editarCpf').value.trim(), nascimento: document.getElementById('editarNascimento').value, obs: document.getElementById('editarObs').value.trim() };
+    fecharEditarPessoa(); renderListaAdmin(); renderOrganograma();
+  };
+
+  ['modalPerfil','modalLogin','modalEditarPessoa','modalEditarSetor','modalConfirmarSaida'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id){ if(id==='modalPerfil') fecharPerfil(); else if(id==='modalEditarPessoa') fecharEditarPessoa(); else if(id==='modalEditarSetor') fecharEditarSetor(); else if (id==='modalConfirmarSaida') fecharConfirmacao(); else fecharLogin(); } }); });
+
+  window.abrirLogin=()=>{ document.getElementById('modalLogin').classList.add('aberto'); setTimeout(()=>document.getElementById('senhaInput').focus(),100); };
+  window.fecharLogin=()=>{ document.getElementById('modalLogin').classList.remove('aberto'); document.getElementById('senhaInput').value=''; document.getElementById('erroSenha').style.display='none'; };
+  window.verificarSenha = async () => {
+    const senha = document.getElementById('senhaInput').value;
+    const emailAdmin = "admin@simplificatimbo.local"; // O e-mail que criaremos no Firebase
+
+    try {
+      // Tenta fazer o login seguro
+      await signInWithEmailAndPassword(auth, emailAdmin, senha);
+      fecharLogin();
+      abrirPainel();
+    } catch (error) {
+      // Se a senha estiver errada
+      document.getElementById('erroSenha').style.display = 'block';
+      document.getElementById('senhaInput').value = '';
+      document.getElementById('senhaInput').focus();
+    }
+  };
+  window.abrirPainel=()=>{ document.getElementById('painelAdmin').classList.add('aberto'); popularSelects(); renderListaAdmin(); renderListaSetoresAdmin(); preencherFormDiretor(); };
+  window.fecharPainelComConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.add('aberto');
+  window.fecharConfirmacao = () => document.getElementById('modalConfirmarSaida').classList.remove('aberto');
+  window.fecharPainelDireto = () => document.getElementById('painelAdmin').classList.remove('aberto');
+  window.toggleSetor = (header) => header.closest('.setor-card').classList.toggle('aberto');
+  function popularSelects() { const opts=setores.map(s=>`<option value="${s.id}">${s.nome}</option>`).join(''); document.getElementById('novoSetor').innerHTML='<option value="">Selecione o setor</option>'+opts; document.getElementById('filtroSetorAdmin').innerHTML='<option value="">Todos os setores</option>'+opts; }
+
+  carregarDados();
+</script>
+</body>
+</html>
