@@ -218,9 +218,13 @@
   .cracha-corpo { padding: 14px 24px 6px; text-align: center; }
   .cracha-nome { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: #12335c; line-height: 1.2; letter-spacing: -0.2px; margin-top: 2px; }
   .cracha-nome.compacto { font-size: 0.92rem; line-height: 1.16; }
-  .cracha-tags { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  .cracha-cargo { background: #1565a8; color: white; font-family: 'Syne', sans-serif; font-size: 0.64rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 6px 14px; border-radius: 20px; }
-  .cracha-setor-tag { background: #eaf1fa; border: 1.4px solid #cfe0f2; color: #1565a8; font-family: 'Syne', sans-serif; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; padding: 5px 13px; border-radius: 20px; }
+  .cracha-cargo-banner { background: linear-gradient(135deg, #1565a8 0%, #0d3561 100%); color: white; font-family: 'Syne', sans-serif; border-radius: 999px; padding: 9px 22px; margin: 12px auto 0; display: inline-block; box-shadow: 0 3px 10px rgba(21,101,168,0.28); }
+  .cracha-cargo-banner .cracha-cargo-lbl { display: block; font-size: 0.56rem; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; opacity: 0.72; margin-bottom: 1px; }
+  .cracha-cargo-banner .cracha-cargo-val { font-size: 0.95rem; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; }
+  .cracha-pills { display: flex; justify-content: center; align-items: stretch; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .cracha-pill { background: #eaf1fa; border: 1.4px solid #cfe0f2; border-radius: 14px; padding: 5px 14px; text-align: center; min-width: 90px; }
+  .cracha-pill-lbl { font-size: 0.56rem; font-weight: 700; color: #7a8fa6; text-transform: uppercase; letter-spacing: 0.8px; }
+  .cracha-pill-val { font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 800; color: #1565a8; letter-spacing: 0.3px; margin-top: 1px; }
   .cracha-divisor { height: 1px; background: #e2e9f2; margin: 16px 0 14px; }
   .cracha-info { display: flex; flex-direction: column; gap: 8px; text-align: left; }
   .cracha-info:empty { display: none; margin: 0; }
@@ -285,9 +289,19 @@
     <div class="cracha-foto-wrap"><img class="cracha-foto" id="crachaFoto" src="" alt="" crossorigin="anonymous"></div>
     <div class="cracha-corpo">
       <div class="cracha-nome" id="cachaNome"></div>
-      <div class="cracha-tags">
-        <span class="cracha-cargo" id="cachaCargo"></span>
-        <span class="cracha-setor-tag" id="cachaSetor"></span>
+      <div class="cracha-cargo-banner">
+        <span class="cracha-cargo-lbl">Cargo</span>
+        <span class="cracha-cargo-val" id="cachaCargo"></span>
+      </div>
+      <div class="cracha-pills">
+        <div class="cracha-pill">
+          <div class="cracha-pill-lbl">Setor</div>
+          <div class="cracha-pill-val" id="cachaSetor"></div>
+        </div>
+        <div class="cracha-pill" id="crachaMatriculaPill">
+          <div class="cracha-pill-lbl">Matrícula</div>
+          <div class="cracha-pill-val" id="cachaMatricula"></div>
+        </div>
       </div>
       <div class="cracha-divisor" id="crachaDivisor"></div>
       <div class="cracha-info" id="cachaInfo"></div>
@@ -875,8 +889,11 @@
       }
       const nomeEl=document.getElementById('cachaNome'); nomeEl.textContent=nomeP; nomeEl.classList.toggle('compacto', nomeP.length>22);
       document.getElementById('cachaCargo').textContent=cargoP; document.getElementById('cachaSetor').textContent=nomeSetor;
+      const matriculaPill=document.getElementById('crachaMatriculaPill');
+      if (mb.matricula){ matriculaPill.style.display=''; document.getElementById('cachaMatricula').textContent=mb.matricula; }
+      else { matriculaPill.style.display='none'; }
       const cf=document.getElementById('crachaFoto'); cf.src=fotoSrc; await waitImageReady(cf);
-      const infos=[ mb.matricula?{label:'Matrícula',valor:mb.matricula,full:false}:null, mb.obs?{label:'Observação',valor:mb.obs,full:true}:null ].filter(Boolean);
+      const infos=[ mb.obs?{label:'Observação',valor:mb.obs,full:true}:null ].filter(Boolean);
       document.getElementById('crachaDivisor').style.display = infos.length ? '' : 'none';
       document.getElementById('cachaInfo').innerHTML=infos.map(i=> `<div class="cracha-campo"> <div class="cracha-campo-label">${i.label}</div> <div class="cracha-campo-valor">${i.valor}</div> </div>`).join('');
       try { const imgB64 = await toBase64(fotoSrc); if (imgB64 && imgB64 !== cf.src) { cf.src = imgB64; await waitImageReady(cf); } } catch(e) { console.warn('Não foi possível converter foto para base64:', e); }
@@ -897,7 +914,7 @@
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX = isLogo ? 400 : 150; // Logos podem ser um pouco maiores (400px), pessoas ficam com 150px
+        const MAX = isLogo ? 400 : 340; // Pessoas sobem de 150 para 340px — evita borrão ao exportar o crachá em alta resolução (3x)
         let w = img.width, h = img.height;
         
         if (w > h) { 
@@ -909,10 +926,12 @@
         canvas.width = w; 
         canvas.height = h;
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
         
         // Exporta no formato WebP (muito mais leve e aceita fundo transparente)
-        callbackResult(canvas.toDataURL('image/webp', 0.8));
+        callbackResult(canvas.toDataURL('image/webp', 0.85));
       };
       img.src = e.target.result;
     };
