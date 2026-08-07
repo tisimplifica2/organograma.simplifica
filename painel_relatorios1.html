@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Relatórios — Simplifica Timbó</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<style>
+  :root {
+    --azul: #1565a8; --azul-claro: #1e7ecf; --azul-escuro: #0d3561; --azul-neon: #5ab4f0;
+    --verde: #16a34a; --verde-bg: #f0fdf4; --verde-borda: #bbf7d0;
+    --vermelho: #dc2626; --vermelho-bg: #fef2f2;
+    --amarelo: #ea580c; --amarelo-bg: #fff7ed;
+    --fundo: #eef3f9; --painel: #ffffff; --linha: #e3edf7; --linha-forte: #cddceb;
+    --tinta: #14213d; --tinta-2: #475569; --tinta-3: #7a8fa6;
+    --sombra: 0 1px 3px rgba(13,53,97,.06), 0 8px 30px rgba(13,53,97,.09);
+    --raio: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'DM Sans', sans-serif; color: var(--tinta);
+    background:
+      radial-gradient(1200px 500px at 100% -10%, rgba(90,180,240,.12), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(21,101,168,.10), transparent 55%),
+      var(--fundo);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 28px 20px;
+  }
+
+  .estacao {
+    width: 100%; max-width: 860px; background: var(--painel);
+    border-radius: var(--raio); box-shadow: var(--sombra); overflow: hidden;
+    display: grid; grid-template-columns: 1.15fr 1fr;
+  }
+
+  /* ---- Coluna esquerda: identidade + o que a matriz entrega ---- */
+  .painel-info {
+    background: linear-gradient(160deg, var(--azul-escuro) 0%, var(--azul) 100%);
+    color: #fff; padding: 30px 28px; position: relative; display: flex; flex-direction: column;
+  }
+  .painel-info::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+    background: repeating-linear-gradient(-45deg, var(--azul-neon) 0 12px, transparent 12px 24px); opacity: .5;
+  }
+  .marca { display: flex; align-items: center; gap: 9px; margin-bottom: 26px; }
+  .marca-selo {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--azul-neon);
+    color: var(--azul-escuro); display: grid; place-items: center; font-weight: 800; font-family: 'Syne', sans-serif; font-size: 1rem;
+  }
+  .marca-txt { font-family: 'Syne', sans-serif; font-weight: 800; font-size: .95rem; letter-spacing: -.2px; }
+  .marca-txt small { display: block; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .68rem; color: #b9d4ef; letter-spacing: .3px; }
+
+  .painel-info .eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #8fb6de; margin-bottom: 10px; }
+  .painel-info h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.7rem; line-height: 1.1; letter-spacing: -.5px; margin-bottom: 12px; }
+  .painel-info .sub { font-size: .9rem; color: #cfe0f2; line-height: 1.5; margin-bottom: 26px; }
+
+  .entrega-titulo { font-size: .66rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8fb6de; margin-top: auto; padding-top: 22px; margin-bottom: 14px; }
+  .entrega { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .entrega li { display: flex; gap: 11px; align-items: flex-start; font-size: .86rem; color: #e5eef8; line-height: 1.35; }
+  .entrega .ei {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px; background: rgba(255,255,255,.12);
+    display: grid; place-items: center; font-size: .85rem;
+  }
+  .entrega li b { color: #fff; font-weight: 700; }
+
+  /* ---- Coluna direita: controles ---- */
+  .painel-form { padding: 30px 30px 26px; display: flex; flex-direction: column; }
+  .form-eyebrow { font-size: .66rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tinta-3); margin-bottom: 6px; }
+  .form-titulo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.15rem; color: var(--tinta); margin-bottom: 22px; }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 22px; }
+  .preset {
+    border: 1.4px solid var(--linha-forte); background: #fff; color: var(--tinta-2);
+    font-family: 'DM Sans', sans-serif; font-size: .8rem; font-weight: 600; padding: 7px 13px;
+    border-radius: 999px; cursor: pointer; transition: all .14s;
+  }
+  .preset:hover { border-color: var(--azul-claro); color: var(--azul); }
+  .preset.ativo { background: var(--azul); border-color: var(--azul); color: #fff; }
+
+  .datas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 6px; }
+  .campo label { display: block; font-size: .72rem; font-weight: 700; color: var(--tinta-2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+  .campo input[type=date] {
+    width: 100%; padding: 12px 13px; border: 1.5px solid var(--linha); border-radius: 10px;
+    font-family: 'DM Mono', monospace; font-size: .92rem; color: var(--tinta); background: #f8fafc; transition: all .14s;
+  }
+  .campo input[type=date]:focus { outline: none; border-color: var(--azul-claro); background: #fff; box-shadow: 0 0 0 3px rgba(94,180,240,.18); }
+
+  .periodo-resumo {
+    display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; padding: 10px 13px;
+    background: #f5f9fd; border: 1px solid var(--linha); border-radius: 10px;
+    font-size: .82rem; color: var(--tinta-2); min-height: 42px;
+  }
+  .periodo-resumo .pr-icon { font-size: .95rem; }
+  .periodo-resumo b { color: var(--azul); font-weight: 700; font-family: 'DM Mono', monospace; }
+
+  .btn-gerar {
+    margin-top: 18px; background: var(--azul); color: #fff; border: none; padding: 15px;
+    width: 100%; border-radius: 11px; font-family: 'DM Sans', sans-serif; font-size: .98rem; font-weight: 700;
+    cursor: pointer; transition: all .16s; display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    box-shadow: 0 4px 14px rgba(21,101,168,.25);
+  }
+  .btn-gerar:hover { background: var(--azul-claro); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(21,101,168,.32); }
+  .btn-gerar:active { transform: translateY(0); }
+  .btn-gerar:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-gerar .spin { width: 15px; height: 15px; border: 2.2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: girar .7s linear infinite; display: none; }
+  .btn-gerar.ocupado .spin { display: inline-block; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+
+  #msgStatus {
+    font-size: .84rem; margin-top: 14px; font-weight: 600; min-height: 20px;
+    display: flex; align-items: center; gap: 7px; opacity: 0; transition: opacity .2s;
+  }
+  #msgStatus.mostra { opacity: 1; }
+  #msgStatus.sucesso { color: var(--verde); }
+  #msgStatus.erro { color: var(--vermelho); }
+  #msgStatus.aviso { color: var(--amarelo); }
+  #msgStatus.processando { color: var(--azul); }
+
+  .rodape-nota { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--linha); font-size: .74rem; color: var(--tinta-3); line-height: 1.5; }
+  .rodape-nota b { color: var(--tinta-2); font-weight: 700; }
+
+  @media (max-width: 720px) {
+    body { padding: 0; align-items: stretch; }
+    .estacao { grid-template-columns: 1fr; max-width: 480px; margin: auto; border-radius: 0; min-height: 100vh; }
+    .painel-info { padding: 26px 22px; }
+    .painel-info h1 { font-size: 1.45rem; }
+    .entrega { margin-top: 22px; }
+    .painel-form { padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="estacao">
+  <aside class="painel-info">
+    <div class="marca">
+      <div class="marca-selo">S</div>
+      <div class="marca-txt">Simplifica Timbó<small>Central de Relatórios · RH</small></div>
+    </div>
+
+    <div class="eyebrow">Matriz de Frequência</div>
+    <h1>Relatório de<br>assiduidade da equipe</h1>
+    <p class="sub">Escolha o período e gere a planilha gerencial com o cruzamento de presenças e faltas de toda a equipe do Simplifica.</p>
+
+    <div class="entrega-titulo">O que a planilha traz</div>
+    <ul class="entrega">
+      <li><span class="ei">📊</span><span><b>Dashboard gestor</b> com assiduidade global e ranking por setor.</span></li>
+      <li><span class="ei">🗓️</span><span><b>Matriz dia a dia</b> — presença (P) e falta (A) de cada servidor, por turno.</span></li>
+      <li><span class="ei">🎯</span><span><b>% de assiduidade</b> por pessoa, com destaque de quem está abaixo de 80%.</span></li>
+    </ul>
+  </aside>
+
+  <section class="painel-form">
+    <div class="form-eyebrow">Configurar exportação</div>
+    <div class="form-titulo">Período do relatório</div>
+
+    <div class="presets" id="presets">
+      <button type="button" class="preset" data-preset="7">Últimos 7 dias</button>
+      <button type="button" class="preset" data-preset="30">Últimos 30 dias</button>
+      <button type="button" class="preset" data-preset="mes">Este mês</button>
+      <button type="button" class="preset" data-preset="mespassado">Mês passado</button>
+    </div>
+
+    <div class="datas">
+      <div class="campo">
+        <label for="dataInicio">Início</label>
+        <input type="date" id="dataInicio" required>
+      </div>
+      <div class="campo">
+        <label for="dataFim">Fim</label>
+        <input type="date" id="dataFim" required>
+      </div>
+    </div>
+
+    <div class="periodo-resumo" id="periodoResumo">
+      <span class="pr-icon">🗓️</span>
+      <span id="periodoTexto">Escolha um atalho ou defina as datas.</span>
+    </div>
+
+    <button class="btn-gerar" id="btnGerar" onclick="gerarMatrizFrequencia()">
+      <span class="spin"></span>
+      <span id="btnGerarTxt">Exportar planilha gerencial</span>
+    </button>
+    <div id="msgStatus"></div>
+
+    <div class="rodape-nota">
+      Os dados vêm da <b>lista de chamada</b> registrada por dia e turno. Cada pessoa é agrupada por nome e setor — servidores em mais de um setor aparecem em linhas separadas.
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmdk20_3aZvS6QijUnVGSG4mI3TaM0vlk",
+    authDomain: "simplifica-timbo.firebaseapp.com",
+    projectId: "simplifica-timbo",
+    storageBucket: "simplifica-timbo.firebasestorage.app",
+    messagingSenderId: "651621474575",
+    appId: "1:651621474575:web:f9d75bcb41069038971e7a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function formatarDataBR(dataISO) {
+    const [a, m, d] = dataISO.split('-');
+    return `${d}/${m}`;
+  }
+
+  function mostrarMensagem(texto, classe) {
+    const msg = document.getElementById('msgStatus');
+    if (!texto) { msg.textContent = ''; msg.className = ''; return; }
+    const icones = { sucesso: '✓', erro: '⚠', aviso: '!', processando: '' };
+    msg.textContent = (icones[classe] ? icones[classe] + '  ' : '') + texto;
+    msg.className = classe + ' mostra';
+  }
+
+  // Controla o estado do botão preservando o spinner (que é filho do botão).
+  function setBtn(texto, ocupado) {
+    const btn = document.getElementById('btnGerar');
+    document.getElementById('btnGerarTxt').textContent = texto;
+    btn.disabled = !!ocupado;
+    btn.classList.toggle('ocupado', !!ocupado);
+  }
+
+  // ---- Atalhos de período e resumo em tempo real ----
+  const fmtISO = (d) => d.toISOString().slice(0, 10);
+  const fmtBRcompleto = (iso) => { const [a,m,d] = iso.split('-'); return `${d}/${m}/${a}`; };
+
+  function aplicarPreset(tipo) {
+    const hoje = new Date();
+    let inicio, fim = new Date(hoje);
+    if (tipo === '7') { inicio = new Date(hoje); inicio.setDate(hoje.getDate() - 6); }
+    else if (tipo === '30') { inicio = new Date(hoje); inicio.setDate(hoje.getDate() - 29); }
+    else if (tipo === 'mes') { inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1); }
+    else if (tipo === 'mespassado') {
+      inicio = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+      fim = new Date(hoje.getFullYear(), hoje.getMonth(), 0);
+    }
+    document.getElementById('dataInicio').value = fmtISO(inicio);
+    document.getElementById('dataFim').value = fmtISO(fim);
+    document.querySelectorAll('.preset').forEach(b => b.classList.toggle('ativo', b.dataset.preset === tipo));
+    atualizarResumo();
+  }
+
+  function atualizarResumo() {
+    const ini = document.getElementById('dataInicio').value;
+    const fim = document.getElementById('dataFim').value;
+    const alvo = document.getElementById('periodoTexto');
+    if (!ini || !fim) { alvo.innerHTML = 'Escolha um atalho ou defina as datas.'; return; }
+    if (ini > fim) { alvo.innerHTML = 'A data de início está depois da data de fim.'; return; }
+    const dias = Math.round((new Date(fim) - new Date(ini)) / 86400000) + 1;
+    alvo.innerHTML = `De <b>${fmtBRcompleto(ini)}</b> a <b>${fmtBRcompleto(fim)}</b> · ${dias} dia${dias === 1 ? '' : 's'}`;
+  }
+
+  document.querySelectorAll('.preset').forEach(b => {
+    b.addEventListener('click', () => aplicarPreset(b.dataset.preset));
+  });
+  ['dataInicio', 'dataFim'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.querySelectorAll('.preset').forEach(b => b.classList.remove('ativo'));
+      atualizarResumo();
+    });
+  });
+  // Começa com "últimos 30 dias" selecionado
+  aplicarPreset('30');
+
+  window.gerarMatrizFrequencia = async function() {
+    const dataInicio = document.getElementById('dataInicio').value;
+    const dataFim = document.getElementById('dataFim').value;
+
+    if (!dataInicio || !dataFim) { mostrarMensagem("Preencha as duas datas.", "erro"); return; }
+    if (dataInicio > dataFim) { mostrarMensagem("A data inicial não pode ser maior.", "erro"); return; }
+
+    setBtn("Cruzando dados no Firebase…", true);
+    mostrarMensagem("", "");
+
+    try {
+      // 1. Busca os documentos de chamada
+      const chamadasRef = collection(db, "chamadas");
+      const q = query(chamadasRef, where("data", ">=", dataInicio), where("data", "<=", dataFim));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        mostrarMensagem("Nenhum registro de chamada nesse período. Confira as datas ou registre a chamada primeiro.", "aviso");
+        setBtn("Exportar planilha gerencial", false);
+        return;
+      }
+
+      // 2. Estruturação dos dados para a Matriz (Pivotamento)
+      const diasColunas = []; // Armazena as colunas de datas/turnos
+      const servidoresMap = {}; // Armazena os servidores e seus registros diários
+      const setoresStats = {}; // Estatísticas para o Dashboard
+      let globalPres = 0, globalAus = 0;
+
+      // Extrai e ordena os documentos (Data -> Turno Mat -> Turno Vesp)
+      const docsOrdenados = [];
+      querySnapshot.forEach(doc => docsOrdenados.push(doc.data()));
+      docsOrdenados.sort((a, b) => {
+        if (a.data !== b.data) return a.data.localeCompare(b.data);
+        return a.turno.localeCompare(b.turno); // 'mat' vem antes de 'vesp'
+      });
+
+      // Processa os documentos ordenados
+      docsOrdenados.forEach((dados) => {
+        const labelColuna = `${formatarDataBR(dados.data)} ${dados.turno === 'mat' ? 'Mat' : 'Vesp'}`;
+        const idColuna = `${dados.data}_${dados.turno}`;
+        diasColunas.push({ id: idColuna, label: labelColuna });
+
+        if (dados.registros) {
+          Object.entries(dados.registros).forEach(([servidorId, reg]) => {
+            // Agrupa por NOME + SETOR (normalizado), e não pelo ID.
+            // O ID gerado na lista de chamada inclui o índice da pessoa no array,
+            // que muda quando alguém é adicionado/removido — fazendo a mesma pessoa
+            // aparecer com IDs diferentes em dias diferentes e virar linhas duplicadas.
+            const normalizar = (txt) => (txt || '')
+              .toString().trim().toLowerCase()
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+              .replace(/\s+/g, ' ');
+            const chaveServidor = normalizar(reg.nome) + '|' + normalizar(reg.setor);
+
+            // Inicializa o servidor se não existir
+            if (!servidoresMap[chaveServidor]) {
+              servidoresMap[chaveServidor] = {
+                nome: reg.nome, setor: reg.setor, presencas: 0, faltas: 0, 
+                dias: {} // Guarda { "2026-05-16_mat": "P" }
+              };
+            }
+            
+            // Marca a presença/falta na matriz.
+            // Só grava o status por dia aqui; os contadores (presenças/faltas) e as
+            // estatísticas de setor são calculados DEPOIS, a partir do objeto 'dias'.
+            // Isso evita contagem dobrada quando a mesma pessoa tinha 2 IDs no mesmo dia.
+            const diaExistente = servidoresMap[chaveServidor].dias[idColuna];
+            if (reg.presente === true) {
+              // Presença sempre prevalece sobre uma falta anterior no mesmo dia/turno
+              servidoresMap[chaveServidor].dias[idColuna] = { status: 'P', obs: reg.obs };
+            } else if (reg.presente === false) {
+              // Só grava falta se ainda não houver uma presença registrada nesse dia
+              if (!diaExistente || diaExistente.status !== 'P') {
+                servidoresMap[chaveServidor].dias[idColuna] = { status: 'A', obs: reg.obs };
+              }
+            }
+          });
+        }
+      });
+
+      // Recalcula presenças/faltas e estatísticas de setor a partir do mapa consolidado
+      // 'dias'. Fazendo depois da consolidação, cada dia conta no máximo uma vez por
+      // pessoa, então os totais batem exatamente com o que aparece na matriz.
+      globalPres = 0; globalAus = 0;
+      for (const chave in setoresStats) delete setoresStats[chave];
+      Object.values(servidoresMap).forEach(srv => {
+        srv.presencas = 0;
+        srv.faltas = 0;
+        if (!setoresStats[srv.setor]) setoresStats[srv.setor] = { pres: 0, aus: 0 };
+        Object.values(srv.dias).forEach(dia => {
+          if (dia.status === 'P') { srv.presencas++; setoresStats[srv.setor].pres++; globalPres++; }
+          else if (dia.status === 'A') { srv.faltas++; setoresStats[srv.setor].aus++; globalAus++; }
+        });
+      });
+
+      setBtn("Montando a planilha…", true);
+
+      // ==========================================
+      // 3. GERAÇÃO DO EXCEL (Dashboard + Matriz)
+      // ==========================================
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Simplifica Timbó';
+
+      const alinhamentoCentro = { vertical: 'middle', horizontal: 'center' };
+      const bordaFina = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+
+      // ----------------------------------------------------
+      // ABA 1: DASHBOARD GESTOR
+      // ----------------------------------------------------
+      const wsDash = workbook.addWorksheet('Dashboard Gestor');
+      wsDash.columns = [{ width: 35 }, { width: 18 }, { width: 18 }];
+      
+      // Título
+      wsDash.mergeCells('A1:C1');
+      const tituloDash = wsDash.getCell('A1');
+      tituloDash.value = 'MÉTRICAS EXECUTIVAS DE ASSIDUIDADE';
+      tituloDash.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+      tituloDash.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF1565A8' } };
+      tituloDash.alignment = alinhamentoCentro;
+
+      // Resumo Global
+      const totalGlobal = globalPres + globalAus;
+      const assidGlobal = totalGlobal > 0 ? (globalPres / totalGlobal) : 0;
+      
+      wsDash.addRow([]);
+      wsDash.addRow(['MÉTRICAS GLOBAIS', 'VALOR', '']).font = { bold: true };
+      wsDash.addRow(['Total de Registros Computados', totalGlobal, '']);
+      wsDash.addRow(['Total de Presenças', globalPres, '']);
+      wsDash.addRow(['Total de Ausências/Faltas', globalAus, '']);
+      const rowAssidG = wsDash.addRow(['Assiduidade Global', assidGlobal, '']);
+      rowAssidG.getCell(2).numFmt = '0.00%';
+      rowAssidG.getCell(2).font = { bold: true, color: { argb: assidGlobal >= 0.8 ? 'FF00B050' : 'FFFF0000' } };
+
+      // Ranking de Setores
+      wsDash.addRow([]);
+      const rowRankH = wsDash.addRow(['RANKING POR SETOR', 'ASSIDUIDADE', 'FALTAS']);
+      rowRankH.eachCell(c => { c.font = { bold: true, color: { argb: 'FFFFFFFF'} }; c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF475569' } }; c.alignment = alinhamentoCentro; });
+
+      const listaSetores = Object.entries(setoresStats).map(([nome, stats]) => {
+        const total = stats.pres + stats.aus;
+        return { nome, assiduidade: total > 0 ? (stats.pres / total) : 0, faltas: stats.aus };
+      }).sort((a, b) => b.assiduidade - a.assiduidade); // Ordena do melhor pro pior
+
+      listaSetores.forEach(setor => {
+        const row = wsDash.addRow([setor.nome, setor.assiduidade, setor.faltas]);
+        row.getCell(2).numFmt = '0.00%';
+        row.getCell(2).alignment = alinhamentoCentro;
+        row.getCell(3).alignment = alinhamentoCentro;
+        row.eachCell(c => c.border = bordaFina);
+      });
+
+      // ----------------------------------------------------
+      // ABA 2: MATRIZ DE FREQUÊNCIA
+      // ----------------------------------------------------
+      const wsMatriz = workbook.addWorksheet('Matriz de Frequência');
+      
+      // Configura as colunas fixas + colunas de dias
+      const colunasMatriz = [
+        { header: 'Setor', key: 'setor', width: 22 },
+        { header: 'Servidor', key: 'nome', width: 35 },
+        { header: 'Assiduidade', key: 'assiduidade', width: 14 },
+        { header: 'Faltas', key: 'faltas', width: 10 }
+      ];
+      diasColunas.forEach(dia => colunasMatriz.push({ header: dia.label, key: dia.id, width: 12 }));
+      wsMatriz.columns = colunasMatriz;
+
+      // Estilo do Cabeçalho da Matriz
+      wsMatriz.getRow(1).eachCell(c => {
+        c.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+        c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FF1565A8' } };
+        c.alignment = alinhamentoCentro;
+        c.border = bordaFina;
+      });
+
+      // Ordena servidores por Setor -> Nome
+      const servidoresLista = Object.values(servidoresMap).sort((a, b) => {
+        if (a.setor !== b.setor) return a.setor.localeCompare(b.setor);
+        return a.nome.localeCompare(b.nome);
+      });
+
+      // Preenche a Matriz
+      servidoresLista.forEach(srv => {
+        const rowData = {
+          setor: srv.setor,
+          nome: srv.nome,
+          faltas: srv.faltas,
+          assiduidade: (srv.presencas + srv.faltas) > 0 ? (srv.presencas / (srv.presencas + srv.faltas)) : 0
+        };
+
+        // Puxa o P ou A para cada coluna de dia
+        diasColunas.forEach(dia => {
+          const reg = srv.dias[dia.id];
+          rowData[dia.id] = reg ? reg.status : '-';
+        });
+
+        const row = wsMatriz.addRow(rowData);
+        
+        // Formata as células da linha
+        row.eachCell({ includeEmpty: true }, (c, colNum) => {
+          c.border = bordaFina;
+          c.alignment = alinhamentoCentro;
+          if (colNum === 1 || colNum === 2) c.alignment = { vertical: 'middle', horizontal: 'left' };
+          
+          // Formata % de Assiduidade
+          if (colNum === 3) {
+            c.numFmt = '0.00%';
+            c.font = { bold: true, color: { argb: c.value >= 0.8 ? 'FF00B050' : 'FFFF0000' } };
+          }
+          
+          // Cores P (Verde) e A (Vermelho)
+          if (colNum > 4) {
+            if (c.value === 'P') {
+              c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FFE2EFDA' } }; // Fundo Verde Claro
+              c.font = { color: { argb:'FF375623' }, bold: true }; // Texto Verde Escuro
+            } else if (c.value === 'A') {
+              c.fill = { type: 'pattern', pattern:'solid', fgColor:{ argb:'FFFCE4D6' } }; // Fundo Vermelho Claro
+              c.font = { color: { argb:'FFC00000' }, bold: true }; // Texto Vermelho Escuro
+            }
+          }
+        });
+      });
+
+      wsMatriz.autoFilter = `A1:D1`; // Filtro nas 4 primeiras colunas
+
+      // 4. SALVAR ARQUIVO
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, `Relatorio_Matriz_${dataInicio}_a_${dataFim}.xlsx`);
+
+      mostrarMensagem("Planilha exportada. Verifique os downloads.", "sucesso");
+
+    } catch (error) {
+      console.error("Erro geral:", error);
+      mostrarMensagem("Não foi possível gerar a planilha. Verifique a conexão e tente de novo.", "erro");
+    } finally {
+      setBtn("Exportar planilha gerencial", false);
+    }
+  };
+</script>
+</body>
+</html>
