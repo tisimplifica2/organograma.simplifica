@@ -1062,10 +1062,20 @@
     popularSelects(); renderListaSetoresAdmin(); renderOrganograma();
   };
 
+  // Gera um identificador FIXO e único para cada pessoa nova.
+  // Este uid nunca muda (não depende da posição no array), então o histórico
+  // de presença na lista de chamada permanece estável mesmo com rotatividade.
+  function gerarUidPessoa(){
+    try {
+      if (window.crypto && crypto.randomUUID) return 'p_' + crypto.randomUUID();
+    } catch(e) {}
+    return 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+  }
+
   window.adicionarPessoa=function(){
     const nome=document.getElementById('novaNome').value.trim(); const cargo=document.getElementById('novaCargo').value.trim(); const setor=document.getElementById('novoSetor').value;
     if(!nome||!cargo||!setor) return alert('Preencha nome, cargo e setor.');
-    pessoas.push({ nome,cargo,setor,foto:fotoBase64||document.getElementById('novaFotoUrl').value.trim()||'', turno:document.getElementById('novoTurno').value, horaInicio:document.getElementById('novoHoraInicio').value, horaAlmocoInicio:document.getElementById('novoHoraAlmocoInicio').value, horaAlmocoFim:document.getElementById('novoHoraAlmocoFim').value, horaFim:document.getElementById('novoHoraFim').value, matricula:document.getElementById('novaMatricula').value.trim(), cpf:document.getElementById('novaCpf').value.trim(), nascimento:document.getElementById('novaNascimento').value, telefone:document.getElementById('novoTelefone').value.trim(), obs:document.getElementById('novaObs').value.trim() });
+    pessoas.push({ uid: gerarUidPessoa(), nome,cargo,setor,foto:fotoBase64||document.getElementById('novaFotoUrl').value.trim()||'', turno:document.getElementById('novoTurno').value, horaInicio:document.getElementById('novoHoraInicio').value, horaAlmocoInicio:document.getElementById('novoHoraAlmocoInicio').value, horaAlmocoFim:document.getElementById('novoHoraAlmocoFim').value, horaFim:document.getElementById('novoHoraFim').value, matricula:document.getElementById('novaMatricula').value.trim(), cpf:document.getElementById('novaCpf').value.trim(), nascimento:document.getElementById('novaNascimento').value, telefone:document.getElementById('novoTelefone').value.trim(), obs:document.getElementById('novaObs').value.trim() });
     ['novaNome','novaCargo','novaFotoUrl','novaMatricula','novaCpf','novoTelefone','novoHoraInicio','novoHoraAlmocoInicio','novoHoraAlmocoFim','novoHoraFim','novaNascimento','novaObs'].forEach(id=>document.getElementById(id).value=''); document.getElementById('novoTurno').value=''; document.getElementById('novoSetor').value=''; document.getElementById('fotoArquivo').value=''; document.getElementById('fotoPreview').classList.remove('visivel'); document.getElementById('fotoUploadTxt').style.display=''; fotoBase64='';
     renderListaAdmin(); renderOrganograma();
   };
