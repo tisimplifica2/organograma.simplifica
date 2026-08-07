@@ -132,31 +132,55 @@
 
         if (dados.registros) {
           Object.entries(dados.registros).forEach(([servidorId, reg]) => {
+            // Agrupa por NOME + SETOR (normalizado), e não pelo ID.
+            // O ID gerado na lista de chamada inclui o índice da pessoa no array,
+            // que muda quando alguém é adicionado/removido — fazendo a mesma pessoa
+            // aparecer com IDs diferentes em dias diferentes e virar linhas duplicadas.
+            const normalizar = (txt) => (txt || '')
+              .toString().trim().toLowerCase()
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+              .replace(/\s+/g, ' ');
+            const chaveServidor = normalizar(reg.nome) + '|' + normalizar(reg.setor);
+
             // Inicializa o servidor se não existir
-            if (!servidoresMap[servidorId]) {
-              servidoresMap[servidorId] = {
+            if (!servidoresMap[chaveServidor]) {
+              servidoresMap[chaveServidor] = {
                 nome: reg.nome, setor: reg.setor, presencas: 0, faltas: 0, 
                 dias: {} // Guarda { "2026-05-16_mat": "P" }
               };
             }
             
-            // Inicializa o setor no Dashboard se não existir
-            if (!setoresStats[reg.setor]) { setoresStats[reg.setor] = { pres: 0, aus: 0 }; }
-
-            // Marca a presença/falta na matriz
+            // Marca a presença/falta na matriz.
+            // Só grava o status por dia aqui; os contadores (presenças/faltas) e as
+            // estatísticas de setor são calculados DEPOIS, a partir do objeto 'dias'.
+            // Isso evita contagem dobrada quando a mesma pessoa tinha 2 IDs no mesmo dia.
+            const diaExistente = servidoresMap[chaveServidor].dias[idColuna];
             if (reg.presente === true) {
-              servidoresMap[servidorId].dias[idColuna] = { status: 'P', obs: reg.obs };
-              servidoresMap[servidorId].presencas++;
-              setoresStats[reg.setor].pres++;
-              globalPres++;
+              // Presença sempre prevalece sobre uma falta anterior no mesmo dia/turno
+              servidoresMap[chaveServidor].dias[idColuna] = { status: 'P', obs: reg.obs };
             } else if (reg.presente === false) {
-              servidoresMap[servidorId].dias[idColuna] = { status: 'A', obs: reg.obs };
-              servidoresMap[servidorId].faltas++;
-              setoresStats[reg.setor].aus++;
-              globalAus++;
+              // Só grava falta se ainda não houver uma presença registrada nesse dia
+              if (!diaExistente || diaExistente.status !== 'P') {
+                servidoresMap[chaveServidor].dias[idColuna] = { status: 'A', obs: reg.obs };
+              }
             }
           });
         }
+      });
+
+      // Recalcula presenças/faltas e estatísticas de setor a partir do mapa consolidado
+      // 'dias'. Fazendo depois da consolidação, cada dia conta no máximo uma vez por
+      // pessoa, então os totais batem exatamente com o que aparece na matriz.
+      globalPres = 0; globalAus = 0;
+      for (const chave in setoresStats) delete setoresStats[chave];
+      Object.values(servidoresMap).forEach(srv => {
+        srv.presencas = 0;
+        srv.faltas = 0;
+        if (!setoresStats[srv.setor]) setoresStats[srv.setor] = { pres: 0, aus: 0 };
+        Object.values(srv.dias).forEach(dia => {
+          if (dia.status === 'P') { srv.presencas++; setoresStats[srv.setor].pres++; globalPres++; }
+          else if (dia.status === 'A') { srv.faltas++; setoresStats[srv.setor].aus++; globalAus++; }
+        });
       });
 
       btn.textContent = "🎨 Renderizando Matriz ExcelJS...";
