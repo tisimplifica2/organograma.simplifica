@@ -84,8 +84,15 @@
   .campo label { display: block; font-size: .72rem; font-weight: 700; color: var(--tinta-2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
   .campo input[type=date] {
     width: 100%; padding: 12px 13px; border: 1.5px solid var(--linha); border-radius: 10px;
-    font-family: 'DM Mono', monospace; font-size: .92rem; color: var(--tinta); background: #f8fafc; transition: all .14s;
+    font-family: 'DM Mono', monospace; font-size: .92rem; color: #14213d; background: #f8fafc; transition: all .14s;
   }
+  /* Garante que os dígitos (dia/mês/ano) e o separador fiquem pretos e legíveis */
+  .campo input[type=date]::-webkit-datetime-edit,
+  .campo input[type=date]::-webkit-datetime-edit-fields-wrapper,
+  .campo input[type=date]::-webkit-datetime-edit-text,
+  .campo input[type=date]::-webkit-datetime-edit-day-field,
+  .campo input[type=date]::-webkit-datetime-edit-month-field,
+  .campo input[type=date]::-webkit-datetime-edit-year-field { color: #14213d; }
   .campo input[type=date]:focus { outline: none; border-color: var(--azul-claro); background: #fff; box-shadow: 0 0 0 3px rgba(94,180,240,.18); }
 
   .periodo-resumo {
