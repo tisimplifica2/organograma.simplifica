@@ -235,7 +235,11 @@
           if (ignorarColaborador) return; 
 
           const nomeSeguro = p.nome || 'Sem Nome';
-          const idGerado = nomeSeguro.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
+          // Prioriza o uid FIXO salvo no cadastro (pessoas novas). Só cai no id
+          // antigo baseado em índice para cadastros legados que ainda não têm uid.
+          const idGerado = p.uid
+            ? p.uid
+            : nomeSeguro.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_') + '_' + index;
 
           window.servidoresFirebase.push({
             id: idGerado, nome: p.nome || 'Sem Nome', cargo: p.cargo || 'Sem Cargo', setor: nomeSetor || 'Sem Setor', turno: p.turno || 'mat'
